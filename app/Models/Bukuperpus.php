@@ -10,6 +10,8 @@ class BukuPerpus extends Model
 {
     use HasFactory;
 
+    protected $table = 'buku_perpus';
+
     protected $fillable = [
         'judul',
         'pengarang',
