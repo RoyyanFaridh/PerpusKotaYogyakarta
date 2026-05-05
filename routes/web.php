@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\BookTukarController;
 use App\Http\Controllers\Admin\TransaksiController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\LokasiController;
+use App\Http\Controllers\Admin\AdminAuthController;
 
 
 
@@ -15,10 +16,11 @@ Route::get('/', fn () => view('welcome'));
 
 Route::prefix('katalog')->name('katalog.')->group(function () {
     Route::get('/', [CatalogController::class, 'index'])->name('index');
+    Route::get('/cari', [CatalogController::class, 'search'])->name('cari');
     Route::get('/{book}', [CatalogController::class, 'show'])->name('show');
 });
 
-
+Route::get('/admin/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
 
 Route::prefix('admin')->name('admin.')->group(function () {
 
@@ -34,3 +36,4 @@ Route::prefix('admin')->name('admin.')->group(function () {
     //     'index', 'show', 'update', 'destroy'
     // ]);
 });
+
