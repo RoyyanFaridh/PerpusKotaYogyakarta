@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\TransaksiTukar;
+use App\Models\BukuTukar;
+
 class Member extends Model
 {
     use HasFactory;
@@ -47,6 +50,8 @@ class Member extends Model
 
     public function getTotalTukarAttribute(): int
     {
-        return $this->transaksiTukars()->where('status', 'disetujui')->count();
+        return $this->transaksiTukars()
+            ->where('status', 'disetujui')
+            ->count();
     }
 }
