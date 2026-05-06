@@ -1,10 +1,10 @@
 @props([
     'label'   => 'Label',
     'value'   => '0',
-    'icon'    => 'document',  {{-- 'document' | 'book' | 'clock' | 'swap' | 'check' --}}
-    'color'   => 'primary',   {{-- 'primary' | 'success' | 'warning' | 'danger' --}}
-    'badge'   => null,        {{-- opsional: '+8% dari kemarin' --}}
-    'caption' => null,        {{-- opsional: 'Total transaksi tukar buku' --}}
+    'icon'    => 'document', 
+    'color'   => 'primary',   
+    'badge'   => null,        
+    'caption' => null,        
 ])
 
 @php
