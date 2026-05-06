@@ -52,8 +52,8 @@
         </div>
         <div x-show="!open" class="my-2 mx-3 border-t border-white/10"></div>
 
-        {{-- Buku Perpustakaan
-        <a href="{{ route('admin.buku-perpus.index') }}"
+        Buku Perpustakaan
+        <a href="{{ route('admin.buku-perpus') }}"
             @click="activeMenu = 'buku-perpus'"
             :class="activeMenu === 'buku-perpus' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white'"
             class="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-150 relative overflow-hidden"
@@ -66,7 +66,7 @@
             </span>
             <span x-show="open" class="text-sm font-medium whitespace-nowrap" x-transition:enter="transition-opacity duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Buku Perpustakaan</span>
             <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Buku Perpustakaan</span>
-        </a> --}}
+        </a>
 
         {{-- Buku Tukar
         <a href="{{ route('admin.buku-tukar.index') }}"
