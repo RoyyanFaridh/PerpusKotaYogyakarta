@@ -304,7 +304,7 @@
                 </div>
             </a>
 
-            <a href="{{ route('admin.login') }}" class="btn-login">
+            <a href="{{ route('auth.login') }}" class="btn-login">
                 <svg viewBox="0 0 24 24" stroke-width="2">
                     <circle cx="12" cy="8" r="4"/>
                     <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>

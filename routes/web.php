@@ -20,7 +20,7 @@ Route::prefix('katalog')->name('katalog.')->group(function () {
     Route::get('/{book}', [CatalogController::class, 'show'])->name('show');
 });
 
-Route::get('/admin/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
+Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('auth.login');
 
 Route::prefix('admin')->name('admin.')->group(function () {
 
