@@ -63,7 +63,7 @@
                 <x-icons.book-up/>
             @endif
         </div>
-        <span class="text-md text-neutral-500 font-semibold leading-tight">{{ $label }}</span>
+        <span class="text-sm text-neutral-500 font-medium leading-tight">{{ $label }}</span>
     </div>
 
     <div class="flex items-center justify-between gap-3 flex-1 pb-5">
