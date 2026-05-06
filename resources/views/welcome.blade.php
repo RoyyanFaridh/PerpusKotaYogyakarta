@@ -58,7 +58,7 @@
             </a>
 
             {{-- Login Button --}}
-            <a href="{{ route('admin.login') }}"
+            <a href="{{ route('auth.login') }}"
                class="inline-flex items-center gap-[0.45rem] px-5 py-[0.55rem] bg-primary text-white text-sm font-semibold rounded-lg border-none cursor-pointer no-underline transition-all duration-200 whitespace-nowrap shadow-md hover:bg-[#033370] hover:-translate-y-px hover:shadow-lg">
                 <svg class="w-3.75 h-3.75 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2">
                     <circle cx="12" cy="8" r="4"/>
