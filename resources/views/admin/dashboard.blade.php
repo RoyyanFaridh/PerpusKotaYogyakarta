@@ -1,38 +1,46 @@
 @extends('layouts.admin')
-
 @section('title', 'Dashboard')
 @section('page-title', 'Dashboard')
 @section('page-subtitle', 'Selamat Datang, Petugas!')
 
 @section('content')
+    <div class="flex flex-col gap-6">
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <x-admin.stat-card
-            label="Transaksi Hari Ini"
-            value="24"
-            icon="document"
-            color="primary"
-            badge="+8% dari kemarin"
-            caption="Total transaksi tukar buku"
-        />
+        {{-- Stat Cards --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <x-admin.stat-card
+                label="Transaksi Hari Ini"
+                :value="$transaksiHariIni"
+                icon="document"
+                color="primary"
+                :badge="($selisihTransaksi >= 0 ? '+' : '') . $selisihTransaksi . '% dari kemarin'"
+                caption="Total transaksi tukar buku"
+            />
+            <x-admin.stat-card
+                label="Buku Tersedia"
+                :value="$bukuTersedia"
+                icon="book"
+                color="success"
+                :badge="'+' . $bukuMingguIni . ' minggu ini'"
+                caption="Buku tukar yang sudah diterima"
+            />
+            <x-admin.stat-card
+                label="Perlu Verifikasi"
+                :value="$perluVerifikasi"
+                icon="clock"
+                color="warning"
+                badge="Perlu tindakan"
+                caption="Transaksi menunggu konfirmasi"
+            />
+        </div>
 
-        <x-admin.stat-card
-            label="Buku Tersedia"
-            value="142"
-            icon="book"
-            color="success"
-            badge="+3 minggu ini"
-            caption="Koleksi aktif perpustakaan"
-        />
+        {{-- Penukaran per Kategori + Aktivitas Terkini (50/50) --}}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            @include('components.admin.penukaran-per-kategori', ['kategoris' => $kategoris])
+            @include('components.admin.aktivitas-terkini', ['aktivitas' => $aktivitas])
+        </div>
 
-        <x-admin.stat-card
-            label="Perlu Verifikasi"
-            value="7"
-            icon="clock"
-            color="warning"
-            badge="Perlu tindakan"
-            caption="Buku tukar menunggu konfirmasi"
-        />
+        <x-admin.transaksi-terbaru :transaksis="$transaksiTerbaru"/>
+
     </div>
-
 @endsection

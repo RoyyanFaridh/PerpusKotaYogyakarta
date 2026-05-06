@@ -8,9 +8,7 @@ use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\LokasiController;
 use App\Http\Controllers\Admin\AdminAuthController;
-
-
-
+use App\Http\Controllers\Admin\DashboardController;
 
 Route::get('/', fn () => view('welcome'));
 
@@ -22,9 +20,9 @@ Route::prefix('katalog')->name('katalog.')->group(function () {
 
 Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('auth.login');
 
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->group(function () { //middleware(['auth'])->
 
-    Route::get('/dashboard', fn () => view('admin.dashboard'))->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::resource('member', MemberController::class);
     Route::resource('lokasi', LokasiController::class);
 

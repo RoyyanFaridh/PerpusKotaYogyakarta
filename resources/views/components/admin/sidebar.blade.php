@@ -17,13 +17,9 @@
         </svg>
     </button>
 
-    {{-- Brand / Logo --}}
     <div class="flex items-center gap-3 px-4 py-5 border-b border-white/10 overflow-hidden">
         <div class="shrink-0 flex items-center justify-center w-9 h-9 rounded-xl bg-white/15 text-white">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-            </svg>
+            <x-icons.book/>
         </div>
         <div x-show="open" x-transition:enter="transition-opacity duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="overflow-hidden">
             <p class="text-white font-semibold text-sm leading-tight whitespace-nowrap">Perpustakaan</p>
@@ -31,10 +27,8 @@
         </div>
     </div>
 
-    {{-- Navigation --}}
     <nav class="flex-1 overflow-y-auto overflow-x-hidden py-4 px-2 space-y-0.5">
 
-        {{-- Label Section --}}
         <div x-show="open" class="px-3 pt-1 pb-2">
             <span class="text-[10px] font-semibold uppercase tracking-widest text-primary-400">Menu Utama</span>
         </div>
@@ -47,16 +41,12 @@
         >
             <span :class="activeMenu === 'dashboard' ? 'bg-white' : 'bg-primary-400 group-hover:bg-white'" class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full transition-all duration-150"></span>
             <span class="shrink-0 pl-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-                    <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-                </svg>
+                <x-icons.dashboard/>
             </span>
             <span x-show="open" class="text-sm font-medium whitespace-nowrap" x-transition:enter="transition-opacity duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Dashboard</span>
             <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Dashboard</span>
         </a>
 
-        {{-- Koleksi Divider --}}
         <div x-show="open" class="px-3 pt-4 pb-2">
             <span class="text-[10px] font-semibold uppercase tracking-widest text-primary-400">Koleksi Buku</span>
         </div>
