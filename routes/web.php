@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CatalogController;
 // use App\Http\Controllers\Admin\BookPerpusController;
 // use App\Http\Controllers\Admin\BookTukarController;
-// use App\Http\Controllers\Admin\TransaksiController;
+use App\Http\Controllers\Admin\TransaksiController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\LokasiController;
 use App\Http\Controllers\Admin\AdminAuthController;
@@ -22,9 +22,9 @@ Route::get('/admin/login',  [AdminAuthController::class, 'showLoginForm'])->name
 Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('auth.login.post');
 Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('auth.logout');
 
-Route::prefix('admin')->group(function () { //middleware(['auth'])->
+Route::prefix('admin')->name('admin.')->group(function () {
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('member', MemberController::class);
     Route::resource('lokasi', LokasiController::class);
 
@@ -32,9 +32,7 @@ Route::prefix('admin')->group(function () { //middleware(['auth'])->
 
     // Route::resource('buku-tukar', BookTukarController::class);
 
-    // Route::resource('transaksi', TransaksiController::class)->only([
-    //     'index', 'show', 'update', 'destroy'
-    // ]);
+    Route::resource('transaksi', TransaksiController::class);
 });
 
 // Route::get('/', function () {
