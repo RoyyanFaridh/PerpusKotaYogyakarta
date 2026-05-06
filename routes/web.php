@@ -18,7 +18,9 @@ Route::prefix('katalog')->name('katalog.')->group(function () {
     Route::get('/{book}', [CatalogController::class, 'show'])->name('show');
 });
 
-Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('auth.login');
+Route::get('/admin/login',  [AdminAuthController::class, 'showLoginForm'])->name('auth.login');
+Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('auth.login.post');
+Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('auth.logout');
 
 Route::prefix('admin')->group(function () { //middleware(['auth'])->
 
@@ -35,3 +37,11 @@ Route::prefix('admin')->group(function () { //middleware(['auth'])->
     // ]);
 });
 
+// Route::get('/', function () {
+//     return view('welcome', [
+//         'totalBuku'    => \App\Models\Buku::count(),
+//         'totalAnggota' => \App\Models\User::count(),
+//         'totalTukar'   => \App\Models\Transaksi::where('status', 'selesai')->count(),
+//         'kegiatan'     => \App\Models\Kegiatan::orderBy('tanggal')->get(),
+//     ]);
+// });
