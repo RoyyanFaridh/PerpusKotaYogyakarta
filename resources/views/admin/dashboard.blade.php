@@ -8,7 +8,7 @@
 
         {{-- Stat Cards --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <x-admin.stat-card
+            <x-admin.dashboard.stat-card
                 label="Transaksi Hari Ini"
                 :value="$transaksiHariIni"
                 icon="document"
@@ -16,7 +16,7 @@
                 :badge="($selisihTransaksi >= 0 ? '+' : '') . $selisihTransaksi . '% dari kemarin'"
                 caption="Total transaksi tukar buku"
             />
-            <x-admin.stat-card
+            <x-admin.dashboard.stat-card
                 label="Buku Tersedia"
                 :value="$bukuTersedia"
                 icon="book"
@@ -24,7 +24,7 @@
                 :badge="'+' . $bukuMingguIni . ' minggu ini'"
                 caption="Buku tukar yang sudah diterima"
             />
-            <x-admin.stat-card
+            <x-admin.dashboard.stat-card
                 label="Perlu Verifikasi"
                 :value="$perluVerifikasi"
                 icon="clock"
@@ -36,11 +36,11 @@
 
         {{-- Penukaran per Kategori + Aktivitas Terkini (50/50) --}}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            @include('components.admin.penukaran-per-kategori', ['kategoris' => $kategoris])
-            @include('components.admin.aktivitas-terkini', ['aktivitas' => $aktivitas])
+            @include('components.admin.dashboard.penukaran-per-kategori', ['kategoris' => $kategoris])
+            @include('components.admin.dashboard.aktivitas-terkini', ['aktivitas' => $aktivitas])
         </div>
 
-        <x-admin.transaksi-terbaru :transaksis="$transaksiTerbaru"/>
+        <x-admin.dashboard.transaksi-terbaru :transaksis="$transaksiTerbaru"/>
 
     </div>
 @endsection
