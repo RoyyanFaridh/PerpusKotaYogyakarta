@@ -51,14 +51,14 @@
             <table class="w-full text-sm">
                 <thead>
                     <tr class="border-b border-neutral-100 bg-neutral-50">
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Judul</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Pengarang</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">ISBN</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Kategori</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Sumber</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Stok</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Lokasi</th>
-                        <th class="text-right text-xs font-medium text-neutral-400 px-5 py-3">Aksi</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Judul</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Pengarang</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">ISBN</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Kategori</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Sumber</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Stok</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Lokasi</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-neutral-50" id="tableBody">
