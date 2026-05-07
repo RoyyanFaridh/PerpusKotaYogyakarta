@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('buku_perpus', function (Blueprint $table) {
+        Schema::create('bukus', function (Blueprint $table) {
             $table->id();
             $table->string('judul');
             $table->string('pengarang');
@@ -19,7 +19,11 @@ return new class extends Migration
             $table->text('resume')->nullable();
             $table->unsignedInteger('stok')->default(0);
             $table->string('kategori')->nullable();
-            $table->foreignId('lokasi_id')->constrained('lokasis')->cascadeOnDelete();
+            $table->enum('sumber', ['perpus', 'tukar'])->default('perpus');
+            $table->enum('kondisi', ['baik', 'cukup', 'rusak'])->nullable();
+            $table->text('deskripsi')->nullable();
+            $table->foreignId('lokasi_id')->nullable()->constrained('lokasis')->nullOnDelete();
+            $table->foreignId('member_id')->nullable()->constrained('members')->nullOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });
@@ -27,6 +31,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('buku_perpus');
+        Schema::dropIfExists('bukus');
     }
 };

@@ -23,18 +23,18 @@ class Lokasi extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function bukuPerpus()
+    public function bukus()
     {
-        return $this->hasMany(BukuPerpus::class);
+        return $this->hasMany(Buku::class);
     }
 
     public function getTotalStokAttribute(): int
     {
-        return $this->bukuPerpus()->sum('stok');
+        return $this->bukus()->sum('stok');
     }
 
     public function getTotalJudulAttribute(): int
     {
-        return $this->bukuPerpus()->count();
+        return $this->bukus()->count();
     }
 }

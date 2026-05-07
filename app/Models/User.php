@@ -6,12 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-use App\Models\Lokasi;
-use App\Models\Member;
-use App\Models\BukuPerpus;
-use App\Models\BukuTukar;
-use App\Models\TransaksiTukar;
-
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
@@ -26,7 +20,6 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-
     public function lokasis()
     {
         return $this->hasMany(Lokasi::class);
@@ -37,18 +30,13 @@ class User extends Authenticatable
         return $this->hasMany(Member::class);
     }
 
-    public function bukuPerpus()
+    public function bukus()
     {
-        return $this->hasMany(BukuPerpus::class);
+        return $this->hasMany(Buku::class);
     }
 
-    public function bukuTukars()
+    public function transaksis()
     {
-        return $this->hasMany(BukuTukar::class);
-    }
-
-    public function transaksiTukars()
-    {
-        return $this->hasMany(TransaksiTukar::class);
+        return $this->hasMany(Transaksi::class);
     }
 }

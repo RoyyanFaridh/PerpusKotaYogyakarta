@@ -5,9 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
-use App\Models\TransaksiTukar;
-use App\Models\BukuTukar;
+use App\Models\Transaksi;
 
 class Member extends Model
 {
@@ -25,19 +23,14 @@ class Member extends Model
         'user_id',
     ];
 
-    public function user()
+    public function bukus()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(Buku::class);
     }
 
-    public function bukuTukars()
+    public function transaksis()
     {
-        return $this->hasMany(BukuTukar::class, 'member_no_telp', 'no_telp');
-    }
-
-    public function transaksiTukars()
-    {
-        return $this->hasMany(TransaksiTukar::class, 'member_no_telp', 'no_telp');
+        return $this->hasMany(Transaksi::class);
     }
 
     public function scopeCari(Builder $query, string $keyword): Builder

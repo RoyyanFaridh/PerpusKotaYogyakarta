@@ -87,7 +87,7 @@
         </a>
 
         {{-- Buku Perpus --}}
-        <a href="{{ route('admin.buku-perpus.index') }}"
+        <a href="{{ route('admin.buku.perpus') }}"
             @click="activeMenu = 'buku-perpus'"
             :class="activeMenu === 'buku-perpus' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white'"
             class="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-150 relative overflow-hidden"
@@ -120,7 +120,7 @@
         </a>
 
         {{-- Buku Tukar --}}
-        <a href="{{ route('admin.buku-tukar.index') }}"
+        <a href="{{ route('admin.buku.tukar') }}"
             @click="activeMenu = 'buku-tukar'"
             :class="activeMenu === 'buku-tukar' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white'"
             class="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-150 relative overflow-hidden"
