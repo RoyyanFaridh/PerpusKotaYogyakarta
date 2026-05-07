@@ -47,49 +47,6 @@
             <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Dashboard</span>
         </a>
 
-        <div x-show="open" class="px-3 pt-4 pb-2">
-            <span class="text-[10px] font-semibold uppercase tracking-widest text-primary-400">Koleksi Buku</span>
-        </div>
-        <div x-show="!open" class="my-2 mx-3 border-t border-white/10"></div>
-
-        <a href="{{ route('admin.buku-perpus.index') }}"
-            @click="activeMenu = 'buku-perpus'"
-            :class="activeMenu === 'buku-perpus' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white'"
-            class="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-150 relative overflow-hidden"
-        >
-            <span :class="activeMenu === 'buku-perpus' ? 'bg-white' : 'bg-primary-400 group-hover:bg-white'" class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full transition-all duration-150"></span>
-            <span class="shrink-0 pl-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-                </svg>
-            </span>
-            <span x-show="open" class="text-sm font-medium whitespace-nowrap" x-transition:enter="transition-opacity duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Buku Perpustakaan</span>
-            <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Buku Perpustakaan</span>
-        </a>
-
-        {{-- Buku Tukar
-        <a href="{{ route('admin.buku-tukar.index') }}"
-            @click="activeMenu = 'buku-tukar'"
-            :class="activeMenu === 'buku-tukar' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white'"
-            class="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-150 relative overflow-hidden"
-        >
-            <span :class="activeMenu === 'buku-tukar' ? 'bg-white' : 'bg-primary-400 group-hover:bg-white'" class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full transition-all duration-150"></span>
-            <span class="shrink-0 pl-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3m8 0h3a2 2 0 0 0 2-2v-3"/>
-                    <path d="M8 12h8M12 8l4 4-4 4"/>
-                </svg>
-            </span>
-            <span x-show="open" class="text-sm font-medium whitespace-nowrap" x-transition:enter="transition-opacity duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Buku Tukar</span>
-            <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Buku Tukar</span>
-        </a> --}}
-
-        {{-- Transaksi --}}
-        <div x-show="open" class="px-3 pt-4 pb-2">
-            <span class="text-[10px] font-semibold uppercase tracking-widest text-primary-400">Transaksi</span>
-        </div>
-        <div x-show="!open" class="my-2 mx-3 border-t border-white/10"></div>
-
         <a href="{{ route('admin.transaksi.index') }}"
             @click="activeMenu = 'transaksi'"
             :class="activeMenu === 'transaksi' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white'"
@@ -106,13 +63,12 @@
             <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Transaksi Tukar</span>
         </a> 
 
-        {{-- Master Data --}}
         <div x-show="open" class="px-3 pt-4 pb-2">
-            <span class="text-[10px] font-semibold uppercase tracking-widest text-primary-400">Master Data</span>
+            <span class="text-[10px] font-semibold uppercase tracking-widest text-primary-400">Kelola Data</span>
         </div>
         <div x-show="!open" class="my-2 mx-3 border-t border-white/10"></div>
 
-        {{-- Member
+        {{-- Member --}}
         <a href="{{ route('admin.member.index') }}"
             @click="activeMenu = 'member'"
             :class="activeMenu === 'member' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white'"
@@ -130,7 +86,23 @@
             <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Member</span>
         </a>
 
-        Lokasi
+        {{-- Buku Perpus --}}
+        <a href="{{ route('admin.buku-perpus.index') }}"
+            @click="activeMenu = 'buku-perpus'"
+            :class="activeMenu === 'buku-perpus' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white'"
+            class="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-150 relative overflow-hidden"
+        >
+            <span :class="activeMenu === 'buku-perpus' ? 'bg-white' : 'bg-primary-400 group-hover:bg-white'" class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full transition-all duration-150"></span>
+            <span class="shrink-0 pl-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                </svg>
+            </span>
+            <span x-show="open" class="text-sm font-medium whitespace-nowrap" x-transition:enter="transition-opacity duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Buku Perpustakaan</span>
+            <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Buku Perpustakaan</span>
+        </a>
+
+        {{-- Lokasi --}}
         <a href="{{ route('admin.lokasi.index') }}"
             @click="activeMenu = 'lokasi'"
             :class="activeMenu === 'lokasi' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white'"
@@ -147,10 +119,68 @@
             <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Lokasi</span>
         </a>
 
+        {{-- Buku Tukar --}}
+        <a href="{{ route('admin.buku-tukar.index') }}"
+            @click="activeMenu = 'buku-tukar'"
+            :class="activeMenu === 'buku-tukar' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white'"
+            class="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-150 relative overflow-hidden"
+        >
+            <span :class="activeMenu === 'buku-tukar' ? 'bg-white' : 'bg-primary-400 group-hover:bg-white'" class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full transition-all duration-150"></span>
+            <span class="shrink-0 pl-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3m8 0h3a2 2 0 0 0 2-2v-3"/>
+                    <path d="M8 12h8M12 8l4 4-4 4"/>
+                </svg>
+            </span>
+            <span x-show="open" class="text-sm font-medium whitespace-nowrap" x-transition:enter="transition-opacity duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Buku Tukar</span>
+            <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Buku Tukar</span>
+        </a>
+
+
+        {{-- Akun --}}
+        <div x-show="open" class="px-3 pt-4 pb-2">
+            <span class="text-[10px] font-semibold uppercase tracking-widest text-primary-400">Akun</span>
+        </div>
+        <div x-show="!open" class="my-2 mx-3 border-t border-white/10"></div>
+
+        <a href="{{ route('admin.pengaturan.index') }}"
+            @click="activeMenu = 'pengaturan'"
+            :class="activeMenu === 'pengaturan' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white'"
+            class="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-150 relative overflow-hidden"
+        >
+            <span :class="activeMenu === 'pengaturan' ? 'bg-white' : 'bg-primary-400 group-hover:bg-white'" class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full transition-all duration-150"></span>
+
+            <span class="shrink-0 pl-1">
+                <svg xmlns="http://www.w3.org/2000/svg" 
+                    class="w-5 h-5" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    stroke-width="2" 
+                    stroke-linecap="round" 
+                    stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0A1.65 1.65 0 0 0 10 3.09V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0A1.65 1.65 0 0 0 20.91 10H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+            </span>
+
+            <span x-show="open"
+                class="text-sm font-medium whitespace-nowrap"
+                x-transition:enter="transition-opacity duration-150"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100">
+                Pengaturan
+            </span>
+
+            <span x-show="!open"
+                class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                Pengaturan
+            </span>
+        </a>
     </nav>
 
     {{-- User Profile & Logout --}}
-    {{-- <div class="border-t border-white/10 p-3">
+    <div class="border-t border-white/10 p-3">
         <div class="flex items-center gap-3 rounded-xl px-2 py-2 overflow-hidden">
             <div class="shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-white/20 text-white text-xs font-bold uppercase">
                 {{ substr(auth()->user()->name ?? 'A', 0, 1) }}
@@ -159,7 +189,7 @@
                 <p class="text-white text-xs font-semibold truncate">{{ auth()->user()->name ?? 'Admin' }}</p>
                 <p class="text-primary-300 text-[11px] truncate">{{ auth()->user()->email ?? '' }}</p>
             </div>
-            <form x-show="open" method="POST" action="{{ route('logout') }}">
+            <form x-show="open" method="POST" action="{{ route('auth.logout') }}">
                 @csrf
                 <button type="submit" class="shrink-0 text-primary-300 hover:text-white transition-colors" title="Logout">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -169,6 +199,6 @@
                 </button>
             </form>
         </div>
-    </div> --}}
+    </div>
 
 </aside>

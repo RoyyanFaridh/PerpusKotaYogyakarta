@@ -3,12 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\Admin\BookPerpusController;
-// use App\Http\Controllers\Admin\BookTukarController;
+use App\Http\Controllers\Admin\BookTukarController;
 use App\Http\Controllers\Admin\TransaksiController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\LokasiController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\PengaturanController; // tambahkan ini
 
 Route::get('/', fn () => view('welcome'));
 
@@ -30,9 +31,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::resource('buku-perpus', BookPerpusController::class);
 
-    // Route::resource('buku-tukar', BookTukarController::class);
+    Route::resource('buku-tukar', BookTukarController::class);
 
     Route::resource('transaksi', TransaksiController::class);
+
+    Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index'); // tambahkan ini
 });
 
 // Route::get('/', function () {
