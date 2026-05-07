@@ -10,7 +10,7 @@
         title="Daftar Member"
         :subtitle="$members->total() . ' member terdaftar'"
         icon="user"
-        route="admin.member.create"
+        button-onclick="bukaModalMember()"
         route-label="Tambah Member"
         placeholder="Cari nama atau nomor telepon..."
         search-id="searchInput"
@@ -113,4 +113,11 @@
     </div>
 
 </div>
+
+{{-- Buka modal otomatis jika validasi gagal --}}
+@if ($errors->any())
+    <script>document.addEventListener('DOMContentLoaded', bukaModalMember);</script>
+@endif
+
+@include('admin.member.create')
 @endsection

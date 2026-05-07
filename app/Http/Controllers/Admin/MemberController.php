@@ -20,14 +20,9 @@ class MemberController extends Controller
             ->paginate(15);
 
         $totalMember = Member::count();
-
-        return view('admin.member.index', compact('members', 'totalMember'));
-    }
-
-    public function create()
-    {
         $users = User::orderBy('nama')->get();
-        return view('admin.member.create', compact('users'));
+
+        return view('admin.member.index', compact('members', 'totalMember', 'users'));
     }
 
     public function store(Request $request)
