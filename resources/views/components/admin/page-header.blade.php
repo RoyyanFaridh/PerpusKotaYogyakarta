@@ -49,7 +49,11 @@
 
     {{-- Stats (opsional) --}}
     @if (!empty($stats))
-        <div class="grid grid-cols-{{ count($stats) }} divide-x divide-neutral-100 border-b border-neutral-100">
+        @php
+            $cols = [1 => 'grid-cols-1', 2 => 'grid-cols-2', 3 => 'grid-cols-3', 4 => 'grid-cols-4'];
+            $colClass = $cols[count($stats)] ?? 'grid-cols-4';
+        @endphp
+        <div class="grid {{ $colClass }} divide-x divide-neutral-100 border-b border-neutral-100">
             @foreach ($stats as $stat)
                 <div class="px-5 py-3.5 flex flex-col gap-0.5">
                     <span class="text-xl font-bold {{ $stat['color'] ?? 'text-neutral-800' }} leading-none">{{ $stat['value'] }}</span>
