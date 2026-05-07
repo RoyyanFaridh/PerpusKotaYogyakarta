@@ -34,7 +34,6 @@
             />
         </div>
 
-        {{-- Penukaran per Kategori + Aktivitas Terkini (50/50) --}}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             @include('components.admin.dashboard.penukaran-per-kategori', ['kategoris' => $kategoris])
             @include('components.admin.dashboard.aktivitas-terkini', ['aktivitas' => $aktivitas])

@@ -3,37 +3,31 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\BukuTukar;
+use App\Models\Buku;
 use App\Models\Member;
-use App\Models\TransaksiTukar;
-use App\Enums\StatusTransaksi;
-use App\Enums\StatusBukuTukar;
+use App\Models\Transaksi;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $transaksiHariIni = TransaksiTukar::disetujui()
-            ->whereDate('created_at', today())
-            ->count();
+        $transaksiHariIni = Transaksi::whereDate('created_at', today())->count();
 
-        $transaksiKemarin = TransaksiTukar::disetujui()
-            ->whereDate('created_at', today()->subDay())
-            ->count();
+        $transaksiKemarin = Transaksi::whereDate('created_at', today()->subDay())->count();
 
         $selisihTransaksi = $transaksiKemarin > 0
             ? round((($transaksiHariIni - $transaksiKemarin) / $transaksiKemarin) * 100)
             : 0;
 
-        $bukuTersedia  = BukuTukar::diterima()->count();
-        $bukuMingguIni = BukuTukar::diterima()
-            ->whereBetween('created_at', [now()->startOfWeek(), now()])
-            ->count();
+        $bukuTersedia  = Buku::where('stok', '>', 0)->count();
+        $bukuMingguIni = Buku::whereBetween('created_at', [now()->startOfWeek(), now()])->count();
+        $perluVerifikasi = Transaksi::where('status', 'menunggu')->count();
 
-        $perluVerifikasi  = TransaksiTukar::pending()->count();
+        $kategoris        = $this->dummyKategoris();
+
         $kategoris        = $this->dummyKategoris();
         $aktivitas        = $this->getAktivitasTerkini();
-        $transaksiTerbaru = TransaksiTukar::with(['member', 'bukuTukar', 'bukuPerpus']) // <-- tambah ini
+        $transaksiTerbaru = Transaksi::with(['member', 'bukuDiserahkan', 'bukuDiterima'])
             ->latest()
             ->limit(5)
             ->get();
@@ -46,7 +40,7 @@ class DashboardController extends Controller
             'perluVerifikasi',
             'kategoris',
             'aktivitas',
-            'transaksiTerbaru', // <-- tambah ini
+            'transaksiTerbaru',
         ));
     }
 
@@ -54,47 +48,26 @@ class DashboardController extends Controller
     {
         $items = collect();
 
-        TransaksiTukar::with(['member', 'bukuTukar'])
+        Transaksi::with(['member', 'bukuDiserahkan'])
             ->latest()
             ->limit(10)
             ->get()
             ->each(function ($t) use (&$items) {
                 $nama  = $t->member?->nama ?? 'Member';
-                $judul = $t->bukuTukar?->judul ?? 'Buku';
+                $judul = $t->bukuDiserahkan?->judul ?? 'Buku';
 
-                $tipe = match (true) {
-                    $t->status === StatusTransaksi::Disetujui => 'transaksi_disetujui',
-                    $t->status === StatusTransaksi::Ditolak   => 'transaksi_ditolak',
-                    default                                   => 'transaksi_pending',
-                };
-
-                $label = match (true) {
-                    $t->status === StatusTransaksi::Disetujui => 'Transaksi disetujui',
-                    $t->status === StatusTransaksi::Ditolak   => 'Transaksi ditolak',
-                    default                                   => 'Transaksi menunggu konfirmasi',
+                $label = match ($t->status) {
+                    'disetujui' => 'Transaksi disetujui',
+                    'ditolak'   => 'Transaksi ditolak',
+                    default     => 'Transaksi menunggu konfirmasi',
                 };
 
                 $items->push([
-                    'tipe'      => $tipe,
+                    'tipe'      => 'transaksi_' . $t->status,
                     'pesan'     => "{$label} oleh {$nama}",
                     'sub'       => $judul,
                     'waktu'     => $t->created_at->diffForHumans(),
                     'timestamp' => $t->created_at,
-                ]);
-            });
-
-        BukuTukar::with('member')
-            ->latest()
-            ->limit(5)
-            ->get()
-            ->each(function ($b) use (&$items) {
-                $nama = $b->member?->nama ?? 'Member';
-                $items->push([
-                    'tipe'      => 'buku_masuk',
-                    'pesan'     => "Buku baru dikirim oleh {$nama}",
-                    'sub'       => $b->judul,
-                    'waktu'     => $b->created_at->diffForHumans(),
-                    'timestamp' => $b->created_at,
                 ]);
             });
 
@@ -105,25 +78,9 @@ class DashboardController extends Controller
                 $items->push([
                     'tipe'      => 'member_baru',
                     'pesan'     => "Member baru terdaftar",
-                    'sub'       => "{$m->nama} · {$m->nik}",
+                    'sub'       => $m->nama,
                     'waktu'     => $m->created_at->diffForHumans(),
                     'timestamp' => $m->created_at,
-                ]);
-            });
-
-        BukuTukar::with('member')
-            ->where('status', StatusBukuTukar::SudahDitukar)
-            ->latest()
-            ->limit(5)
-            ->get()
-            ->each(function ($b) use (&$items) {
-                $nama = $b->member?->nama ?? 'Member';
-                $items->push([
-                    'tipe'      => 'sisa_buku',
-                    'pesan'     => "Buku berhasil ditukar oleh {$nama}",
-                    'sub'       => $b->judul,
-                    'waktu'     => $b->updated_at->diffForHumans(),
-                    'timestamp' => $b->updated_at,
                 ]);
             });
 
