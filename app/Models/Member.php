@@ -13,10 +13,13 @@ class Member extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'no_telp';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     protected $fillable = [
-        'nik',
-        'nama',
         'no_telp',
+        'nama',
         'alamat',
         'email',
         'user_id',
@@ -29,23 +32,18 @@ class Member extends Model
 
     public function bukuTukars()
     {
-        return $this->hasMany(BukuTukar::class);
+        return $this->hasMany(BukuTukar::class, 'member_no_telp', 'no_telp');
     }
 
     public function transaksiTukars()
     {
-        return $this->hasMany(TransaksiTukar::class);
-    }
-
-    public function scopeByNik(Builder $query, string $nik): Builder
-    {
-        return $query->where('nik', $nik);
+        return $this->hasMany(TransaksiTukar::class, 'member_no_telp', 'no_telp');
     }
 
     public function scopeCari(Builder $query, string $keyword): Builder
     {
         return $query->where('nama', 'like', "%{$keyword}%")
-                     ->orWhere('nik', 'like', "%{$keyword}%");
+                     ->orWhere('no_telp', 'like', "%{$keyword}%");
     }
 
     public function getTotalTukarAttribute(): int

@@ -14,7 +14,7 @@ class TransaksiTukar extends Model
     protected $table = 'transaksis';
 
     protected $fillable = [
-        'member_id',
+        'member_no_telp',
         'buku_tukar_id',
         'buku_perpus_id',
         'user_id',
@@ -24,13 +24,13 @@ class TransaksiTukar extends Model
     ];
 
     protected $casts = [
-        'status'       => StatusTransaksi::class,
-        'tanggal_tukar'=> 'datetime',
+        'status'        => StatusTransaksi::class,
+        'tanggal_tukar' => 'datetime',
     ];
 
     public function member()
     {
-        return $this->belongsTo(Member::class);
+        return $this->belongsTo(Member::class, 'member_no_telp', 'no_telp');
     }
 
     public function bukuTukar()
@@ -63,9 +63,9 @@ class TransaksiTukar extends Model
         return $query->where('status', StatusTransaksi::Ditolak);
     }
 
-    public function scopeByMember(Builder $query, int $memberId): Builder
+    public function scopeByMember(Builder $query, string $noTelp): Builder
     {
-        return $query->where('member_id', $memberId);
+        return $query->where('member_no_telp', $noTelp);
     }
 
     public function getLokasiAttribute()

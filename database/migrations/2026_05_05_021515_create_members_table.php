@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('members', function (Blueprint $table) {
             $table->id();
-            $table->string('nik', 16)->unique();
+            $table->string('no_telp', 15)->primary();
             $table->string('nama');
             $table->string('no_telp')->nullable();
             $table->text('alamat')->nullable();

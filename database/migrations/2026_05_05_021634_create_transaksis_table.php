@@ -10,7 +10,8 @@ return new class extends Migration
     {
         Schema::create('transaksis', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('member_id')->constrained('members')->cascadeOnDelete();
+            $table->string('member_no_telp', 15);
+            $table->foreign('member_no_telp')->references('no_telp')->on('members')->cascadeOnDelete();
             $table->foreignId('buku_tukar_id')->unique()->constrained('buku_tukars')->cascadeOnDelete();
             $table->foreignId('buku_perpus_id')->constrained('buku_perpus')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
