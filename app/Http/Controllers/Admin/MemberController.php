@@ -26,7 +26,7 @@ class MemberController extends Controller
 
     public function create()
     {
-        $users = User::orderBy('name')->get();
+        $users = User::orderBy('nama')->get();
         return view('admin.member.create', compact('users'));
     }
 
@@ -61,7 +61,7 @@ class MemberController extends Controller
 
     public function edit(Member $member)
     {
-        $users = User::orderBy('name')->get();
+        $users = User::orderBy('nama')->get();
         return view('admin.member.edit', compact('member', 'users'));
     }
 

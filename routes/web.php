@@ -30,12 +30,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('lokasi', LokasiController::class);
 
     Route::prefix('buku')->name('buku.')->group(function () {
-        Route::get('/',          [BukuController::class, 'index'])->name('index');
-        Route::get('/perpus',    [BukuController::class, 'perpus'])->name('perpus');
-        Route::get('/tukar',     [BukuController::class, 'tukar'])->name('tukar');
-        Route::post('/',         [BukuController::class, 'store'])->name('store');
-        Route::put('/{buku}',    [BukuController::class, 'update'])->name('update');
-        Route::delete('/{buku}', [BukuController::class, 'destroy'])->name('destroy');
+        Route::get('/',            [BukuController::class, 'index'])->name('index');
+        Route::get('/perpus',      [BukuController::class, 'perpus'])->name('perpus');
+        Route::get('/create',      [BukuController::class, 'create'])->name('create');
+        Route::get('/tukar',       [BukuController::class, 'tukar'])->name('tukar');
+        Route::post('/',           [BukuController::class, 'store'])->name('store');
+        Route::put('/{buku}',      [BukuController::class, 'update'])->name('update');
+        Route::delete('/{buku}',   [BukuController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('transaksi')->name('transaksi.')->group(function () {
@@ -47,5 +48,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/cari-buku-isbn', [TransaksiController::class, 'cariBukuIsbn'])->name('cari-buku-isbn');
     });
 
-    Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');
+    // Pengaturan
+    Route::prefix('pengaturan')->name('pengaturan.')->group(function () {
+        Route::get('/',               [PengaturanController::class, 'index'])->name('index');
+        Route::put('/profil',         [PengaturanController::class, 'updateProfil'])->name('profil');
+        Route::put('/password',       [PengaturanController::class, 'updatePassword'])->name('password');
+        Route::post('/user',          [PengaturanController::class, 'storeUser'])->name('user');
+        Route::delete('/user/{user}', [PengaturanController::class, 'destroyUser'])->name('user.destroy');
+        Route::get('/backup',         [PengaturanController::class, 'backup'])->name('backup');
+    });
 });

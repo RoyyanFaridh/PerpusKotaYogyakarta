@@ -10,6 +10,8 @@
         title="Semua Buku"
         :subtitle="$stats['total'] . ' buku terdaftar'"
         icon="book"
+        route="admin.buku.create"
+        route-label="Tambah Buku"
         placeholder="Cari judul, pengarang, ISBN..."
         search-id="searchInput"
         :stats="[
