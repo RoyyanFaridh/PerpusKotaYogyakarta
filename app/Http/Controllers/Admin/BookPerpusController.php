@@ -17,8 +17,19 @@ class BookPerpusController extends Controller
 
     public function index()
     {
-        $books = $this->service->getAll();
-        return view('admin.buku-perpus.index', compact('books'));
+        $books         = $this->service->getAll();
+        $totalBuku     = \App\Models\BukuPerpus::count();
+        $bukuTersedia  = \App\Models\BukuPerpus::where('stok', '>', 0)->count();
+        $bukuHabis     = \App\Models\BukuPerpus::where('stok', 0)->count();
+        $totalKategori = \App\Models\BukuPerpus::whereNotNull('kategori')->distinct('kategori')->count('kategori');
+
+        return view('admin.buku-perpus.index', compact(
+            'books',
+            'totalBuku',
+            'bukuTersedia',
+            'bukuHabis',
+            'totalKategori',
+        ));
     }
 
     public function create()

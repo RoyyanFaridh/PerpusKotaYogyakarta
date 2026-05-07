@@ -1,88 +1,49 @@
-{{-- resources/views/admin/transaksi.blade.php --}}
 @extends('layouts.admin')
-
 @section('title', 'Transaksi')
+@section('page-title', 'Transaksi')
+@section('page-subtitle', 'Kelola data transaksi tukar buku')
 
 @section('content')
-<div class="min-h-screen px-6 py-8">
+<div class="flex flex-col gap-4">
 
-    {{-- ── Header ── --}}
-    <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-            <p class="text-[0.70rem] font-semibold tracking-[0.22em] uppercase text-primary-500 mb-1 flex items-center gap-2">
-                <span class="block w-5 h-px bg-primary-400 rounded"></span>
-                Manajemen
-            </p>
-            <h1 class="font-extrabold text-primary-900 text-[1.8rem] leading-tight">
-                Data <span class="text-primary">Transaksi</span>
-            </h1>
-        </div>
+    {{-- Header + Stats + Search --}}
+    <x-admin.page-header
+        title="Semua Transaksi"
+        :subtitle="$transaksi->total() . ' transaksi terdaftar'"
+        icon="transaksi"
+        route="admin.transaksi.create"
+        route-label="Tambah"
+        placeholder="Cari member, buku..."
+        search-id="searchInput"
+        :stats="[
+            ['label' => 'Total',     'value' => $transaksi->total(),             'color' => 'text-neutral-800'],
+            ['label' => 'Pending',   'value' => $allTransaksi['pending']   ?? 0, 'color' => 'text-warning-700'],
+            ['label' => 'Disetujui', 'value' => $allTransaksi['disetujui'] ?? 0, 'color' => 'text-success-700'],
+            ['label' => 'Ditolak',   'value' => $allTransaksi['ditolak']   ?? 0, 'color' => 'text-danger-700'],
+        ]"
+        :filters="[
+            [
+                'name'        => 'status',
+                'id'          => 'filterStatus',
+                'placeholder' => 'Semua Status',
+                'options'     => [
+                    ['value' => 'pending',   'label' => 'Pending'],
+                    ['value' => 'disetujui', 'label' => 'Disetujui'],
+                    ['value' => 'ditolak',   'label' => 'Ditolak'],
+                ],
+            ],
+        ]"
+    />
 
-        {{-- Search & Filter --}}
-        <div class="flex items-center gap-3 flex-wrap">
-            {{-- Search --}}
-            <div class="relative flex items-center bg-white border border-primary-100 rounded-lg shadow-sm overflow-hidden focus-within:border-primary focus-within:shadow-md transition-all duration-200">
-                <span class="pl-3 pr-2 text-neutral-400">
-                    <svg class="w-4 h-4 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2">
-                        <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35" stroke-linecap="round"/>
-                    </svg>
-                </span>
-                <input
-                    type="text"
-                    id="searchInput"
-                    placeholder="Cari member, buku…"
-                    class="border-none outline-none text-[0.85rem] text-primary-900 bg-transparent py-2 pr-3 w-48 placeholder-neutral-400"
-                >
-            </div>
+    {{-- Tabel --}}
+    <div class="relative overflow-hidden rounded-xl bg-white border border-neutral-200">
+        <div class="absolute top-0 left-0 right-0 h-0.5 bg-primary-400"></div>
 
-            {{-- Filter Status --}}
-            <select
-                id="filterStatus"
-                class="border border-primary-100 bg-white text-[0.85rem] text-primary-900 rounded-lg px-3 py-2 outline-none shadow-sm cursor-pointer focus:border-primary transition-all duration-200"
-            >
-                <option value="">Semua Status</option>
-                <option value="menunggu">Menunggu</option>
-                <option value="diproses">Diproses</option>
-                <option value="selesai">Selesai</option>
-                <option value="ditolak">Ditolak</option>
-            </select>
-
-            {{-- Tambah Transaksi --}}
-            <a href="{{ route('admin.transaksi.create') }}"
-               class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-[0.85rem] font-semibold rounded-lg shadow-md hover:bg-primary-700 hover:-translate-y-px hover:shadow-lg transition-all duration-200 whitespace-nowrap">
-                <svg class="w-4 h-4 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2.5">
-                    <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
-                </svg>
-                Tambah
-            </a>
-        </div>
-    </div>
-
-    {{-- ── Stats Mini ── --}}
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-        @php
-            $stats = [
-                ['label' => 'Total',     'value' => $transaksi->total() ?? 0,                                              'color' => 'text-primary'],
-                ['label' => 'Menunggu',  'value' => $transaksi->where('status','menunggu')->count()  ?? 0,                 'color' => 'text-amber-500'],
-                ['label' => 'Diproses',  'value' => $transaksi->where('status','diproses')->count()  ?? 0,                 'color' => 'text-blue-500'],
-                ['label' => 'Selesai',   'value' => $transaksi->where('status','selesai')->count()   ?? 0,                 'color' => 'text-emerald-500'],
-            ];
-        @endphp
-        @foreach ($stats as $s)
-            <div class="bg-white rounded-xl border border-primary-100 px-5 py-4 shadow-sm">
-                <div class="font-extrabold text-[1.7rem] {{ $s['color'] }}">{{ $s['value'] }}</div>
-                <div class="text-[0.72rem] font-medium tracking-widest uppercase text-neutral-400 mt-0.5">{{ $s['label'] }}</div>
-            </div>
-        @endforeach
-    </div>
-
-    {{-- ── Tabel ── --}}
-    <div class="bg-white rounded-2xl border border-primary-100 shadow-sm overflow-hidden">
-
-        {{-- Flash message --}}
         @if (session('success'))
-            <div class="flex items-center gap-3 px-6 py-3 bg-emerald-50 border-b border-emerald-100 text-emerald-700 text-sm font-medium">
-                <svg class="w-4 h-4 shrink-0 fill-emerald-500" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div class="flex items-center gap-2.5 px-5 py-3 bg-success-50 border-b border-success-100 text-success-700 text-xs font-medium">
+                <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
                 {{ session('success') }}
             </div>
         @endif
@@ -90,140 +51,93 @@
         <div class="overflow-x-auto">
             <table class="w-full text-sm" id="transaksiTable">
                 <thead>
-                    <tr class="border-b border-primary-100 bg-primary-50/60">
-                        <th class="px-5 py-3.5 text-left text-[0.70rem] font-semibold tracking-[0.12em] uppercase text-primary-400 whitespace-nowrap">#</th>
-                        <th class="px-5 py-3.5 text-left text-[0.70rem] font-semibold tracking-[0.12em] uppercase text-primary-400 whitespace-nowrap">ID</th>
-                        <th class="px-5 py-3.5 text-left text-[0.70rem] font-semibold tracking-[0.12em] uppercase text-primary-400 whitespace-nowrap">Member</th>
-                        <th class="px-5 py-3.5 text-left text-[0.70rem] font-semibold tracking-[0.12em] uppercase text-primary-400 whitespace-nowrap">Buku Diserahkan</th>
-                        <th class="px-5 py-3.5 text-left text-[0.70rem] font-semibold tracking-[0.12em] uppercase text-primary-400 whitespace-nowrap">Buku Diterima</th>
-                        <th class="px-5 py-3.5 text-left text-[0.70rem] font-semibold tracking-[0.12em] uppercase text-primary-400 whitespace-nowrap">Tanggal</th>
-                        <th class="px-5 py-3.5 text-left text-[0.70rem] font-semibold tracking-[0.12em] uppercase text-primary-400 whitespace-nowrap">Status</th>
-                        <th class="px-5 py-3.5 text-center text-[0.70rem] font-semibold tracking-[0.12em] uppercase text-primary-400 whitespace-nowrap">Aksi</th>
+                    <tr class="border-b border-neutral-100 bg-neutral-50">
+                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">ID</th>
+                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Member</th>
+                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Buku Diserahkan</th>
+                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Buku Diterima</th>
+                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Tanggal</th>
+                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Status</th>
+                        <th class="text-right text-xs font-medium text-neutral-400 px-5 py-3">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-primary-50" id="tableBody">
+                <tbody class="divide-y divide-neutral-50" id="tableBody">
                     @forelse ($transaksi as $index => $item)
                         @php
                             $statusMap = [
-                                'menunggu' => ['label' => 'Menunggu',  'class' => 'bg-amber-50 text-amber-600 border-amber-200'],
-                                'diproses' => ['label' => 'Diproses',  'class' => 'bg-blue-50 text-blue-600 border-blue-200'],
-                                'selesai'  => ['label' => 'Selesai',   'class' => 'bg-emerald-50 text-emerald-600 border-emerald-200'],
-                                'ditolak'  => ['label' => 'Ditolak',   'class' => 'bg-red-50 text-red-500 border-red-200'],
+                                'disetujui' => ['label' => 'Disetujui', 'class' => 'bg-success-50 text-success-700', 'dot' => 'bg-success-400'],
+                                'ditolak'   => ['label' => 'Ditolak',   'class' => 'bg-danger-50 text-danger-700',   'dot' => 'bg-danger-400'],
+                                'pending'   => ['label' => 'Pending',   'class' => 'bg-warning-50 text-warning-700', 'dot' => 'bg-warning-400 animate-pulse'],
                             ];
-                            $s = $statusMap[$item->status] ?? ['label' => $item->status, 'class' => 'bg-neutral-100 text-neutral-500 border-neutral-200'];
+                            $s = $statusMap[$item->status->value] ?? $statusMap['pending'];
                         @endphp
-                        <tr class="hover:bg-primary-50/40 transition-colors duration-150 group table-row-data"
-                            data-status="{{ $item->status }}"
+                        <tr class="hover:bg-neutral-50 transition-colors table-row-data"
+                            data-status="{{ $item->status->value }}"
                             data-search="{{ strtolower($item->member->nama ?? '') }} {{ strtolower($item->bukuTukar->judul ?? '') }} {{ strtolower($item->bukuPerpus->judul ?? '') }}">
 
-                            {{-- No --}}
-                            <td class="px-5 py-4 text-neutral-400 text-[0.80rem]">
-                                {{ $transaksi->firstItem() + $index }}
-                            </td>
-
-                            {{-- ID --}}
-                            <td class="px-5 py-4">
-                                <span class="font-mono text-[0.78rem] font-semibold text-primary-400 bg-primary-50 px-2 py-0.5 rounded">
-                                    #{{ str_pad($item->id, 4, '0', STR_PAD_LEFT) }}
+                            <td class="px-5 py-3.5">
+                                <span class="text-xs font-mono font-medium text-neutral-500">
+                                    #TXN-{{ str_pad($item->id, 4, '0', STR_PAD_LEFT) }}
                                 </span>
                             </td>
 
-                            {{-- Member --}}
-                            <td class="px-5 py-4">
-                                <div class="flex items-center gap-2.5">
+                            <td class="px-5 py-3.5">
+                                <div class="flex items-center gap-2">
                                     <div class="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-white text-[0.65rem] font-bold shrink-0">
                                         {{ strtoupper(substr($item->member->nama ?? 'U', 0, 1)) }}
                                     </div>
                                     <div>
-                                        <div class="font-semibold text-primary-900 text-[0.85rem] leading-tight">
-                                            {{ $item->member->nama ?? '-' }}
-                                        </div>
-                                        <div class="text-[0.72rem] text-neutral-400">
-                                            {{ $item->member->email ?? '' }}
-                                        </div>
+                                        <p class="text-xs font-semibold text-neutral-800 leading-tight">{{ $item->member->nama ?? '-' }}</p>
+                                        <p class="text-[0.68rem] text-neutral-400">{{ $item->member->nik ?? '' }}</p>
                                     </div>
                                 </div>
                             </td>
 
-                            {{-- Buku Diserahkan --}}
-                            <td class="px-5 py-4 max-w-[180px]">
-                                <div class="font-medium text-primary-800 text-[0.83rem] leading-snug line-clamp-2">
-                                    {{ $item->bukuTukar->judul ?? '-' }}
-                                </div>
-                                @if ($item->bukuTukar->penulis ?? false)
-                                    <div class="text-[0.70rem] text-neutral-400 mt-0.5">{{ $item->bukuTukar->penulis }}</div>
-                                @endif
+                            <td class="px-5 py-3.5 max-w-[160px]">
+                                <p class="text-xs font-medium text-neutral-700 truncate">{{ $item->bukuTukar->judul ?? '-' }}</p>
                             </td>
 
-                            {{-- Buku Diterima --}}
-                            <td class="px-5 py-4 max-w-[180px]">
-                                <div class="font-medium text-primary-800 text-[0.83rem] leading-snug line-clamp-2">
-                                    {{ $item->bukuPerpus->judul ?? '-' }}
-                                </div>
-                                @if ($item->bukuPerpus->penulis ?? false)
-                                    <div class="text-[0.70rem] text-neutral-400 mt-0.5">{{ $item->bukuPerpus->penulis }}</div>
-                                @endif
+                            <td class="px-5 py-3.5 max-w-[160px]">
+                                <p class="text-xs font-medium text-neutral-700 truncate">{{ $item->bukuPerpus->judul ?? '-' }}</p>
                             </td>
 
-                            {{-- Tanggal --}}
-                            <td class="px-5 py-4 whitespace-nowrap">
-                                <div class="text-[0.83rem] font-medium text-primary-800">
-                                    {{ \Carbon\Carbon::parse($item->tanggal_tukar)->format('d M Y') }}
-                                </div>
-                                <div class="text-[0.70rem] text-neutral-400 mt-0.5">
-                                    {{ \Carbon\Carbon::parse($item->tanggal_tukar)->diffForHumans() }}
-                                </div>
+                            <td class="px-5 py-3.5 whitespace-nowrap">
+                                <p class="text-xs font-medium text-neutral-700">{{ \Carbon\Carbon::parse($item->tanggal_tukar)->format('d M Y') }}</p>
+                                <p class="text-[0.68rem] text-neutral-400 mt-0.5">{{ \Carbon\Carbon::parse($item->tanggal_tukar)->diffForHumans() }}</p>
                             </td>
 
-                            {{-- Status --}}
-                            <td class="px-5 py-4">
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[0.70rem] font-semibold border {{ $s['class'] }}">
-                                    <span class="w-1.5 h-1.5 rounded-full
-                                        {{ $item->status === 'menunggu' ? 'bg-amber-400 animate-pulse' : '' }}
-                                        {{ $item->status === 'diproses' ? 'bg-blue-400 animate-pulse' : '' }}
-                                        {{ $item->status === 'selesai'  ? 'bg-emerald-400' : '' }}
-                                        {{ $item->status === 'ditolak'  ? 'bg-red-400' : '' }}
-                                    "></span>
+                            <td class="px-5 py-3.5">
+                                <span class="inline-flex items-center gap-1.5 text-[0.68rem] font-medium px-2 py-0.5 rounded-full {{ $s['class'] }}">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ $s['dot'] }}"></span>
                                     {{ $s['label'] }}
                                 </span>
                             </td>
 
-                            {{-- Aksi --}}
-                            <td class="px-5 py-4">
-                                <div class="flex items-center justify-center gap-2">
-                                    {{-- Detail --}}
+                            <td class="px-5 py-3.5">
+                                <div class="flex items-center justify-end gap-1.5">
                                     <a href="{{ route('admin.transaksi.show', $item->id) }}"
-                                       title="Detail"
-                                       class="w-7 h-7 rounded-lg bg-primary-50 border border-primary-100 flex items-center justify-center text-primary hover:bg-primary hover:text-white hover:border-primary transition-all duration-200">
-                                        <svg class="w-3.5 h-3.5 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                            <circle cx="12" cy="12" r="3"/>
+                                       class="p-1.5 rounded-lg text-neutral-400 hover:text-primary-600 hover:bg-primary-50 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
                                         </svg>
                                     </a>
-
-                                    {{-- Edit --}}
                                     <a href="{{ route('admin.transaksi.edit', $item->id) }}"
-                                       title="Edit"
-                                       class="w-7 h-7 rounded-lg bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-500 hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-200">
-                                        <svg class="w-3.5 h-3.5 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2">
-                                            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                                            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                       class="p-1.5 rounded-lg text-neutral-400 hover:text-warning-600 hover:bg-warning-50 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                                         </svg>
                                     </a>
-
-                                    {{-- Hapus --}}
-                                    <form action="{{ route('admin.transaksi.destroy', $item->id) }}" method="POST"
+                                    <form method="POST" action="{{ route('admin.transaksi.destroy', $item->id) }}"
                                           onsubmit="return confirm('Hapus transaksi #{{ str_pad($item->id,4,'0',STR_PAD_LEFT) }}?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit"
-                                                title="Hapus"
-                                                class="w-7 h-7 rounded-lg bg-red-50 border border-red-100 flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all duration-200">
-                                            <svg class="w-3.5 h-3.5 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2">
+                                        <button type="submit" class="p-1.5 rounded-lg text-neutral-400 hover:text-danger-600 hover:bg-danger-50 transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                 <polyline points="3 6 5 6 21 6"/>
-                                                <path d="M19 6l-1 14H6L5 6"/>
-                                                <path d="M10 11v6M14 11v6"/>
-                                                <path d="M9 6V4h6v2"/>
+                                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                                <path d="M10 11v6"/><path d="M14 11v6"/>
+                                                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
                                             </svg>
                                         </button>
                                     </form>
@@ -231,21 +145,21 @@
                             </td>
                         </tr>
                     @empty
-                        <tr id="emptyRow">
-                            <td colspan="8" class="px-5 py-16 text-center">
-                                <div class="flex flex-col items-center gap-3 text-neutral-400">
-                                    <svg class="w-10 h-10 stroke-current fill-none opacity-40" viewBox="0 0 24 24" stroke-width="1.5">
-                                        <path d="M9 17H7A5 5 0 017 7h2M15 7h2a5 5 0 010 10h-2M8 12h8"/>
-                                    </svg>
-                                    <p class="text-sm font-medium">Belum ada transaksi</p>
+                        <tr>
+                            <td colspan="7" class="px-5 py-12 text-center">
+                                <div class="flex flex-col items-center gap-2">
+                                    <div class="w-10 h-10 rounded-xl bg-neutral-100 flex items-center justify-center">
+                                        <x-icons.transaksi class="w-5 h-5 text-neutral-400"/>
+                                    </div>
+                                    <p class="text-sm font-medium text-neutral-500">Belum ada transaksi</p>
+                                    <p class="text-xs text-neutral-400">Transaksi akan muncul di sini</p>
                                 </div>
                             </td>
                         </tr>
                     @endforelse
 
-                    {{-- Empty state saat filter/search kosong --}}
                     <tr id="noResultRow" class="hidden">
-                        <td colspan="8" class="px-5 py-12 text-center text-neutral-400 text-sm">
+                        <td colspan="7" class="px-5 py-10 text-center text-xs text-neutral-400">
                             Tidak ada hasil yang cocok.
                         </td>
                     </tr>
@@ -253,45 +167,36 @@
             </table>
         </div>
 
-        {{-- Pagination --}}
         @if ($transaksi->hasPages())
-            <div class="px-6 py-4 border-t border-primary-100 flex items-center justify-between gap-4 flex-wrap">
-                <p class="text-[0.78rem] text-neutral-400">
-                    Menampilkan <span class="font-semibold text-primary-700">{{ $transaksi->firstItem() }}</span>–<span class="font-semibold text-primary-700">{{ $transaksi->lastItem() }}</span>
-                    dari <span class="font-semibold text-primary-700">{{ $transaksi->total() }}</span> transaksi
+            <div class="px-5 py-3 bg-neutral-50 border-t border-neutral-100 flex items-center justify-between gap-4 flex-wrap">
+                <p class="text-[0.7rem] text-neutral-400">
+                    Menampilkan <span class="font-semibold text-neutral-600">{{ $transaksi->firstItem() }}</span>–<span class="font-semibold text-neutral-600">{{ $transaksi->lastItem() }}</span>
+                    dari <span class="font-semibold text-neutral-600">{{ $transaksi->total() }}</span> transaksi
                 </p>
                 <div class="flex items-center gap-1">
-                    {{-- Prev --}}
                     @if ($transaksi->onFirstPage())
-                        <span class="px-3 py-1.5 rounded-lg text-[0.78rem] text-neutral-300 border border-neutral-100 cursor-not-allowed">← Prev</span>
+                        <span class="px-3 py-1.5 rounded-lg text-[0.75rem] text-neutral-300 border border-neutral-100 cursor-not-allowed">← Prev</span>
                     @else
-                        <a href="{{ $transaksi->previousPageUrl() }}"
-                           class="px-3 py-1.5 rounded-lg text-[0.78rem] text-primary border border-primary-100 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200">← Prev</a>
+                        <a href="{{ $transaksi->previousPageUrl() }}" class="px-3 py-1.5 rounded-lg text-[0.75rem] text-primary-600 border border-neutral-200 hover:bg-primary-50 transition-colors">← Prev</a>
                     @endif
 
-                    {{-- Page numbers --}}
                     @foreach ($transaksi->getUrlRange(1, $transaksi->lastPage()) as $page => $url)
                         @if ($page == $transaksi->currentPage())
-                            <span class="px-3 py-1.5 rounded-lg text-[0.78rem] bg-primary text-white font-semibold">{{ $page }}</span>
+                            <span class="px-3 py-1.5 rounded-lg text-[0.75rem] bg-primary text-white font-semibold">{{ $page }}</span>
                         @else
-                            <a href="{{ $url }}"
-                               class="px-3 py-1.5 rounded-lg text-[0.78rem] text-primary border border-primary-100 hover:bg-primary-50 transition-all duration-200">{{ $page }}</a>
+                            <a href="{{ $url }}" class="px-3 py-1.5 rounded-lg text-[0.75rem] text-neutral-600 border border-neutral-200 hover:bg-neutral-50 transition-colors">{{ $page }}</a>
                         @endif
                     @endforeach
 
-                    {{-- Next --}}
                     @if ($transaksi->hasMorePages())
-                        <a href="{{ $transaksi->nextPageUrl() }}"
-                           class="px-3 py-1.5 rounded-lg text-[0.78rem] text-primary border border-primary-100 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200">Next →</a>
+                        <a href="{{ $transaksi->nextPageUrl() }}" class="px-3 py-1.5 rounded-lg text-[0.75rem] text-primary-600 border border-neutral-200 hover:bg-primary-50 transition-colors">Next →</a>
                     @else
-                        <span class="px-3 py-1.5 rounded-lg text-[0.78rem] text-neutral-300 border border-neutral-100 cursor-not-allowed">Next →</span>
+                        <span class="px-3 py-1.5 rounded-lg text-[0.75rem] text-neutral-300 border border-neutral-100 cursor-not-allowed">Next →</span>
                     @endif
                 </div>
             </div>
         @endif
-
     </div>
-    {{-- /Tabel --}}
 
 </div>
 

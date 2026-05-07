@@ -6,81 +6,45 @@
 @section('content')
 <div class="flex flex-col gap-4">
 
-    {{-- Header + Tambah --}}
-    <div class="relative overflow-hidden rounded-xl bg-white border border-neutral-200">
-        <div class="absolute top-0 left-0 right-0 h-0.5 bg-primary-400"></div>
-        <div class="flex items-center justify-between px-5 py-4">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-primary-50 text-primary-700 flex items-center justify-center shrink-0">
-                    <x-icons.book class="w-4.5 h-4.5"/>
-                </div>
-                <div>
-                    <p class="text-sm font-medium text-neutral-700">Total Koleksi</p>
-                    <p class="text-xs text-neutral-400">{{ $books->total() }} buku terdaftar</p>
-                </div>
-            </div>
-            <a href="{{ route('admin.buku-perpus.create') }}"
-               class="flex items-center gap-2 text-xs font-medium px-3.5 py-2 rounded-lg bg-primary text-white hover:bg-primary-600 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-                Tambah Buku
-            </a>
-        </div>
-    </div>
-
-    {{-- Filter & Search --}}
-    <div class="relative overflow-hidden rounded-xl bg-white border border-neutral-200">
-        <div class="absolute top-0 left-0 right-0 h-0.5 bg-primary-400"></div>
-        <div class="px-5 py-4 flex flex-col sm:flex-row gap-3">
-            {{-- Search --}}
-            <div class="relative flex-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                </svg>
-                <input
-                    type="text"
-                    name="search"
-                    value="{{ request('search') }}"
-                    placeholder="Cari judul, pengarang, ISBN..."
-                    onchange="this.form.submit()"
-                    form="filter-form"
-                    class="w-full pl-9 pr-4 py-2 text-xs rounded-lg border border-neutral-200 text-neutral-700 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition"
-                />
-            </div>
-
-            <form id="filter-form" method="GET" action="{{ route('admin.buku-perpus.index') }}" class="flex gap-2">
-                <input type="hidden" name="search" value="{{ request('search') }}">
-
-                {{-- Filter Kategori --}}
-                <select name="kategori" onchange="this.form.submit()"
-                    class="text-xs px-3 py-2 rounded-lg border border-neutral-200 text-neutral-600 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition bg-white">
-                    <option value="">Semua Kategori</option>
-                    @foreach (['Novel', 'Sains', 'Sejarah', 'Teknologi', 'Anak-anak', 'Lainnya'] as $kat)
-                        <option value="{{ $kat }}" {{ request('kategori') === $kat ? 'selected' : '' }}>
-                            {{ $kat }}
-                        </option>
-                    @endforeach
-                </select>
-
-                {{-- Filter Stok --}}
-                <select name="stok" onchange="this.form.submit()"
-                    class="text-xs px-3 py-2 rounded-lg border border-neutral-200 text-neutral-600 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition bg-white">
-                    <option value="">Semua Stok</option>
-                    <option value="tersedia" {{ request('stok') === 'tersedia' ? 'selected' : '' }}>Tersedia</option>
-                    <option value="habis"    {{ request('stok') === 'habis'    ? 'selected' : '' }}>Habis</option>
-                </select>
-
-                {{-- Reset --}}
-                @if (request()->hasAny(['search', 'kategori', 'stok']))
-                    <a href="{{ route('admin.buku-perpus.index') }}"
-                       class="flex items-center text-xs px-3 py-2 rounded-lg border border-neutral-200 text-neutral-500 hover:bg-neutral-50 transition-colors whitespace-nowrap">
-                        Reset
-                    </a>
-                @endif
-            </form>
-        </div>
-    </div>
+    <x-admin.page-header
+         title="Koleksi Buku"
+        :subtitle="$books->total() . ' buku terdaftar'"
+        icon="book"
+        route="admin.buku-perpus.create"
+        route-label="Tambah Buku"
+        placeholder="Cari judul, pengarang, ISBN..."
+        search-id="searchInput"
+        :stats="[
+            ['label' => 'Total Buku',  'value' => $totalBuku,      'color' => 'text-neutral-800'],
+            ['label' => 'Tersedia',    'value' => $bukuTersedia,   'color' => 'text-success-700'],
+            ['label' => 'Habis',       'value' => $bukuHabis,      'color' => 'text-danger-700'],
+            ['label' => 'Kategori',    'value' => $totalKategori,  'color' => 'text-primary-700'],
+        ]"
+        :filters="[
+            [
+                'name'        => 'kategori',
+                'placeholder' => 'Semua Kategori',
+                'onchange'    => true,
+                'options'     => [
+                    ['value' => 'Novel',     'label' => 'Novel'],
+                    ['value' => 'Sains',     'label' => 'Sains'],
+                    ['value' => 'Sejarah',   'label' => 'Sejarah'],
+                    ['value' => 'Teknologi', 'label' => 'Teknologi'],
+                    ['value' => 'Anak-anak', 'label' => 'Anak-anak'],
+                    ['value' => 'Lainnya',   'label' => 'Lainnya'],
+                ],
+            ],
+            [
+                'name'        => 'stok',
+                'placeholder' => 'Semua Stok',
+                'onchange'    => true,
+                'options'     => [
+                    ['value' => 'tersedia', 'label' => 'Tersedia'],
+                    ['value' => 'habis',    'label' => 'Habis'],
+                ],
+            ],
+        ]"
+    />
 
     {{-- Tabel --}}
     <div class="relative overflow-hidden rounded-xl bg-white border border-neutral-200">
