@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Lokasi;
 
 class LokasiController extends Controller
 {
     public function index()
     {
-        //
+        $lokasis = Lokasi::latest()->paginate(15);
+        return view('admin.lokasi.index', compact('lokasis'));
     }
 
     public function create()
