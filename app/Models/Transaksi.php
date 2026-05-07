@@ -17,7 +17,6 @@ class Transaksi extends Model
         'buku_diserahkan_id',
         'buku_diterima_id',
         'user_id',
-        'status',
         'catatan_petugas',
         'tanggal_tukar',
     ];
@@ -44,16 +43,6 @@ class Transaksi extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function scopeDisetujui(Builder $query): Builder
-    {
-        return $query->where('status', 'disetujui');
-    }
-
-    public function scopeDitolak(Builder $query): Builder
-    {
-        return $query->where('status', 'ditolak');
     }
 
     public function scopeByMember(Builder $query, int $memberId): Builder

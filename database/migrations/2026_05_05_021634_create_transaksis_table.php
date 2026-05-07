@@ -14,7 +14,6 @@ return new class extends Migration
             $table->foreignId('buku_diserahkan_id')->constrained('bukus')->cascadeOnDelete();
             $table->foreignId('buku_diterima_id')->constrained('bukus')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->enum('status', ['disetujui', 'ditolak'])->default('disetujui');
             $table->text('catatan_petugas')->nullable();
             $table->timestamp('tanggal_tukar')->nullable();
             $table->timestamps();

@@ -3,21 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Admin - @yield('title', 'Perpustakaan')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    {{-- Alpine.js (jika belum include di app.js) --}}
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="font-sans bg-neutral-100 flex h-screen overflow-hidden">
 
-    {{-- Sidebar --}}
     @include('components.admin.sidebar')
 
-    {{-- Main Content --}}
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
-        {{-- Topbar --}}
         <header class="h-16 bg-white border-b border-neutral-200 flex items-center justify-between px-6 shrink-0 shadow-sm">
             <div>
                 <h1 class="text-neutral-800 font-semibold text-base">@yield('page-title', 'Dashboard')</h1>
@@ -41,6 +38,6 @@
         </main>
 
     </div>
-
+     @stack('scripts')
 </body>
 </html>
