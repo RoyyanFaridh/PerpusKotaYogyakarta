@@ -52,8 +52,7 @@
         </div>
         <div x-show="!open" class="my-2 mx-3 border-t border-white/10"></div>
 
-        Buku Perpustakaan
-        <a href="{{ route('admin.buku-perpus') }}"
+        <a href="{{ route('admin.buku-perpus.index') }}"
             @click="activeMenu = 'buku-perpus'"
             :class="activeMenu === 'buku-perpus' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white'"
             class="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-150 relative overflow-hidden"
