@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\Admin\BookPerpusController;
 // use App\Http\Controllers\Admin\BookTukarController;
-// use App\Http\Controllers\Admin\TransaksiController;
+use App\Http\Controllers\Admin\TransaksiController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\LokasiController;
 use App\Http\Controllers\Admin\AdminAuthController;
@@ -32,9 +32,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Route::resource('buku-tukar', BookTukarController::class);
 
-    // Route::resource('transaksi', TransaksiController::class)->only([
-    //     'index', 'show', 'update', 'destroy'
-    // ]);
+    Route::resource('transaksi', TransaksiController::class);
 });
 
 // Route::get('/', function () {
