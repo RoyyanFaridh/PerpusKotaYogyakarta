@@ -57,6 +57,7 @@
                         <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Kategori</th>
                         <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Stok</th>
                         <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Lokasi</th>
+                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Sumber</th>
                         <th class="text-right text-xs font-medium text-neutral-400 px-5 py-3">Aksi</th>
                     </tr>
                 </thead>
@@ -107,6 +108,17 @@
                                         </button>
                                     </form>
                                 </div>
+                            </td>
+                            <td class="px-5 py-3.5">
+                                @if ($buku->sumber === 'perpus')
+                                    <span class="text-[0.68rem] font-medium px-2 py-0.5 rounded-full bg-primary-50 text-primary-700">
+                                        Perpustakaan
+                                    </span>
+                                @else
+                                    <span class="text-[0.68rem] font-medium px-2 py-0.5 rounded-full bg-warning-50 text-warning-700">
+                                        Tukar
+                                    </span>
+                                @endif
                             </td>
                         </tr>
                     @empty

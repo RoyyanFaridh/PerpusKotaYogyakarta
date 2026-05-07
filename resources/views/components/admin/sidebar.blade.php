@@ -1,5 +1,5 @@
 <aside
-    x-data="{ open: true, activeMenu: '{{ request()->routeIs('admin.dashboard*') ? 'dashboard' : (request()->routeIs('admin.buku-perpus*') ? 'buku-perpus' : (request()->routeIs('admin.buku-tukar*') ? 'buku-tukar' : (request()->routeIs('admin.transaksi*') ? 'transaksi' : (request()->routeIs('admin.member*') ? 'member' : (request()->routeIs('admin.lokasi*') ? 'lokasi' : ''))))) }}' }"
+    x-data="{ open: true, activeMenu: '{{ request()->routeIs('admin.dashboard*') ? 'dashboard' : (request()->routeIs('admin.buku*') ? 'buku' : (request()->routeIs('admin.transaksi*') ? 'transaksi' : (request()->routeIs('admin.member*') ? 'member' : (request()->routeIs('admin.lokasi*') ? 'lokasi' : (request()->routeIs('admin.pengaturan*') ? 'pengaturan' : ''))))) }}' }"
     :class="open ? 'w-64' : 'w-18'"
     class="relative flex flex-col h-screen bg-primary transition-all duration-300 ease-in-out shrink-0 shadow-lg"
 >
@@ -86,8 +86,23 @@
             <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Member</span>
         </a>
 
+        {{-- Buku --}}
+    <a href="{{ route('admin.buku.index') }}"
+        @click="activeMenu = 'buku'"
+        :class="activeMenu === 'buku' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white'"
+        class="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-150 relative overflow-hidden"
+    >
+        <span :class="activeMenu === 'buku' ? 'bg-white' : 'bg-primary-400 group-hover:bg-white'" class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full transition-all duration-150"></span>
+        <span class="shrink-0 pl-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+            </svg>
+        </span>
+        <span x-show="open" class="text-sm font-medium whitespace-nowrap" x-transition:enter="transition-opacity duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Buku</span>
+        <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Buku</span>
+    </a>
         {{-- Buku Perpus --}}
-        <a href="{{ route('admin.buku.perpus') }}"
+        {{-- <a href="{{ route('admin.buku.perpus') }}"
             @click="activeMenu = 'buku-perpus'"
             :class="activeMenu === 'buku-perpus' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white'"
             class="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-150 relative overflow-hidden"
@@ -100,7 +115,7 @@
             </span>
             <span x-show="open" class="text-sm font-medium whitespace-nowrap" x-transition:enter="transition-opacity duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Buku Perpustakaan</span>
             <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Buku Perpustakaan</span>
-        </a>
+        </a> --}}
 
         {{-- Lokasi --}}
         <a href="{{ route('admin.lokasi.index') }}"
@@ -120,7 +135,7 @@
         </a>
 
         {{-- Buku Tukar --}}
-        <a href="{{ route('admin.buku.tukar') }}"
+        {{-- <a href="{{ route('admin.buku.tukar') }}"
             @click="activeMenu = 'buku-tukar'"
             :class="activeMenu === 'buku-tukar' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white'"
             class="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-150 relative overflow-hidden"
@@ -134,7 +149,7 @@
             </span>
             <span x-show="open" class="text-sm font-medium whitespace-nowrap" x-transition:enter="transition-opacity duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">Buku Tukar</span>
             <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Buku Tukar</span>
-        </a>
+        </a> --}}
 
 
         {{-- Akun --}}
