@@ -31,19 +31,10 @@
                     <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Buku diserahkan</th>
                     <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Buku diterima</th>
                     <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Tanggal</th>
-                    <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Status</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-neutral-50">
                 @forelse ($transaksis as $t)
-                    @php
-                        $statusMap = [
-                            'disetujui' => ['label' => 'Selesai',  'class' => 'bg-success-50 text-success-700'],
-                            'ditolak'   => ['label' => 'Ditolak',  'class' => 'bg-danger-50 text-danger-700'],
-                            'pending'   => ['label' => 'Pending',  'class' => 'bg-warning-50 text-warning-700'],
-                        ];
-                        $status = $statusMap[$t->status->value] ?? $statusMap['pending'];
-                    @endphp
                     <tr class="hover:bg-neutral-50 transition-colors">
                         <td class="px-5 py-3.5 text-xs font-mono font-medium text-neutral-500 whitespace-nowrap">
                             #TXN-{{ str_pad($t->id, 4, '0', STR_PAD_LEFT) }}
@@ -59,11 +50,6 @@
                         </td>
                         <td class="px-5 py-3.5 text-xs text-neutral-400 whitespace-nowrap">
                             {{ $t->created_at->format('d/m/y') }}
-                        </td>
-                        <td class="px-5 py-3.5">
-                            <span class="text-xs font-medium px-2.5 py-1 rounded-full {{ $status['class'] }}">
-                                {{ $status['label'] }}
-                            </span>
                         </td>
                     </tr>
                 @empty
