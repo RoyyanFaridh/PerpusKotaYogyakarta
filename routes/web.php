@@ -22,12 +22,12 @@ Route::get('/admin/login',  [AdminAuthController::class, 'showLoginForm'])->name
 Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('auth.login.post');
 Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('auth.logout');
 
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-  Route::resource('member', MemberController::class)->except(['create', 'show']);
-Route::resource('lokasi', LokasiController::class)->except(['create', 'show']);
+    Route::resource('member', MemberController::class)->except(['create', 'show']);
+    Route::resource('lokasi', LokasiController::class)->except(['create', 'show']);
 
     Route::prefix('buku')->name('buku.')->group(function () {
         Route::get('/',          [BukuController::class, 'index'])->name('index');
