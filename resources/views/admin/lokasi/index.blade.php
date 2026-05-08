@@ -22,7 +22,7 @@
     <div class="relative overflow-hidden rounded-xl bg-white border border-neutral-200">
         <div class="absolute top-0 left-0 right-0 h-0.5 bg-primary-400"></div>
 
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto custom-scroll">
             <table class="w-full text-sm">
                 <thead>
                     <tr class="border-b border-neutral-100 bg-neutral-50">
