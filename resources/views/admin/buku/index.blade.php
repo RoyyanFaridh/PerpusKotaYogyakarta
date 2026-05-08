@@ -10,7 +10,7 @@
         title="Semua Buku"
         :subtitle="$stats['total'] . ' buku terdaftar'"
         icon="book"
-        route="admin.buku.create"
+        button-onclick="openTambah()"
         route-label="Tambah Buku"
         placeholder="Cari judul, pengarang, ISBN..."
         search-id="searchInput"
@@ -44,6 +44,16 @@
         ]"
     />
 
+    {{-- Flash Message --}}
+    @if (session('success'))
+        <div class="flex items-center gap-2.5 px-5 py-3 rounded-xl bg-success-50 border border-success-100 text-success-700 text-xs font-medium">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            {{ session('success') }}
+        </div>
+    @endif
+
     <div class="relative overflow-hidden rounded-xl bg-white border border-neutral-200">
         <div class="absolute top-0 left-0 right-0 h-0.5 bg-primary-400"></div>
 
@@ -51,19 +61,20 @@
             <table class="w-full text-sm">
                 <thead>
                     <tr class="border-b border-neutral-100 bg-neutral-50">
-                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Judul</th>
-                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Pengarang</th>
-                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">ISBN</th>
-                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Kategori</th>
-                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Sumber</th>
-                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Stok</th>
-                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Lokasi</th>
-                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Aksi</th>
+                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Judul</th>
+                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Pengarang</th>
+                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">ISBN</th>
+                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Kategori</th>
+                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Sumber</th>
+                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Stok</th>
+                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Lokasi</th>
+                        <th class="text-right text-xs font-medium text-neutral-400 px-5 py-3">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-neutral-50" id="tableBody">
                     @forelse ($bukus as $buku)
-                        <tr class="hover:bg-neutral-50 transition-colors">
+                        <tr class="hover:bg-neutral-50 transition-colors table-row-data"
+                            data-search="{{ strtolower($buku->judul) }} {{ strtolower($buku->pengarang) }} {{ strtolower($buku->isbn ?? '') }}">
                             <td class="px-5 py-3.5">
                                 <p class="text-xs font-semibold text-neutral-800 max-w-[200px] truncate">{{ $buku->judul }}</p>
                                 <p class="text-[0.68rem] text-neutral-400 mt-0.5">{{ $buku->tahun_terbit ?? '-' }}</p>
@@ -102,26 +113,17 @@
                             </td>
                             <td class="px-5 py-3.5">
                                 <div class="flex items-center justify-end gap-1.5">
+                                    {{-- Edit --}}
                                     <button onclick="openEdit({{ $buku->id }})"
-                                        class="p-1.5 rounded-lg text-neutral-400 hover:text-primary-600 hover:bg-primary-50 transition-colors">
+                                        class="p-1.5 rounded-lg text-neutral-400 hover:text-primary-600 hover:bg-primary-50 transition-colors"
+                                        title="Edit">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                                         </svg>
                                     </button>
-                                    <form method="POST" action="{{ route('admin.buku.destroy', $buku) }}"
-                                          onsubmit="return confirm('Hapus buku ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="p-1.5 rounded-lg text-neutral-400 hover:text-danger-600 hover:bg-danger-50 transition-colors">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <polyline points="3 6 5 6 21 6"/>
-                                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                                                <path d="M10 11v6"/><path d="M14 11v6"/>
-                                                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                                        </svg>
-                                        </button>
-                                    </form>
+                                    {{-- Hapus --}}
+                                    @include('admin.buku._destroy', ['buku' => $buku])
                                 </div>
                             </td>
                         </tr>
@@ -138,6 +140,12 @@
                             </td>
                         </tr>
                     @endforelse
+
+                    <tr id="noResultRow" class="hidden">
+                        <td colspan="8" class="px-5 py-10 text-center text-xs text-neutral-400">
+                            Tidak ada hasil yang cocok.
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -150,4 +158,36 @@
     </div>
 
 </div>
+
+@include('admin.buku.create')
+@include('admin.buku.edit')
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Client-side search
+    const searchInput = document.getElementById('searchInput');
+    const rows        = document.querySelectorAll('.table-row-data');
+    const noResultRow = document.getElementById('noResultRow');
+
+    searchInput?.addEventListener('input', () => {
+        const q = searchInput.value.toLowerCase().trim();
+        let visible = 0;
+        rows.forEach(row => {
+            const match = !q || row.dataset.search.includes(q);
+            row.classList.toggle('hidden', !match);
+            if (match) visible++;
+        });
+        noResultRow.classList.toggle('hidden', visible > 0);
+    });
+});
+
+function confirmHapus(e, judul) {
+    if (!confirm(`Hapus buku "${judul}"?\nTindakan ini tidak bisa dibatalkan.`)) {
+        e.preventDefault();
+        return false;
+    }
+    return true;
+}
+</script>
+
 @endsection

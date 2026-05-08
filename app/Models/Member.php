@@ -33,6 +33,11 @@ class Member extends Model
         return $this->hasMany(Transaksi::class);
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function scopeCari(Builder $query, string $keyword): Builder
     {
         return $query->where('nama', 'like', "%{$keyword}%")

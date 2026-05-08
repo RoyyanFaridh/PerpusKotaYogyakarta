@@ -30,13 +30,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('lokasi', LokasiController::class);
 
     Route::prefix('buku')->name('buku.')->group(function () {
-        Route::get('/',            [BukuController::class, 'index'])->name('index');
-        Route::get('/perpus',      [BukuController::class, 'perpus'])->name('perpus');
-        Route::get('/create',      [BukuController::class, 'create'])->name('create');
-        Route::get('/tukar',       [BukuController::class, 'tukar'])->name('tukar');
-        Route::post('/',           [BukuController::class, 'store'])->name('store');
-        Route::put('/{buku}',      [BukuController::class, 'update'])->name('update');
-        Route::delete('/{buku}',   [BukuController::class, 'destroy'])->name('destroy');
+        Route::get('/',          [BukuController::class, 'index'])->name('index');
+        Route::get('/create',    [BukuController::class, 'create'])->name('create');
+        Route::post('/',         [BukuController::class, 'store'])->name('store');
+        Route::put('/{buku}',    [BukuController::class, 'update'])->name('update');
+        Route::delete('/{buku}', [BukuController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('transaksi')->name('transaksi.')->group(function () {

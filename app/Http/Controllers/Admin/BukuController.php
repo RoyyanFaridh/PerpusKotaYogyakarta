@@ -29,25 +29,6 @@ class BukuController extends Controller
         return view('admin.buku.index', compact('bukus', 'lokasis', 'filters', 'stats'));
     }
 
-    public function perpus(Request $request)
-    {
-        $filters  = $request->only(['search', 'kategori', 'stok']);
-        $bukus    = $this->service->getPerpus($filters);
-        $lokasis  = Lokasi::all();
-        $stats    = $this->getStatsPerpus();
-
-        return view('admin.buku.perpus', compact('bukus', 'lokasis', 'filters', 'stats'));
-    }
-
-    public function tukar(Request $request)
-    {
-        $filters  = $request->only(['search', 'kategori', 'kondisi']);
-        $bukus    = $this->service->getTukar($filters);
-        $stats    = $this->getStatsTukar();
-
-        return view('admin.buku.tukar', compact('bukus', 'filters', 'stats'));
-    }
-
     public function store(SimpanBukuRequest $request)
     {
         $this->service->store(array_merge(
@@ -56,6 +37,23 @@ class BukuController extends Controller
         ));
 
         return redirect()->back()->with('success', 'Buku berhasil ditambahkan.');
+    }
+
+    public function edit(int $id)
+    {
+        $buku = Buku::findOrFail($id);
+
+        if (request()->ajax()) {
+            return response()->json($buku);
+        }
+
+        return view('admin.buku.edit', compact('buku'));
+    }
+
+    public function create()
+    {
+        $lokasis = Lokasi::all();
+        return view('admin.buku.create', compact('lokasis'));
     }
 
     public function update(SimpanBukuRequest $request, int $id)
@@ -80,26 +78,6 @@ class BukuController extends Controller
             'tukar'    => Buku::tukar()->count(),
             'tersedia' => Buku::where('stok', '>', 0)->count(),
             'habis'    => Buku::where('stok', 0)->count(),
-        ];
-    }
-
-    private function getStatsPerpus(): array
-    {
-        return [
-            'total'    => Buku::perpus()->count(),
-            'tersedia' => Buku::perpus()->where('stok', '>', 0)->count(),
-            'habis'    => Buku::perpus()->where('stok', 0)->count(),
-            'kategori' => Buku::perpus()->whereNotNull('kategori')->distinct('kategori')->count('kategori'),
-        ];
-    }
-
-    private function getStatsTukar(): array
-    {
-        return [
-            'total' => Buku::tukar()->count(),
-            'baik'  => Buku::tukar()->where('kondisi', 'baik')->count(),
-            'cukup' => Buku::tukar()->where('kondisi', 'cukup')->count(),
-            'rusak' => Buku::tukar()->where('kondisi', 'rusak')->count(),
         ];
     }
 }

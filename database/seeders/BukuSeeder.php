@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\BukuPerpus;
+use App\Models\Buku;
 use Illuminate\Database\Seeder;
 
-class BukuPerpusSeeder extends Seeder
+class BukuSeeder extends Seeder
 {
     public function run(): void
     {
@@ -143,7 +143,7 @@ class BukuPerpusSeeder extends Seeder
         ];
 
         foreach ($buku as $item) {
-            BukuPerpus::create($item);
+            Buku::create($item);
         }
     }
 }
