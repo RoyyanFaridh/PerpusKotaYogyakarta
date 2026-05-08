@@ -29,14 +29,30 @@ class BukuController extends Controller
         return view('admin.buku.index', compact('bukus', 'lokasis', 'filters', 'stats'));
     }
 
-    public function store(SimpanBukuRequest $request)
+    public function store(Request $request)
     {
-        $this->service->store(array_merge(
-            $request->validated(),
-            ['user_id' => Auth::id()] 
-        ));
+        $validated = $request->validate([
+            'judul'         => ['required', 'string', 'max:255'],
+            'pengarang'     => ['required', 'string', 'max:255'],
+            'penerbit'      => ['nullable', 'string', 'max:255'],
+            'isbn'          => ['nullable', 'string', 'max:20'],
+            'tahun_terbit'  => ['nullable', 'integer'],
+            'tempat_terbit' => ['nullable', 'string', 'max:255'],
+            'resume'        => ['nullable', 'string'],
+            'stok'          => ['required', 'integer', 'min:0'],
+            'kategori'      => ['nullable', 'string', 'max:100'],
+            'sumber'        => ['required', 'in:perpus,tukar'],
+            'kondisi'       => ['nullable', 'string', 'max:100'],
+            'deskripsi'     => ['nullable', 'string'],
+            'lokasi_id'     => ['required', 'exists:lokasis,id'],
+        ]);
 
-        return redirect()->back()->with('success', 'Buku berhasil ditambahkan.');
+        $validated['user_id'] = Auth::id();
+
+        $this->service->store($validated); 
+
+        return redirect()->route('admin.buku.index')
+                        ->with('success', 'Buku berhasil ditambahkan.');
     }
 
     public function edit(int $id)

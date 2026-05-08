@@ -21,7 +21,7 @@ class DashboardController extends Controller
 
         $bukuTersedia  = Buku::where('stok', '>', 0)->count();
         $bukuMingguIni = Buku::whereBetween('created_at', [now()->startOfWeek(), now()])->count();
-        $perluVerifikasi = Transaksi::where('status', 'menunggu')->count();
+        $perluVerifikasi = Transaksi::whereNull('tanggal_tukar')->count();
 
         $kategoris        = $this->dummyKategoris();
 
