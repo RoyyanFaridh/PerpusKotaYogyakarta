@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Database\Seeders\UserSeeder;
 use Database\Seeders\LokasiSeeder;
 use Database\Seeders\MemberSeeder;
-use Database\Seeders\BukuPerpusSeeder;
+use Database\Seeders\BukuSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             LokasiSeeder::class,
             MemberSeeder::class,
-            BukuPerpusSeeder::class,
+            BukuSeeder::class,
         ]);
     }
 }

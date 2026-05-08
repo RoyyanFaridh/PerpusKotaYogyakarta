@@ -123,7 +123,7 @@
                                         </svg>
                                     </button>
                                     {{-- Hapus --}}
-                                    @include('admin.buku._destroy', ['buku' => $buku])
+                                    @include('admin.buku.destroy', ['buku' => $buku])
                                 </div>
                             </td>
                         </tr>
