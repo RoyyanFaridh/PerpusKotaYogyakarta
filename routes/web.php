@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\Admin\BukuController;
 use App\Http\Controllers\Admin\TransaksiController;
@@ -9,8 +10,10 @@ use App\Http\Controllers\Admin\LokasiController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PengaturanController;
+use App\Http\Controllers\Admin\KegiatanController;
 
-Route::get('/', fn () => view('welcome'));
+Route::get('/', [HomeController::class, 'index']);
+Route::get('/search-buku', [CatalogController::class, 'searchAjax'])->name('search.buku');
 
 Route::prefix('katalog')->name('katalog.')->group(function () {
     Route::get('/', [CatalogController::class, 'index'])->name('index');
@@ -26,8 +29,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::resource('member', MemberController::class)->except(['create', 'show']);
-    Route::resource('lokasi', LokasiController::class)->except(['create', 'show']);
+    Route::resource('member',   MemberController::class)->except(['create', 'show']);
+    Route::resource('lokasi',   LokasiController::class)->except(['create', 'show']);
+    Route::resource('kegiatan', KegiatanController::class)->except(['show']);
 
     Route::prefix('buku')->name('buku.')->group(function () {
         Route::get('/',          [BukuController::class, 'index'])->name('index');
@@ -46,7 +50,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::get('/cari-buku-isbn', [TransaksiController::class, 'cariBukuIsbn'])->name('cari-buku-isbn');
     });
 
-    // Pengaturan
     Route::prefix('pengaturan')->name('pengaturan.')->group(function () {
         Route::get('/',               [PengaturanController::class, 'index'])->name('index');
         Route::put('/profil',         [PengaturanController::class, 'updateProfil'])->name('profil');
