@@ -68,7 +68,9 @@
 
             {{-- Alamat --}}
             <div class="flex flex-col gap-1.5">
-                <label for="alamat" class="text-xs font-medium text-neutral-700">Alamat</label>
+                <label for="nama" class="text-xs font-medium text-neutral-700">
+                    Alamat <span class="text-danger-500">*</span>
+                </label>
                 <textarea id="alamat" name="alamat" rows="3" placeholder="Masukkan alamat lengkap"
                           class="w-full text-sm px-3.5 py-2.5 rounded-lg border {{ $errors->has('alamat') ? 'border-danger-400 bg-danger-50' : 'border-neutral-200' }} text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition resize-none">{{ old('alamat') }}</textarea>
                 @error('alamat')
