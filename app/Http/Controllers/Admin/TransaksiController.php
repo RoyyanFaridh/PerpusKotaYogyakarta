@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Transaksi;
 use App\Services\TransaksiService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TransaksiController extends Controller
 {
@@ -45,19 +46,28 @@ class TransaksiController extends Controller
             'buku_diterima_id'             => 'required|exists:bukus,id',
         ]);
 
-        $this->service->simpan(array_merge(
-            $request->all(),
-            ['user_id' => auth()->id()]
-        ));
+        try {
+            $this->service->simpan(array_merge(
+                $request->all(),
+                ['user_id' => Auth::id()]
+            ));
 
-        return response()->json(['success' => true, 'message' => 'Transaksi berhasil disimpan.']);
+            return response()->json(['success' => true, 'message' => 'Transaksi berhasil disimpan.']);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+            ], 500);
+        }
     }
 
     public function update(Request $request, int $id)
     {
         $request->validate([
-            'member.nama'     => 'required|string|max:255',
-            'member.no_telp'  => 'required|string|max:15',
+            'member.nama'      => 'required|string|max:255',
+            'member.no_telp'   => 'required|string|max:15',
             'buku_diterima_id' => 'required|exists:bukus,id',
         ]);
 

@@ -29,7 +29,7 @@ class DashboardController extends Controller
         $aktivitas        = $this->getAktivitasTerkini();
         $transaksiTerbaru = Transaksi::with(['member', 'bukuDiserahkan', 'bukuDiterima'])
             ->latest()
-            ->limit(5)
+            ->limit(15)
             ->get();
 
         return view('admin.dashboard', compact(
@@ -50,21 +50,15 @@ class DashboardController extends Controller
 
         Transaksi::with(['member', 'bukuDiserahkan'])
             ->latest()
-            ->limit(10)
+            ->limit(20)
             ->get()
             ->each(function ($t) use (&$items) {
                 $nama  = $t->member?->nama ?? 'Member';
                 $judul = $t->bukuDiserahkan?->judul ?? 'Buku';
 
-                $label = match ($t->status) {
-                    'disetujui' => 'Transaksi disetujui',
-                    'ditolak'   => 'Transaksi ditolak',
-                    default     => 'Transaksi menunggu konfirmasi',
-                };
-
                 $items->push([
-                    'tipe'      => 'transaksi_' . $t->status,
-                    'pesan'     => "{$label} oleh {$nama}",
+                    'tipe'      => 'transaksi_pending',
+                    'pesan'     => "Transaksi tukar buku oleh {$nama}",
                     'sub'       => $judul,
                     'waktu'     => $t->created_at->diffForHumans(),
                     'timestamp' => $t->created_at,
@@ -72,7 +66,7 @@ class DashboardController extends Controller
             });
 
         Member::latest()
-            ->limit(5)
+            ->limit(10)
             ->get()
             ->each(function ($m) use (&$items) {
                 $items->push([
@@ -86,7 +80,7 @@ class DashboardController extends Controller
 
         return $items
             ->sortByDesc('timestamp')
-            ->take(12)
+            ->take(20)
             ->values()
             ->all();
     }

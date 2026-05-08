@@ -16,59 +16,62 @@
                 <p class="text-xs text-neutral-400 mt-0.5">{{ count($transaksis) }} transaksi ditampilkan</p>
             </div>
         </div>
-        {{-- <a href="{{ route('admin.transaksi') }}"
+        <a href="{{ route('admin.transaksi.index') }}"
            class="text-xs font-medium px-3 py-1.5 rounded-lg border border-neutral-200 text-neutral-500 hover:bg-neutral-50 hover:text-neutral-700 transition-colors whitespace-nowrap">
             Lihat semua
-        </a> --}}
+        </a>
     </div>
 
-    <div class="overflow-x-auto">
+    <div class="overflow-x-auto overflow-y-auto max-h-[160px] custom-scroll">
         <table class="w-full text-sm">
-            <thead>
+            <thead class="sticky top-0 z-10">
                 <tr class="border-b border-neutral-100 bg-neutral-50">
-                    <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">ID</th>
-                    <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Member</th>
-                    <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Buku diserahkan</th>
-                    <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Buku diterima</th>
-                    <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Tanggal</th>
-                    <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Status</th>
+                    <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">ID</th>
+                    <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Member</th>
+                    <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Buku Diserahkan</th>
+                    <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Buku Diterima</th>
+                    <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Tanggal</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-neutral-50">
                 @forelse ($transaksis as $t)
-                    @php
-                        $statusMap = [
-                            'disetujui' => ['label' => 'Selesai',  'class' => 'bg-success-50 text-success-700'],
-                            'ditolak'   => ['label' => 'Ditolak',  'class' => 'bg-danger-50 text-danger-700'],
-                            'pending'   => ['label' => 'Pending',  'class' => 'bg-warning-50 text-warning-700'],
-                        ];
-                        $status = $statusMap[$t->status->value] ?? $statusMap['pending'];
-                    @endphp
                     <tr class="hover:bg-neutral-50 transition-colors">
-                        <td class="px-5 py-3.5 text-xs font-mono font-medium text-neutral-500 whitespace-nowrap">
-                            #TXN-{{ str_pad($t->id, 4, '0', STR_PAD_LEFT) }}
-                        </td>
-                        <td class="px-5 py-3.5 text-sm font-medium text-neutral-700 whitespace-nowrap">
-                            {{ $t->member?->nama ?? '-' }}
-                        </td>
-                        <td class="px-5 py-3.5 text-sm text-neutral-600 max-w-[180px] truncate">
-                            {{ $t->bukuTukar?->judul ?? '-' }}
-                        </td>
-                        <td class="px-5 py-3.5 text-sm text-neutral-600 max-w-[180px] truncate">
-                            {{ $t->bukuPerpus?->judul ?? '-' }}
-                        </td>
-                        <td class="px-5 py-3.5 text-xs text-neutral-400 whitespace-nowrap">
-                            {{ $t->created_at->format('d/m/y') }}
-                        </td>
                         <td class="px-5 py-3.5">
-                            <span class="text-xs font-medium px-2.5 py-1 rounded-full {{ $status['class'] }}">
-                                {{ $status['label'] }}
+                            <span class="text-xs font-mono font-medium text-neutral-500">
+                                #TXN-{{ str_pad($t->id, 4, '0', STR_PAD_LEFT) }}
                             </span>
+                        </td>
+
+                        <td class="px-5 py-3.5">
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-white text-[0.65rem] font-bold shrink-0">
+                                    {{ strtoupper(substr($t->member?->nama ?? 'U', 0, 1)) }}
+                                </div>
+                                <div>
+                                    <p class="text-xs font-semibold text-neutral-800 leading-tight">{{ $t->member?->nama ?? '-' }}</p>
+                                    <p class="text-[0.68rem] text-neutral-400">{{ $t->member?->no_telp ?? '' }}</p>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="px-5 py-3.5 max-w-[160px]">
+                            <p class="text-xs font-medium text-neutral-700 truncate">{{ $t->bukuDiserahkan?->judul ?? '-' }}</p>
+                            <p class="text-[0.68rem] text-neutral-400 mt-0.5">{{ $t->bukuDiserahkan?->pengarang ?? '' }}</p>
+                        </td>
+
+                        <td class="px-5 py-3.5 max-w-[160px]">
+                            <p class="text-xs font-medium text-neutral-700 truncate">{{ $t->bukuDiterima?->judul ?? '-' }}</p>
+                            <p class="text-[0.68rem] text-neutral-400 mt-0.5">{{ $t->bukuDiterima?->pengarang ?? '' }}</p>
+                        </td>
+
+                        <td class="px-5 py-3.5 whitespace-nowrap">
+                            <p class="text-xs font-medium text-neutral-700">{{ $t->tanggal_tukar?->format('d M Y') ?? '-' }}</p>
+                            <p class="text-[0.68rem] text-neutral-400 mt-0.5">{{ $t->tanggal_tukar?->diffForHumans() ?? '' }}</p>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-5 py-12 text-center">
+                        <td colspan="5" class="px-5 py-12 text-center">
                             <div class="flex flex-col items-center gap-2">
                                 <div class="w-10 h-10 rounded-xl bg-neutral-100 flex items-center justify-center">
                                     <x-icons.transaksi class="w-5 h-5 text-neutral-400"/>
@@ -90,5 +93,4 @@
             </p>
         </div>
     @endif
-
 </div>

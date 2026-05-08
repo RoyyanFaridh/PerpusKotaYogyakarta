@@ -47,7 +47,7 @@
             </div>
         @endif
 
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto custom-scroll">
             <table class="w-full text-sm">
                 <thead>
                     <tr class="border-b border-neutral-100 bg-neutral-50">
@@ -106,7 +106,7 @@
                                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                                         </svg>
                                     </button>
-                                    @include('admin.transaksi._destroy', ['item' => $item])
+                                    @include('admin.transaksi.destroy', ['item' => $item])
                                 </div>
                             </td>
                         </tr>

@@ -9,7 +9,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="font-sans bg-neutral-100 flex h-screen overflow-hidden">
+<body class="font-sans bg-neutral-100 flex h-screen overflow-hidden custom-scroll">
 
     @include('components.admin.sidebar')
 
@@ -33,7 +33,7 @@
             </div>
         </header>
 
-        <main class="flex-1 overflow-y-auto p-6">
+        <main class="flex-1 overflow-y-auto p-6 custom-scroll">
             @yield('content')
         </main>
 

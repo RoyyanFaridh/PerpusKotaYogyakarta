@@ -43,11 +43,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 
     Route::prefix('transaksi')->name('transaksi.')->group(function () {
         Route::get('/',               [TransaksiController::class, 'index'])->name('index');
-        Route::get('/create',         [TransaksiController::class, 'create'])->name('create');
         Route::post('/',              [TransaksiController::class, 'store'])->name('store');
         Route::get('/cari-member',    [TransaksiController::class, 'cariMember'])->name('cari-member');
         Route::post('/simpan-member', [TransaksiController::class, 'simpanMember'])->name('simpan-member');
         Route::get('/cari-buku-isbn', [TransaksiController::class, 'cariBukuIsbn'])->name('cari-buku-isbn');
+        Route::get('/{id}',           [TransaksiController::class, 'show'])->name('show');
+        Route::put('/{id}',           [TransaksiController::class, 'update'])->name('update');
+        Route::delete('/{id}',        [TransaksiController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('pengaturan')->name('pengaturan.')->group(function () {

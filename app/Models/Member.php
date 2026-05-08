@@ -11,10 +11,6 @@ class Member extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'no_telp';
-    public $incrementing = false;
-    protected $keyType = 'string';
-
     protected $fillable = [
         'no_telp',
         'nama',

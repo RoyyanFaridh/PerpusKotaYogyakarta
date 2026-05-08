@@ -21,7 +21,7 @@ class TransaksiService
     {
         if (!empty($data['id'])) {
             $member = Member::findOrFail($data['id']);
-            $member->update($data);
+            $member->update(collect($data)->except('id')->toArray()); // ← exclude id
             return $member->fresh();
         }
 
@@ -30,6 +30,8 @@ class TransaksiService
 
     public function cariBukuByIsbn(string $isbn): ?Buku
     {
+        if (blank($isbn)) return null;
+
         return Buku::where('isbn', $isbn)->first();
     }
 
@@ -40,20 +42,26 @@ class TransaksiService
             // 1. Simpan/update member
             $member = $this->simpanAtauUpdateMember($data['member']);
 
-            // 2. Simpan buku yang diserahkan member (sumber: tukar, stok: 0 dulu)
-            $bukuDiserahkan = Buku::create([
-                'judul'      => $data['buku_diserahkan']['judul'],
-                'pengarang'  => $data['buku_diserahkan']['pengarang'],
-                'penerbit'   => $data['buku_diserahkan']['penerbit']   ?? null,
-                'isbn'       => $data['buku_diserahkan']['isbn']        ?? null,
-                'kategori'   => $data['buku_diserahkan']['kategori']   ?? null,
-                'kondisi'    => $data['buku_diserahkan']['kondisi'],
-                'deskripsi'  => $data['buku_diserahkan']['deskripsi']  ?? null,
-                'sumber'     => 'tukar',
-                'stok'       => 0,
-                'member_id'  => $member->id,
-                'user_id'    => $data['user_id'],
-            ]);
+            // 2. Simpan buku yang diserahkan member (sumber: tukar)
+            $isbnDiserahkan = $data['buku_diserahkan']['isbn'] ?? null;
+
+            if ($isbnDiserahkan && $existing = Buku::where('isbn', $isbnDiserahkan)->first()) {
+                $bukuDiserahkan = $existing;
+            } else {
+                $bukuDiserahkan = Buku::create([
+                    'judul'      => $data['buku_diserahkan']['judul'],
+                    'pengarang'  => $data['buku_diserahkan']['pengarang'],
+                    'penerbit'   => $data['buku_diserahkan']['penerbit']  ?? null,
+                    'isbn'       => $isbnDiserahkan,
+                    'kategori'   => $data['buku_diserahkan']['kategori']  ?? null,
+                    'kondisi'    => $data['buku_diserahkan']['kondisi'],
+                    'deskripsi'  => $data['buku_diserahkan']['deskripsi'] ?? null,
+                    'sumber'     => 'tukar',
+                    'stok'       => 0,
+                    'member_id'  => $member->id,
+                    'user_id'    => $data['user_id'],
+                ]);
+            }
 
             // 3. Kurangi stok buku yang diberikan ke member
             $bukuDiterima = Buku::findOrFail($data['buku_diterima_id']);

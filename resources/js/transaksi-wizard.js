@@ -1,9 +1,8 @@
-// ─── State ───────────────────────────────────────────────
+
 let createStep = 1;
 let editStep   = 1;
 let editId     = null;
 
-// ─── Create ──────────────────────────────────────────────
 function resetCreate() {
     createStep = 1;
     [
@@ -63,7 +62,11 @@ function simpanTransaksi() {
 
     fetch('/admin/transaksi', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+        headers: { 
+            'Content-Type': 'application/json', 
+            'Accept': 'application/json', 
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content 
+        },
         body: JSON.stringify(payload),
     })
     .then(r => r.json())
@@ -75,7 +78,6 @@ function simpanTransaksi() {
     .finally(() => { btn.disabled = false; btn.textContent = 'Simpan Transaksi'; });
 }
 
-// ─── Edit ────────────────────────────────────────────────
 function openEditTransaksi(id) {
     editId = id;
     fetch(`/admin/transaksi/${id}`)
