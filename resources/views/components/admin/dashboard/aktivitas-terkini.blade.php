@@ -32,7 +32,7 @@
         </button>
     </div>
 
-    <ul class="divide-y divide-neutral-50 overflow-y-auto flex-1">
+    <ul class="divide-y divide-neutral-50 overflow-y-auto max-h-[300px] custom-scroll">
 
         @forelse ($aktivitas as $item)
             @php
