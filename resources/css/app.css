@@ -94,15 +94,13 @@
     background: transparent;
 }
 .custom-scroll::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, #04448d 0%, #6F7B89 2%, #e5e5e5 2%, #d4d4d4 100%);
+    background: linear-gradient(to bottom, #04448d, #e5e5e5);
     border-radius: 99px;
-    opacity: 1;
-    transition: opacity 0.5s ease;
 }
 .custom-scroll::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(to bottom, #04448d 0%, #6F7B89 2%, #d4d4d4 2%, #d4d4d4 100%);
-    border-radius: 99px;
+    background: linear-gradient(to bottom, #012145, #d4d4d4);
 }
-.custom-scroll:not(:hover)::-webkit-scrollbar-thumb {
-    background: transparent;
+.custom-scroll::-webkit-scrollbar-corner {
+    background: #eff6ff;
+    border-radius: 99px;
 }
