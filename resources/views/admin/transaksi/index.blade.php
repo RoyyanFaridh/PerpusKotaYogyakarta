@@ -10,6 +10,8 @@
         title="Semua Transaksi"
         :subtitle="$transaksi->total() . ' transaksi terdaftar'"
         icon="transaksi"
+        button-onclick="openModal()"
+        route-label="Tambah Transaksi"
         placeholder="Cari member, buku..."
         search-id="searchInput"
         :stats="[
@@ -32,16 +34,6 @@
             ],
         ]"
     />
-
-    <div class="flex justify-end -mt-2">
-        <button onclick="openModal()"
-            class="flex items-center gap-2 text-xs font-medium px-3.5 py-2 rounded-lg bg-primary text-white hover:bg-primary-600 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
-            Tambah Transaksi
-        </button>
-    </div>
 
     <div class="relative overflow-hidden rounded-xl bg-white border border-neutral-200">
         <div class="absolute top-0 left-0 right-0 h-0.5 bg-primary-400"></div>
