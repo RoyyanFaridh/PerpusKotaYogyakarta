@@ -40,7 +40,7 @@
                 {{-- Nama --}}
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs font-medium text-neutral-700">Nama</label>
-                    <input type="text" name="nama" value="{{ old('nama', auth()->user()->nama) }}"
+                    <input type="text" name="nama" value="{{ old('nama', auth()->user()?->nama) }}"
                         class="w-full text-sm px-3.5 py-2.5 rounded-lg border {{ $errors->has('nama') ? 'border-danger-400 bg-danger-50' : 'border-neutral-200' }} text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
                     @error('nama') <p class="text-xs text-danger-500">{{ $message }}</p> @enderror
                 </div>
@@ -48,7 +48,7 @@
                 {{-- Email --}}
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs font-medium text-neutral-700">Email</label>
-                    <input type="email" name="email" value="{{ old('email', auth()->user()->email ?? '') }}"
+                    <input type="email" name="email" value="{{ old('email', auth()->user()?->email) }}"
                         placeholder="contoh@email.com"
                         class="w-full text-sm px-3.5 py-2.5 rounded-lg border {{ $errors->has('email') ? 'border-danger-400 bg-danger-50' : 'border-neutral-200' }} text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
                     @error('email') <p class="text-xs text-danger-500">{{ $message }}</p> @enderror
@@ -57,7 +57,7 @@
                 {{-- Nomor HP --}}
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs font-medium text-neutral-700">Nomor HP</label>
-                    <input type="text" name="no_hp" value="{{ old('no_hp', auth()->user()->no_hp ?? '') }}"
+                    <input type="text" name="no_hp" value="{{ old('no_hp', auth()->user()?->no_hp) }}"
                         placeholder="08xxxxxxxxxx" maxlength="15"
                         class="w-full text-sm px-3.5 py-2.5 rounded-lg border {{ $errors->has('no_hp') ? 'border-danger-400 bg-danger-50' : 'border-neutral-200' }} text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
                     @error('no_hp') <p class="text-xs text-danger-500">{{ $message }}</p> @enderror
@@ -217,21 +217,21 @@
                             <td class="px-5 py-3.5">
                                 <div class="flex items-center gap-2.5">
                                     <div class="w-7 h-7 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xs font-bold uppercase shrink-0">
-                                        {{ substr($user->nama, 0, 1) }}
+                                        {{ substr($user->nama ?? '?', 0, 1) }}
                                     </div>
-                                    <p class="text-xs font-semibold text-neutral-800">{{ $user->nama }}</p>
+                                    <p class="text-xs font-semibold text-neutral-800">{{ $user->nama ?? '-' }}</p>
                                 </div>
                             </td>
                             <td class="px-5 py-3.5 text-xs text-neutral-600">{{ $user->email ?? '-' }}</td>
                             <td class="px-5 py-3.5 text-xs text-neutral-600">{{ $user->no_hp ?? '-' }}</td>
                             <td class="px-5 py-3.5 text-xs text-neutral-400">
-                                {{ $user->created_at->format('d M Y') }}
+                                {{ $user->created_at?->format('d M Y') ?? '-' }}
                             </td>
                             <td class="px-5 py-3.5">
                                 <div class="flex items-center justify-end gap-1.5">
                                     @if ($user->id !== auth()->id())
                                         <form method="POST" action="{{ route('admin.pengaturan.user.destroy', $user) }}"
-                                              onsubmit="return confirm('Hapus user {{ $user->nama }}?')">
+                                              onsubmit="return confirm('Hapus user {{ $user->nama ?? '' }}?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"

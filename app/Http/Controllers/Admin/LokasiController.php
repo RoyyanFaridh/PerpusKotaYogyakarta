@@ -3,53 +3,80 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Lokasi;
+use App\Models\User;
+use Illuminate\Http\Request;
 
 class LokasiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $lokasis = Lokasi::latest()->paginate(15);
-        return view('admin.lokasi.index', compact('lokasis'));
-    }
+        $lokasis = Lokasi::with('user')
+                    ->when($request->search, function ($query, $search) {
+                        $query->where('nama_lokasi', 'like', "%{$search}%")
+                              ->orWhere('alamat', 'like', "%{$search}%");
+                    })
+                    ->latest()
+                    ->paginate(15);
 
-    public function create()
-    {
-        //
+        $users = User::orderBy('nama')->get();
+
+        return view('admin.lokasi.index', compact('lokasis', 'users'));
     }
 
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'nama_lokasi' => ['required', 'string', 'max:255'],
+            'alamat'      => ['required', 'string'],
+            'no_telp'     => ['nullable', 'string', 'max:15'],
+            'user_id'     => ['required', 'exists:users,id'],
+        ], [
+            'nama_lokasi.required' => 'Nama lokasi wajib diisi.',
+            'alamat.required'      => 'Alamat wajib diisi.',
+            'no_telp.max'          => 'Nomor telepon maksimal 15 karakter.',
+            'user_id.required'     => 'Penanggung jawab wajib dipilih.',
+            'user_id.exists'       => 'User tidak ditemukan.',
+        ]);
+
+        Lokasi::create($validated);
+
+        return redirect()->route('admin.lokasi.index')
+                         ->with('success', 'Lokasi berhasil ditambahkan.');
     }
 
-    public function show(string $id)
+    public function edit(Lokasi $lokasi)
     {
-        //
+        $users = User::orderBy('nama')->get();
+        return view('admin.lokasi.edit', compact('lokasi', 'users'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, Lokasi $lokasi)
     {
-        //
+        $validated = $request->validate([
+            'nama_lokasi' => ['required', 'string', 'max:255'],
+            'alamat'      => ['required', 'string'],
+            'no_telp'     => ['nullable', 'string', 'max:15'],
+            'user_id'     => ['required', 'exists:users,id'],
+        ], [
+            'nama_lokasi.required' => 'Nama lokasi wajib diisi.',
+            'alamat.required'      => 'Alamat wajib diisi.',
+            'no_telp.max'          => 'Nomor telepon maksimal 15 karakter.',
+            'user_id.required'     => 'Penanggung jawab wajib dipilih.',
+            'user_id.exists'       => 'User tidak ditemukan.',
+        ]);
+
+        $lokasi->update($validated);
+
+        return redirect()->route('admin.lokasi.index')
+                         ->with('success', 'Lokasi berhasil diperbarui.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Lokasi $lokasi)
     {
-        //
-    }
+        $lokasi->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('admin.lokasi.index')
+                         ->with('success', 'Lokasi berhasil dihapus.');
     }
 }

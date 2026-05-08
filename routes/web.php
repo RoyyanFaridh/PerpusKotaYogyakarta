@@ -26,8 +26,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::resource('member', MemberController::class);
-    Route::resource('lokasi', LokasiController::class);
+  Route::resource('member', MemberController::class)->except(['create', 'show']);
+Route::resource('lokasi', LokasiController::class)->except(['create', 'show']);
 
     Route::prefix('buku')->name('buku.')->group(function () {
         Route::get('/',            [BukuController::class, 'index'])->name('index');
