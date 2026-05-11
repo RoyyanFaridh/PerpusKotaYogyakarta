@@ -19,24 +19,14 @@
         </div>
 
         @php
-            $namaBulan    = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-            $today        = now()->startOfDay();
-            $closestIndex = 0;
+            $namaBulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
 
-            // Selesai di atas, sisanya urut tanggal ASC
+            // Sorting dilakukan di controller, tinggal pakai $closestIndex dari controller
             $sorted = $kegiatan->sortBy(function ($item) {
                 $s   = $item->status_otomatis;
                 $tgl = \Carbon\Carbon::parse($item->tanggal_mulai)->timestamp;
                 return [$s === 'selesai' ? 0 : 1, $tgl];
             })->values();
-
-            foreach ($sorted as $i => $item) {
-                $s = $item->status_otomatis;
-                if ($s === 'sedang_berlangsung' || $s === 'akan_berlangsung') {
-                    $closestIndex = $i;
-                    break;
-                }
-            }
         @endphp
 
         {{-- Timeline --}}
