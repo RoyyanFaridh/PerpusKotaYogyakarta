@@ -19,7 +19,6 @@
         ]"
     />
 
-    {{-- Tabel --}}
     <div class="relative overflow-hidden rounded-xl bg-white border border-neutral-200">
         <div class="absolute top-0 left-0 right-0 h-0.5 bg-primary-400"></div>
 
@@ -29,10 +28,10 @@
                     <tr class="border-b border-neutral-100 bg-neutral-50">
                         <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">No. Telepon</th>
                         <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Nama</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Email</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Alamat</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">User</th>
-                        <th class="text-right text-xs font-medium text-neutral-400 px-5 py-3">Aksi</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Email</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Alamat</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">User</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-neutral-50">
@@ -44,13 +43,13 @@
                             <td class="px-5 py-3.5">
                                 <p class="text-xs font-semibold text-neutral-800">{{ $member->nama }}</p>
                             </td>
-                            <td class="px-5 py-3.5 text-xs text-neutral-600">
+                            <td class="px-5 py-3.5 text-xs text-neutral-600 text-center">
                                 {{ $member->email ?? '-' }}
                             </td>
-                            <td class="px-5 py-3.5">
-                                <p class="text-xs text-neutral-500 max-w-[200px] truncate">{{ $member->alamat ?? '-' }}</p>
+                            <td class="px-5 py-3.5 text-center">
+                                <p class="text-xs text-neutral-500 max-w-[200px] truncate mx-auto">{{ $member->alamat ?? '-' }}</p>
                             </td>
-                            <td class="px-5 py-3.5">
+                            <td class="px-5 py-3.5 text-center">
                                 @if ($member->user)
                                     <span class="text-[0.68rem] font-medium px-2 py-0.5 rounded-full bg-primary-50 text-primary-700">
                                         {{ $member->user->name }}
@@ -60,28 +59,40 @@
                                 @endif
                             </td>
                             <td class="px-5 py-3.5">
-                                <div class="flex items-center justify-end gap-1.5">
-                                    <a href="{{ route('admin.member.edit', $member) }}"
-                                       class="p-1.5 rounded-lg text-neutral-400 hover:text-primary-600 hover:bg-primary-50 transition-colors">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    {{-- Edit --}}
+                                    <button type="button"
+                                            onclick="bukaModalEdit({{ json_encode([
+                                                'id'      => $member->id,
+                                                'no_telp' => $member->no_telp,
+                                                'nama'    => $member->nama,
+                                                'email'   => $member->email,
+                                                'alamat'  => $member->alamat,
+                                                'user_id' => $member->user_id,
+                                            ]) }})"
+                                            class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                                         </svg>
-                                    </a>
-                                    <form method="POST" action="{{ route('admin.member.destroy', $member) }}"
-                                          onsubmit="return confirm('Hapus member ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                                class="p-1.5 rounded-lg text-neutral-400 hover:text-danger-600 hover:bg-danger-50 transition-colors">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <polyline points="3 6 5 6 21 6"/>
-                                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                                                <path d="M10 11v6"/><path d="M14 11v6"/>
-                                                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                                            </svg>
-                                        </button>
-                                    </form>
+                                        <span>Edit</span>
+                                    </button>
+
+                                    {{-- Hapus: trigger modal konfirmasi --}}
+                                    <button type="button"
+                                            onclick="bukaModalHapusMember(
+                                                '{{ route('admin.member.destroy', $member) }}',
+                                                '{{ addslashes($member->nama) }}'
+                                            )"
+                                            class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-danger-300 hover:text-danger-600 hover:bg-danger-50 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="3 6 5 6 21 6"/>
+                                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                            <path d="M10 11v6"/><path d="M14 11v6"/>
+                                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                                        </svg>
+                                        <span>Hapus</span>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -114,10 +125,11 @@
 
 </div>
 
-{{-- Buka modal otomatis jika validasi gagal --}}
 @if ($errors->any())
     <script>document.addEventListener('DOMContentLoaded', bukaModalMember);</script>
 @endif
 
 @include('admin.member.create')
+@include('admin.member.edit')
+@include('admin.member.destroy')
 @endsection

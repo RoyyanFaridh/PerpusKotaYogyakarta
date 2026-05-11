@@ -1,6 +1,3 @@
-{{-- _destroy.blade.php — include per baris tabel --}}
-{{-- Usage: @include('admin.buku._destroy', ['buku' => $buku]) --}}
-
 <form method="POST" action="{{ route('admin.buku.destroy', $buku) }}"
       onsubmit="return confirmHapus(event, '{{ addslashes($buku->judul) }}')">
     @csrf

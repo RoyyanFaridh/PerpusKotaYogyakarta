@@ -15,18 +15,21 @@ class UserSeeder extends Seeder
             'email'    => 'admin@perpus.com',
             'no_hp'    => '081234567890',
             'password' => Hash::make('password'),
+            'role'     => 'superadmin',
         ]);
 
         User::create([
             'nama'     => 'Petugas Satu',
             'email'    => 'petugas1@perpus.com',
             'password' => Hash::make('password'),
+            'role'     => 'admin',
         ]);
 
         User::create([
             'nama'     => 'Petugas Dua',
             'email'    => 'petugas2@perpus.com',
             'password' => Hash::make('password'),
+            'role'     => 'admin',
         ]);
     }
 }
