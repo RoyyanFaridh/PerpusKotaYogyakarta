@@ -47,7 +47,7 @@
                                 {{ $member->email ?? '-' }}
                             </td>
                             <td class="px-5 py-3.5 text-center">
-                                <p class="text-xs text-neutral-500 max-w-[200px] truncate mx-auto">{{ $member->alamat ?? '-' }}</p>
+                                <p class="text-xs text-neutral-500 max-w-50 truncate mx-auto">{{ $member->alamat ?? '-' }}</p>
                             </td>
                             <td class="px-5 py-3.5 text-center">
                                 @if ($member->user)

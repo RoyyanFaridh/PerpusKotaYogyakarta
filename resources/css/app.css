@@ -104,3 +104,5 @@
     background: #eff6ff;
     border-radius: 99px;
 }
+
+[x-cloak] { display: none !important; }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SimpanBukuRequest;
 use App\Models\Buku;
 use App\Models\Lokasi;
+use App\Models\Member;
 use App\Services\BukuService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,9 +25,10 @@ class BukuController extends Controller
         $filters  = $request->only(['search', 'kategori', 'kondisi', 'stok']);
         $bukus    = $this->service->getAll($filters);
         $lokasis  = Lokasi::all();
+        $members  = Member::all();
         $stats    = $this->getStats();
 
-        return view('admin.buku.index', compact('bukus', 'lokasis', 'filters', 'stats'));
+        return view('admin.buku.index', compact('bukus', 'lokasis', 'members', 'filters', 'stats'));
     }
 
     public function store(Request $request)

@@ -316,7 +316,7 @@
             card.style.opacity    = '0';
             card.style.transform  = 'scale(0.88) translateY(16px)';
             card.style.transition = 'opacity 0.55s ease, transform 0.55s ease';
-            setTimeout(() => {
+            setTimeout(() => {min-w-13
                 card.style.opacity   = '1';
                 card.style.transform = 'scale(1) translateY(0)';
             }, 120 * i + 80);

@@ -10,7 +10,7 @@
         title="Semua Buku"
         :subtitle="$stats['total'] . ' buku terdaftar'"
         icon="book"
-        button-onclick="openTambah()"
+        button-onclick="bukaModalBuku()"
         route-label="Tambah Buku"
         placeholder="Cari judul, pengarang, ISBN..."
         search-id="searchInput"
@@ -44,7 +44,6 @@
         ]"
     />
 
-    {{-- Flash Message --}}
     @if (session('success'))
         <div class="flex items-center gap-2.5 px-5 py-3 rounded-xl bg-success-50 border border-success-100 text-success-700 text-xs font-medium">
             <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -61,14 +60,14 @@
             <table class="w-full text-sm">
                 <thead>
                     <tr class="border-b border-neutral-100 bg-neutral-50">
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Judul</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Pengarang</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">ISBN</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Kategori</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Sumber</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Stok</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Lokasi</th>
-                        <th class="text-right text-xs font-medium text-neutral-400 px-5 py-3">Aksi</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Judul</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Pengarang</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">ISBN</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Kategori</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Sumber</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Stok</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Lokasi</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-neutral-50" id="tableBody">
@@ -114,16 +113,47 @@
                             <td class="px-5 py-3.5">
                                 <div class="flex items-center justify-end gap-1.5">
                                     {{-- Edit --}}
-                                    <button onclick="openEdit({{ $buku->id }})"
-                                        class="p-1.5 rounded-lg text-neutral-400 hover:text-primary-600 hover:bg-primary-50 transition-colors"
-                                        title="Edit">
+                                    <button type="button"
+                                        onclick="bukaModalEditBuku({{ json_encode([
+                                            'id'          => $buku->id,
+                                            'judul'       => $buku->judul,
+                                            'pengarang'   => $buku->pengarang,
+                                            'penerbit'    => $buku->penerbit,
+                                            'isbn'        => $buku->isbn,
+                                            'tahun_terbit'=> $buku->tahun_terbit,
+                                            'tempat_terbit'=> $buku->tempat_terbit,
+                                            'resume'      => $buku->resume,
+                                            'stok'        => $buku->stok,
+                                            'kategori'    => $buku->kategori,
+                                            'sumber'      => $buku->sumber,
+                                            'kondisi'     => $buku->kondisi,
+                                            'deskripsi'   => $buku->deskripsi,
+                                            'lokasi_id'   => $buku->lokasi_id,
+                                            'member_id'   => $buku->member_id,
+                                        ]) }})"
+                                        class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                                         </svg>
+                                        <span>Edit</span>
                                     </button>
+
                                     {{-- Hapus --}}
-                                    @include('admin.buku.destroy', ['buku' => $buku])
+                                    <button type="button"
+                                        onclick="bukaModalHapusBuku(
+                                            '{{ route('admin.buku.destroy', $buku) }}',
+                                            '{{ addslashes($buku->judul) }}'
+                                        )"
+                                        class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-danger-300 hover:text-danger-600 hover:bg-danger-50 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="3 6 5 6 21 6"/>
+                                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                            <path d="M10 11v6"/><path d="M14 11v6"/>
+                                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                                        </svg>
+                                        <span>Hapus</span>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -161,6 +191,7 @@
 
 @include('admin.buku.create')
 @include('admin.buku.edit')
+@include('admin.buku.destroy')
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {

@@ -5,9 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Admin - @yield('title', 'Perpustakaan')</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+        body { visibility: hidden; }
+    </style>
+    <script>
+        (function() {
+            const isOpen = localStorage.getItem('sidebarOpen') !== 'false';
+            document.documentElement.style.setProperty('--sidebar-w', isOpen ? '16rem' : '4.5rem');
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans bg-neutral-100 flex h-screen overflow-hidden custom-scroll">
 
@@ -38,6 +49,10 @@
         </main>
 
     </div>
-     @stack('scripts')
+
+    @stack('scripts')
+    <script>
+        document.body.style.visibility = 'visible';
+    </script>
 </body>
 </html>

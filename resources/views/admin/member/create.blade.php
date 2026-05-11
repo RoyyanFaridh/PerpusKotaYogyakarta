@@ -1,11 +1,8 @@
-{{-- Modal Tambah Member --}}
 <div id="modalTambahMember"
-     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
 
-    {{-- Backdrop --}}
     <div class="absolute inset-0" onclick="tutupModalMember()"></div>
 
-    {{-- Modal Card --}}
     <div class="relative z-10 w-full max-w-lg rounded-xl bg-white border border-neutral-200 overflow-hidden shadow-lg">
 
         <div class="absolute top-0 left-0 right-0 h-0.5 bg-primary-400"></div>

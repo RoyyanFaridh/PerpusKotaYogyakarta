@@ -26,11 +26,12 @@
             <table class="w-full text-sm">
                 <thead>
                     <tr class="border-b border-neutral-100 bg-neutral-50">
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Nama Lokasi</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Alamat</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">No. Telepon</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Penanggung Jawab</th>
-                        <th class="text-right text-xs font-medium text-neutral-400 px-5 py-3">Aksi</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Nama Lokasi</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Alamat</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">No. Telepon</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Penanggung Jawab</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Tanggal</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-neutral-50" id="tableBody">
@@ -39,13 +40,13 @@
                             <td class="px-5 py-3.5">
                                 <p class="text-xs font-semibold text-neutral-800">{{ $lokasi->nama_lokasi }}</p>
                             </td>
-                            <td class="px-5 py-3.5">
-                                <p class="text-xs text-neutral-500 max-w-[200px] truncate">{{ $lokasi->alamat }}</p>
+                            <td class="px-5 py-3.5 text-left">
+                                <p class="text-xs text-neutral-500 max-w-[220px] whitespace-normal leading-relaxed mx-auto">{{ $lokasi->alamat }}</p>
                             </td>
-                            <td class="px-5 py-3.5 text-xs text-neutral-500 font-mono">
+                            <td class="px-5 py-3.5 text-xs text-neutral-500 font-mono text-center">
                                 {{ $lokasi->no_telp ?? '-' }}
                             </td>
-                            <td class="px-5 py-3.5">
+                            <td class="px-5 py-3.5 text-center">
                                 @if ($lokasi->user)
                                     <span class="text-[0.68rem] font-medium px-2 py-0.5 rounded-full bg-primary-50 text-primary-700">
                                         {{ $lokasi->user->nama }}
@@ -54,31 +55,41 @@
                                     <span class="text-[0.68rem] text-neutral-400">-</span>
                                 @endif
                             </td>
-                            <td class="px-5 py-3.5 text-xs text-neutral-400">
+                            <td class="px-5 py-3.5 text-xs text-neutral-400 text-center">
                                 {{ $lokasi->created_at->format('d M Y') }}
                             </td>
                             <td class="px-5 py-3.5">
                                 <div class="flex items-center justify-end gap-1.5">
-                                    <a href="{{ route('admin.lokasi.edit', $lokasi) }}"
-                                        class="p-1.5 rounded-lg text-neutral-400 hover:text-primary-600 hover:bg-primary-50 transition-colors">
+                                    <button type="button"
+                                        onclick="bukaModalEditLokasi({{ json_encode([
+                                            'id'          => $lokasi->id,
+                                            'nama_lokasi' => $lokasi->nama_lokasi,
+                                            'alamat'      => $lokasi->alamat,
+                                            'no_telp'     => $lokasi->no_telp,
+                                            'user_id'     => $lokasi->user_id,
+                                        ]) }})"
+                                        class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                    </svg>
+                                    <span>Edit</span>
+                                </button>
+                                    {{-- Hapus --}}
+                                    <button type="button"
+                                            onclick="bukaModalHapusLokasi(
+                                                '{{ route('admin.lokasi.destroy', $lokasi) }}',
+                                                '{{ addslashes($lokasi->nama_lokasi) }}'
+                                            )"
+                                            class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-danger-300 hover:text-danger-600 hover:bg-danger-50 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                            <polyline points="3 6 5 6 21 6"/>
+                                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                            <path d="M10 11v6"/><path d="M14 11v6"/>
+                                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
                                         </svg>
-                                    </a>
-                                    <form method="POST" action="{{ route('admin.lokasi.destroy', $lokasi) }}"
-                                          onsubmit="return confirm('Hapus lokasi ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="p-1.5 rounded-lg text-neutral-400 hover:text-danger-600 hover:bg-danger-50 transition-colors">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <polyline points="3 6 5 6 21 6"/>
-                                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                                                <path d="M10 11v6"/><path d="M14 11v6"/>
-                                                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                                            </svg>
-                                        </button>
-                                    </form>
+                                        <span>Hapus</span>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -114,4 +125,6 @@
 @endif
 
 @include('admin.lokasi.create')
+@include('admin.lokasi.edit')
+@include('admin.lokasi.destroy')
 @endsection
