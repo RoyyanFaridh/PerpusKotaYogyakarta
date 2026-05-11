@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Member;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MemberController extends Controller
 {
@@ -42,6 +43,8 @@ class MemberController extends Controller
             'user_id.required' => 'User wajib dipilih.',
             'user_id.exists'   => 'User tidak ditemukan.',
         ]);
+
+        $validated['user_id'] = Auth::id();
 
         Member::create($validated);
 

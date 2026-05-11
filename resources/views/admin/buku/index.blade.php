@@ -75,7 +75,7 @@
                         <tr class="hover:bg-neutral-50 transition-colors table-row-data"
                             data-search="{{ strtolower($buku->judul) }} {{ strtolower($buku->pengarang) }} {{ strtolower($buku->isbn ?? '') }}">
                             <td class="px-5 py-3.5">
-                                <p class="text-xs font-semibold text-neutral-800 max-w-[200px] truncate">{{ $buku->judul }}</p>
+                                <p class="text-xs font-semibold text-neutral-800 max-w-50 truncate">{{ $buku->judul }}</p>
                                 <p class="text-[0.68rem] text-neutral-400 mt-0.5">{{ $buku->tahun_terbit ?? '-' }}</p>
                             </td>
                             <td class="px-5 py-3.5 text-xs text-neutral-600 whitespace-nowrap">

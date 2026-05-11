@@ -18,7 +18,7 @@
 
         @include('admin.transaksi._step-indicator', ['prefix' => 'edit'])
 
-        <div class="px-6 py-5 min-h-[280px]">
+        <div class="px-6 py-5 min-h-70">
             @include('admin.transaksi._step-member',     ['prefix' => 'edit'])
             @include('admin.transaksi._step-diserahkan', ['prefix' => 'edit'])
             @include('admin.transaksi._step-diterima',   ['prefix' => 'edit'])
@@ -45,62 +45,6 @@
 </div>
 
 <script>
-let editStep = 1;
-let editId   = null;
-
-function openEditTransaksi(id) {
-    editId = id;
-    fetch(`/admin/transaksi/${id}`)
-        .then(r => r.json())
-        .then(data => {
-            document.getElementById('edit_memberId').value      = data.member.id;
-            document.getElementById('edit_memberNama').value    = data.member.nama;
-            document.getElementById('edit_memberNoTelp').value  = data.member.no_telp;
-            document.getElementById('edit_memberAlamat').value  = data.member.alamat  ?? '';
-            document.getElementById('edit_memberEmail').value   = data.member.email   ?? '';
-            document.getElementById('edit_diserahkanJudul').value     = data.buku_diserahkan.judul;
-            document.getElementById('edit_diserahkanPengarang').value = data.buku_diserahkan.pengarang;
-            document.getElementById('edit_diserahkanPenerbit').value  = data.buku_diserahkan.penerbit  ?? '';
-            document.getElementById('edit_diserahkanKategori').value  = data.buku_diserahkan.kategori  ?? '';
-            document.getElementById('edit_diserahkanDeskripsi').value = data.buku_diserahkan.deskripsi ?? '';
-            document.getElementById('edit_isbnDiserahkan').value      = data.buku_diserahkan.isbn      ?? '';
-            setKondisi('edit', data.buku_diserahkan.kondisi ?? '');
-            setBukuDiterima('edit', data.buku_diterima);
-            document.getElementById('edit_catatanPetugas').value = data.catatan_petugas ?? '';
-            document.getElementById('modalEdit').classList.remove('hidden');
-            document.getElementById('modalEdit').classList.add('flex');
-            goToStep('edit', 1);
-        });
-}
-
-function closeEdit() {
-    document.getElementById('modalEdit').classList.add('hidden');
-    document.getElementById('modalEdit').classList.remove('flex');
-    editId = null;
-}
-
-function updateTransaksi() {
-    const payload = {
-        member: {
-            id:      document.getElementById('edit_memberId').value,
-            nama:    document.getElementById('edit_memberNama').value,
-            no_telp: document.getElementById('edit_memberNoTelp').value,
-            alamat:  document.getElementById('edit_memberAlamat').value,
-            email:   document.getElementById('edit_memberEmail').value,
-        },
-        buku_diserahkan: {
-            judul:     document.getElementById('edit_diserahkanJudul').value,
-            pengarang: document.getElementById('edit_diserahkanPengarang').value,
-            penerbit:  document.getElementById('edit_diserahkanPenerbit').value,
-            isbn:      document.getElementById('edit_isbnDiserahkan').value,
-            kategori:  document.getElementById('edit_diserahkanKategori').value,
-            kondisi:   document.querySelector('input[name="edit_diserahkanKondisi"]:checked')?.value,
-            deskripsi: document.getElementById('edit_diserahkanDeskripsi').value,
-        },
-        buku_diterima_id: document.getElementById('edit_bukuDiterimaId').value,
-        catatan_petugas:  document.getElementById('edit_catatanPetugas').value,
-    };
-
     const btn = document.getElementById('editBtnSimpan');
     btn.disabled = true;
     btn.textContent = 'Menyimpan...';

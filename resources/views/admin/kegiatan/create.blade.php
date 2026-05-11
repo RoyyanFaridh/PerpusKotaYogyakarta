@@ -29,7 +29,7 @@
                         value="{{ old('nama_kegiatan') }}"
                         placeholder="Contoh: Pameran Buku Nasional"
                         class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition
-                            @error('nama_kegiatan') border-danger-400 focus:ring-danger-200 @enderror"/>
+                            @error('nama_kegiatan') @enderror"/>
                     @error('nama_kegiatan')
                         <p class="text-[0.68rem] text-danger-500 mt-1">{{ $message }}</p>
                     @enderror
@@ -44,7 +44,7 @@
                         <input type="date" name="tanggal_mulai" required
                             value="{{ old('tanggal_mulai') }}"
                             class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition
-                                @error('tanggal_mulai') border-danger-400 focus:ring-danger-200 @enderror"/>
+                                @error('tanggal_mulai') @enderror"/>
                         @error('tanggal_mulai')
                             <p class="text-[0.68rem] text-danger-500 mt-1">{{ $message }}</p>
                         @enderror
@@ -54,7 +54,7 @@
                         <input type="time" name="jam_pelaksanaan"
                             value="{{ old('jam_pelaksanaan') }}"
                             class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition
-                                @error('jam_pelaksanaan') border-danger-400 focus:ring-danger-200 @enderror"/>
+                                @error('jam_pelaksanaan') @enderror"/>
                         @error('jam_pelaksanaan')
                             <p class="text-[0.68rem] text-danger-500 mt-1">{{ $message }}</p>
                         @enderror
@@ -64,7 +64,7 @@
                         <input type="time" name="jam_selesai"
                             value="{{ old('jam_selesai') }}"
                             class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition
-                                @error('jam_selesai') border-danger-400 focus:ring-danger-200 @enderror"/>
+                                @error('jam_selesai') @enderror"/>
                         @error('jam_selesai')
                             <p class="text-[0.68rem] text-danger-500 mt-1">{{ $message }}</p>
                         @enderror
@@ -77,7 +77,7 @@
                     <textarea name="deskripsi" rows="3"
                         placeholder="Jelaskan kegiatan secara singkat..."
                         class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition resize-none
-                            @error('deskripsi') border-danger-400 focus:ring-danger-200 @enderror">{{ old('deskripsi') }}</textarea>
+                            @error('deskripsi') @enderror">{{ old('deskripsi') }}</textarea>
                     @error('deskripsi')
                         <p class="text-[0.68rem] text-danger-500 mt-1">{{ $message }}</p>
                     @enderror

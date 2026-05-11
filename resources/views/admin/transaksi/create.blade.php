@@ -19,7 +19,7 @@
 
         @include('admin.transaksi._step-indicator', ['prefix' => 'create'])
 
-        <div class="px-6 py-5 min-h-[280px]">
+        <div class="px-6 py-5 min-h-70">
             @include('admin.transaksi._step-member',      ['prefix' => 'create'])
             @include('admin.transaksi._step-diserahkan',  ['prefix' => 'create'])
             @include('admin.transaksi._step-diterima',    ['prefix' => 'create'])
@@ -47,63 +47,6 @@
 </div>
 
 <script>
-let createStep = 1;
-
-function openModal() {
-    resetCreate();
-    document.getElementById('modalCreate').classList.remove('hidden');
-    document.getElementById('modalCreate').classList.add('flex');
-    goToStep('create', 1);
-}
-
-function closeCreate() {
-    document.getElementById('modalCreate').classList.add('hidden');
-    document.getElementById('modalCreate').classList.remove('flex');
-    resetCreate();
-}
-
-function resetCreate() {
-    createStep = 1;
-    const fields = [
-        'memberId', 'memberNama', 'memberNoTelp', 'memberAlamat', 'memberEmail',
-        'cariMemberInput', 'isbnDiserahkan', 'diserahkanJudul', 'diserahkanPengarang',
-        'diserahkanPenerbit', 'diserahkanKategori', 'diserahkanDeskripsi', 'catatanPetugas'
-    ];
-    fields.forEach(id => {
-        const el = document.getElementById('create_' + id);
-        if (el) el.value = '';
-    });
-    const info    = document.getElementById('create_isbnDiserahkanInfo');
-    const results = document.getElementById('create_cariMemberResults');
-    if (info)    info.textContent = '';
-    if (results) results.classList.add('hidden');
-    setKondisi('create', '');
-    resetBukuDiterima('create');
-}
-
-function simpanTransaksi() {
-    const payload = {
-        member: {
-            id:      document.getElementById('create_memberId').value || null,
-            nama:    document.getElementById('create_memberNama').value,
-            no_telp: document.getElementById('create_memberNoTelp').value,
-            alamat:  document.getElementById('create_memberAlamat').value,
-            email:   document.getElementById('create_memberEmail').value,
-        },
-        buku_diserahkan: {
-            judul:     document.getElementById('create_diserahkanJudul').value,
-            pengarang: document.getElementById('create_diserahkanPengarang').value,
-            penerbit:  document.getElementById('create_diserahkanPenerbit').value,
-            isbn:      document.getElementById('create_isbnDiserahkan').value,
-            kategori:  document.getElementById('create_diserahkanKategori').value,
-            kondisi:   document.querySelector('input[name="create_diserahkanKondisi"]:checked')?.value,
-            deskripsi: document.getElementById('create_diserahkanDeskripsi').value,
-        },
-        buku_diterima_id: document.getElementById('create_bukuDiterimaId').value,
-        catatan_petugas:  document.getElementById('create_catatanPetugas').value,
-        _token: '{{ csrf_token() }}',
-    };
-
     const btn = document.getElementById('createBtnSimpan');
     btn.disabled    = true;
     btn.textContent = 'Menyimpan...';

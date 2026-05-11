@@ -1,5 +1,5 @@
 <div id="modalHapusLokasi"
-     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+     class="hidden fixed inset-0 z-50 items-center justify-center bg-black/50 backdrop-blur-sm">
 
     <div class="absolute inset-0" onclick="tutupModalHapusLokasi()"></div>
 

@@ -60,7 +60,7 @@ function simpanTransaksi() {
     btn.disabled    = true;
     btn.textContent = 'Menyimpan...';
 
-    fetch('/admin/transaksi', {
+    fetch(document.querySelector('meta[name="route-transaksi-store"]').content,  {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json', 

@@ -41,7 +41,7 @@
                                 <p class="text-xs font-semibold text-neutral-800">{{ $lokasi->nama_lokasi }}</p>
                             </td>
                             <td class="px-5 py-3.5 text-left">
-                                <p class="text-xs text-neutral-500 max-w-[220px] whitespace-normal leading-relaxed mx-auto">{{ $lokasi->alamat }}</p>
+                                <p class="text-xs text-neutral-500 max-w-55 whitespace-normal leading-relaxed mx-auto">{{ $lokasi->alamat }}</p>
                             </td>
                             <td class="px-5 py-3.5 text-xs text-neutral-500 font-mono text-center">
                                 {{ $lokasi->no_telp ?? '-' }}
