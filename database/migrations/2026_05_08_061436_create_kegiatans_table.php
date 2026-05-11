@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('kegiatans', function (Blueprint $table) {
@@ -16,19 +13,12 @@ return new class extends Migration
             $table->string('nama_kegiatan');
             $table->text('deskripsi')->nullable();
             $table->date('tanggal_mulai');
-            $table->date('tanggal_selesai')->nullable();
-            $table->enum('status', [
-                'akan_berlangsung',
-                'sedang_berlangsung',
-                'selesai',
-            ])->default('akan_berlangsung');
+            $table->time('jam_pelaksanaan')->nullable();
+            $table->time('jam_selesai')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('kegiatans');

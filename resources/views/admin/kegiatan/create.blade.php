@@ -35,8 +35,8 @@
                     @enderror
                 </div>
 
-                {{-- Tanggal Mulai & Selesai --}}
-                <div class="grid grid-cols-2 gap-3">
+                {{-- Tanggal Mulai, Jam Pelaksanaan, Jam Selesai --}}
+                <div class="grid grid-cols-3 gap-3">
                     <div>
                         <label class="block text-xs font-medium text-neutral-600 mb-1">
                             Tanggal Mulai <span class="text-danger-500">*</span>
@@ -50,32 +50,25 @@
                         @enderror
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-neutral-600 mb-1">Tanggal Selesai</label>
-                        <input type="date" name="tanggal_selesai"
-                            value="{{ old('tanggal_selesai') }}"
+                        <label class="block text-xs font-medium text-neutral-600 mb-1">Jam Mulai</label>
+                        <input type="time" name="jam_pelaksanaan"
+                            value="{{ old('jam_pelaksanaan') }}"
                             class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition
-                                @error('tanggal_selesai') border-danger-400 focus:ring-danger-200 @enderror"/>
-                        @error('tanggal_selesai')
+                                @error('jam_pelaksanaan') border-danger-400 focus:ring-danger-200 @enderror"/>
+                        @error('jam_pelaksanaan')
                             <p class="text-[0.68rem] text-danger-500 mt-1">{{ $message }}</p>
                         @enderror
                     </div>
-                </div>
-
-                {{-- Status --}}
-                <div>
-                    <label class="block text-xs font-medium text-neutral-600 mb-1">
-                        Status <span class="text-danger-500">*</span>
-                    </label>
-                    <select name="status" required
-                        class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition bg-white
-                            @error('status') border-danger-400 focus:ring-danger-200 @enderror">
-                        <option value="akan_berlangsung"   {{ old('status', 'akan_berlangsung') === 'akan_berlangsung'   ? 'selected' : '' }}>Akan Berlangsung</option>
-                        <option value="sedang_berlangsung" {{ old('status') === 'sedang_berlangsung' ? 'selected' : '' }}>Sedang Berlangsung</option>
-                        <option value="selesai"            {{ old('status') === 'selesai'            ? 'selected' : '' }}>Selesai</option>
-                    </select>
-                    @error('status')
-                        <p class="text-[0.68rem] text-danger-500 mt-1">{{ $message }}</p>
-                    @enderror
+                    <div>
+                        <label class="block text-xs font-medium text-neutral-600 mb-1">Jam Selesai</label>
+                        <input type="time" name="jam_selesai"
+                            value="{{ old('jam_selesai') }}"
+                            class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition
+                                @error('jam_selesai') border-danger-400 focus:ring-danger-200 @enderror"/>
+                        @error('jam_selesai')
+                            <p class="text-[0.68rem] text-danger-500 mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
 
                 {{-- Deskripsi --}}

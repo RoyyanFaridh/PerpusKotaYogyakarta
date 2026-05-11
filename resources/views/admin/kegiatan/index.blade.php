@@ -15,10 +15,10 @@
         placeholder="Cari nama kegiatan, deskripsi..."
         search-id="searchInput"
         :stats="[
-            ['label' => 'Total',      'value' => $kegiatans->total(),                                              'color' => 'text-neutral-800'],
-            ['label' => 'Akan Datang','value' => $kegiatans->getCollection()->where('status','akan_berlangsung')->count(), 'color' => 'text-blue-600'],
-            ['label' => 'Berlangsung','value' => $kegiatans->getCollection()->where('status','sedang_berlangsung')->count(),'color' => 'text-yellow-600'],
-            ['label' => 'Selesai',    'value' => $kegiatans->getCollection()->where('status','selesai')->count(),           'color' => 'text-green-600'],
+            ['label' => 'Total',      'value' => $kegiatans->total(), 'color' => 'text-neutral-800'],
+            ['label' => 'Akan Datang','value' => $kegiatans->getCollection()->filter(fn($k) => $k->status_otomatis === 'akan_berlangsung')->count(),  'color' => 'text-blue-600'],
+            ['label' => 'Berlangsung','value' => $kegiatans->getCollection()->filter(fn($k) => $k->status_otomatis === 'sedang_berlangsung')->count(), 'color' => 'text-yellow-600'],
+            ['label' => 'Selesai',    'value' => $kegiatans->getCollection()->filter(fn($k) => $k->status_otomatis === 'selesai')->count(),            'color' => 'text-green-600'],
         ]"
     />
 
@@ -29,7 +29,7 @@
             <table class="w-full text-sm">
                 <thead>
                     <tr class="border-b border-neutral-100 bg-neutral-50">
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Tanggal</th>
+                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Tanggal & Jam</th>
                         <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Nama Kegiatan</th>
                         <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Deskripsi</th>
                         <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Status</th>
@@ -38,18 +38,29 @@
                 </thead>
                 <tbody class="divide-y divide-neutral-50" id="tableBody">
                     @forelse ($kegiatans as $kegiatan)
-                        <tr class="hover:bg-neutral-50 transition-colors">
+                        @php $statusOtomatis = $kegiatan->status_otomatis; @endphp
+                        <tr class="hover:bg-neutral-50 transition-colors {{ $statusOtomatis === 'selesai' ? 'opacity-50' : '' }}">
 
-                            {{-- Tanggal --}}
+                            {{-- Tanggal & Jam --}}
                             <td class="px-5 py-3.5 whitespace-nowrap">
                                 <div class="flex flex-col">
                                     <p class="text-xs font-semibold text-neutral-800">
                                         {{ \Carbon\Carbon::parse($kegiatan->tanggal_mulai)->format('d M Y') }}
                                     </p>
-                                    @if ($kegiatan->tanggal_selesai && $kegiatan->tanggal_selesai != $kegiatan->tanggal_mulai)
-                                        <p class="text-[0.68rem] text-neutral-400">
-                                            s/d {{ \Carbon\Carbon::parse($kegiatan->tanggal_selesai)->format('d M Y') }}
+                                    @if ($kegiatan->jam_pelaksanaan)
+                                        <p class="text-[0.68rem] text-neutral-400 flex items-center gap-1 mt-0.5">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                                            </svg>
+                                            {{ \Carbon\Carbon::parse($kegiatan->jam_pelaksanaan)->format('H:i') }}
+                                            @if ($kegiatan->jam_selesai)
+                                                – {{ \Carbon\Carbon::parse($kegiatan->jam_selesai)->format('H:i') }}
+                                            @endif
+                                            WIB
                                         </p>
+                                    @else
+                                        <p class="text-[0.68rem] text-neutral-300 mt-0.5">— WIB</p>
                                     @endif
                                 </div>
                             </td>
@@ -66,19 +77,19 @@
                                 </p>
                             </td>
 
-                            {{-- Status --}}
+                            {{-- Status Otomatis --}}
                             <td class="px-5 py-3.5">
                                 @php
                                     $statusMap = [
-                                        'akan_berlangsung'  => ['label' => 'Akan Berlangsung', 'class' => 'bg-blue-50 text-blue-600',   'dot' => 'bg-blue-400'],
+                                        'akan_berlangsung'  => ['label' => 'Akan Berlangsung', 'class' => 'bg-blue-50 text-blue-600',    'dot' => 'bg-blue-400'],
                                         'sedang_berlangsung'=> ['label' => 'Sedang Berlangsung','class' => 'bg-yellow-50 text-yellow-600','dot' => 'bg-yellow-400'],
-                                        'selesai'           => ['label' => 'Selesai',           'class' => 'bg-green-50 text-green-600', 'dot' => 'bg-green-400'],
+                                        'selesai'           => ['label' => 'Selesai',           'class' => 'bg-neutral-100 text-neutral-400','dot' => 'bg-neutral-300'],
                                     ];
-                                    $st = $statusMap[$kegiatan->status] ?? ['label' => $kegiatan->status, 'class' => 'bg-neutral-100 text-neutral-500', 'dot' => 'bg-neutral-400'];
+                                    $st = $statusMap[$statusOtomatis];
                                 @endphp
                                 <span class="inline-flex items-center gap-1.5 text-[0.68rem] font-medium px-2 py-0.5 rounded-full {{ $st['class'] }}">
                                     <span class="w-1.5 h-1.5 rounded-full {{ $st['dot'] }}
-                                        {{ $kegiatan->status === 'sedang_berlangsung' ? 'animate-pulse' : '' }}">
+                                        {{ $statusOtomatis === 'sedang_berlangsung' ? 'animate-pulse' : '' }}">
                                     </span>
                                     {{ $st['label'] }}
                                 </span>
@@ -138,7 +149,6 @@
 
 </div>
 
-{{-- Buka modal otomatis jika validasi gagal --}}
 @if ($errors->any())
     <script>document.addEventListener('DOMContentLoaded', bukaModalKegiatan);</script>
 @endif

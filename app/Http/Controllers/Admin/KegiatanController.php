@@ -10,7 +10,7 @@ class KegiatanController extends Controller
 {
     public function index()
     {
-        $kegiatans = Kegiatan::latest('tanggal_mulai')->paginate(10);
+        $kegiatans = Kegiatan::orderBy('tanggal_mulai', 'asc')->paginate(10);
 
         return view('admin.kegiatan.index', compact('kegiatans'));
     }
@@ -21,16 +21,16 @@ class KegiatanController extends Controller
             'nama_kegiatan'   => 'required|string|max:255',
             'deskripsi'       => 'nullable|string',
             'tanggal_mulai'   => 'required|date',
-            'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
-            'status'          => 'required|in:akan_berlangsung,sedang_berlangsung,selesai',
+            'jam_pelaksanaan' => 'nullable|date_format:H:i',
+            'jam_selesai'     => 'nullable|date_format:H:i|after:jam_pelaksanaan',
         ]);
 
         Kegiatan::create($request->only([
             'nama_kegiatan',
             'deskripsi',
             'tanggal_mulai',
-            'tanggal_selesai',
-            'status',
+            'jam_pelaksanaan',
+            'jam_selesai',
         ]));
 
         return redirect()->route('admin.kegiatan.index')
@@ -48,16 +48,16 @@ class KegiatanController extends Controller
             'nama_kegiatan'   => 'required|string|max:255',
             'deskripsi'       => 'nullable|string',
             'tanggal_mulai'   => 'required|date',
-            'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
-            'status'          => 'required|in:akan_berlangsung,sedang_berlangsung,selesai',
+            'jam_pelaksanaan' => 'nullable|date_format:H:i',
+            'jam_selesai'     => 'nullable|date_format:H:i|after:jam_pelaksanaan',
         ]);
 
         $kegiatan->update($request->only([
             'nama_kegiatan',
             'deskripsi',
             'tanggal_mulai',
-            'tanggal_selesai',
-            'status',
+            'jam_pelaksanaan',
+            'jam_selesai',
         ]));
 
         return redirect()->route('admin.kegiatan.index')
