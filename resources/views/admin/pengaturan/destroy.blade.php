@@ -1,16 +1,26 @@
-@extends('layouts.admin')
-@section('title', 'Hapus User')
-@section('page-title', 'Hapus User')
-@section('page-subtitle', 'Konfirmasi penghapusan akun')
+{{-- Modal Hapus User --}}
+<div id="modalHapusUser-{{ $user->id }}"
+     class="hidden fixed inset-0 z-50 items-center justify-center bg-black/50 backdrop-blur-sm px-4">
 
-@section('content')
-<div class="max-w-md">
-    <div class="relative overflow-hidden rounded-xl bg-white border border-neutral-200">
+    <div class="absolute inset-0" onclick="tutupModalHapusUser({{ $user->id }})"></div>
+
+    <div class="relative z-10 w-full max-w-md rounded-xl bg-white border border-neutral-200 overflow-hidden shadow-lg">
+
         <div class="absolute top-0 left-0 right-0 h-0.5 bg-danger-400"></div>
 
-        <div class="px-6 py-4 border-b border-neutral-100">
-            <h2 class="text-sm font-semibold text-neutral-800">Konfirmasi Hapus</h2>
-            <p class="text-xs text-neutral-400 mt-0.5">Tindakan ini tidak dapat dibatalkan</p>
+        {{-- Header --}}
+        <div class="flex items-center justify-between px-6 py-4 border-b border-neutral-100">
+            <div>
+                <h2 class="text-sm font-semibold text-neutral-800">Konfirmasi Hapus</h2>
+                <p class="text-xs text-neutral-400 mt-0.5">Tindakan ini tidak dapat dibatalkan</p>
+            </div>
+            <button type="button" onclick="tutupModalHapusUser({{ $user->id }})"
+                    class="p-1 rounded-lg text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
         </div>
 
         <div class="px-6 py-5 flex flex-col gap-4">
@@ -38,10 +48,10 @@
                 @csrf
                 @method('DELETE')
                 <div class="flex items-center justify-between pt-2 border-t border-neutral-100">
-                    <a href="{{ route('admin.pengaturan.index') }}"
-                       class="text-xs text-neutral-400 hover:text-neutral-600 transition">
+                    <button type="button" onclick="tutupModalHapusUser({{ $user->id }})"
+                            class="text-xs text-neutral-400 hover:text-neutral-600 transition">
                         ← Batal
-                    </a>
+                    </button>
                     <button type="submit"
                             class="px-4 py-2 text-xs font-medium rounded-lg bg-danger-500 text-white hover:bg-danger-600 transition">
                         Ya, Hapus User
@@ -52,4 +62,31 @@
         </div>
     </div>
 </div>
-@endsection
+
+<script>
+    function bukaModalHapusUser(id) {
+        const el = document.getElementById('modalHapusUser-' + id);
+        if (!el) return;
+        el.classList.remove('hidden');
+        el.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function tutupModalHapusUser(id) {
+        const el = document.getElementById('modalHapusUser-' + id);
+        if (!el) return;
+        el.classList.add('hidden');
+        el.classList.remove('flex');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('[id^="modalHapusUser-"]').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('flex');
+            });
+            document.body.style.overflow = '';
+        }
+    });
+</script>

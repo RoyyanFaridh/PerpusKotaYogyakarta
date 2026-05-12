@@ -101,13 +101,19 @@
 
 <script>
     function bukaModalLokasi() {
-        document.getElementById('modalTambahLokasi').classList.remove('hidden');
+        const el = document.getElementById('modalTambahLokasi');
+        el.classList.remove('hidden');
+        el.classList.add('flex');
         document.body.style.overflow = 'hidden';
     }
+
     function tutupModalLokasi() {
-        document.getElementById('modalTambahLokasi').classList.add('hidden');
+        const el = document.getElementById('modalTambahLokasi');
+        el.classList.add('hidden');
+        el.classList.remove('flex');
         document.body.style.overflow = '';
     }
+
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') tutupModalLokasi();
     });

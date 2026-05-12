@@ -47,11 +47,11 @@
                 <h2 class="text-sm font-semibold text-neutral-800">Daftar User</h2>
                 <p class="text-xs text-neutral-400 mt-0.5">Semua akun yang terdaftar di sistem</p>
             </div>
-            <a href="{{ route('admin.pengaturan.create') }}"
-               class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition">
+            <button type="button" onclick="bukaModalUser()"
+                    class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 Tambah User
-            </a>
+            </button>
         </div>
 
         <div class="overflow-x-auto">
@@ -97,25 +97,22 @@
                                                 Akses
                                             </button>
                                         @endif
-                                        <a href="{{ route('admin.pengaturan.edit', $user) }}"
-                                           class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50 transition-colors"
-                                           title="Edit">
+                                        <button type="button" onclick="bukaModalEditUser({{ $user->id }})"
+                                                class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50 transition-colors">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                                             <span>Edit</span>
-                                        </a>
-                                        <a href="{{ route('admin.pengaturan.destroy', $user) }}"
-                                           class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-danger-300 hover:text-danger-600 hover:bg-danger-50 transition-colors"
-                                           title="Hapus">
+                                        </button>
+                                        <button type="button" onclick="bukaModalHapusUser({{ $user->id }})"
+                                                class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-danger-300 hover:text-danger-600 hover:bg-danger-50 transition-colors">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
                                             <span>Hapus</span>
-                                        </a>
+                                        </button>
                                     @else
-                                        <a href="{{ route('admin.pengaturan.edit', $user) }}"
-                                           class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50 transition-colors"
-                                           title="Edit">
+                                        <button type="button" onclick="bukaModalEditUser({{ $user->id }})"
+                                                class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50 transition-colors">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                                             <span>Edit</span>
-                                        </a>
+                                        </button>
                                         <span class="text-[0.68rem] text-neutral-300 px-1">Anda</span>
                                     @endif
                                 </div>
@@ -187,6 +184,13 @@
             </table>
         </div>
     </div>
+
+    {{-- Semua Modal --}}
+    @include('admin.pengaturan.create')
+    @foreach ($users as $user)
+        @include('admin.pengaturan.edit', ['user' => $user])
+        @include('admin.pengaturan.destroy', ['user' => $user])
+    @endforeach
 
 </div>
 

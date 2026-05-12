@@ -107,36 +107,34 @@ class PengaturanController extends Controller
     public function updateUser(Request $request, User $user)
     {
         $validated = $request->validate([
-            'nama'  => ['required', 'string', 'max:255'],
-            'email' => ['nullable', 'email', 'max:255', 'unique:users,email,' . $user->id],
-            'no_hp' => ['nullable', 'string', 'max:15'],
-            'role'  => ['sometimes', 'in:superadmin,admin'],
+            'nama'     => ['required', 'string', 'max:255'],
+            'email'    => ['nullable', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'no_hp'    => ['nullable', 'string', 'max:15'],
+            'role'     => ['sometimes', 'in:superadmin,admin'],
+            'password' => ['nullable', 'confirmed', Password::min(8)],
         ], [
-            'nama.required' => 'Nama wajib diisi.',
-            'email.email'   => 'Format email tidak valid.',
-            'email.unique'  => 'Email sudah digunakan.',
-        ]);
-
-        $user->fill($validated)->save();
-
-        return redirect()->route('admin.pengaturan.edit', $user)
-                         ->with('success', 'Profil berhasil diperbarui.');
-    }
-
-    public function updateUserPassword(Request $request, User $user)
-    {
-        $request->validate([
-            'password' => ['required', 'confirmed', Password::min(8)],
-        ], [
-            'password.required'  => 'Password baru wajib diisi.',
+            'nama.required'      => 'Nama wajib diisi.',
+            'email.email'        => 'Format email tidak valid.',
+            'email.unique'       => 'Email sudah digunakan.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
             'password.min'       => 'Password minimal 8 karakter.',
         ]);
 
-        $user->forceFill(['password' => Hash::make($request->password)])->save();
+        $user->fill([
+            'nama'  => $validated['nama'],
+            'email' => $validated['email'] ?? null,
+            'no_hp' => $validated['no_hp'] ?? null,
+            'role'  => $validated['role'] ?? $user->role,
+        ]);
 
-        return redirect()->route('admin.pengaturan.edit', $user)
-                         ->with('success', 'Password berhasil diubah.');
+        if (!empty($validated['password'])) {
+            $user->password = Hash::make($validated['password']);
+        }
+
+        $user->save();
+
+        return redirect()->route('admin.pengaturan.index')
+                         ->with('success', 'User berhasil diperbarui.');
     }
 
     public function updatePermissions(Request $request, User $user)
