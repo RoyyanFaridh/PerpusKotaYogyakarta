@@ -36,7 +36,7 @@
                         'Umum/Komputer',
                         'Filsafat & Psikologi',
                         'Agama',
-                        'ILmu Sosial',
+                        'Ilmu Sosial',
                         'Bahasa',
                         'Sains & Matematika',
                         'Teknologi',
@@ -65,6 +65,20 @@
             <label class="block text-xs font-medium text-neutral-600 mb-1">Deskripsi</label>
             <textarea id="{{ $prefix }}_diserahkanDeskripsi" rows="2" placeholder="Catatan kondisi buku..."
                 class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition resize-none"></textarea>
+        </div>
+
+        {{-- Lokasi Penerimaan --}}
+        <div>
+            <label class="block text-xs font-medium text-neutral-600 mb-1">
+                Lokasi Perpustakaan <span class="text-danger-500">*</span>
+            </label>
+            <select id="{{ $prefix }}_lokasiId"
+                    class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition bg-white">
+                <option value="">-- Pilih Lokasi Perpustakaan --</option>
+                @foreach ($lokasis as $lokasi)
+                    <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
+                @endforeach
+            </select>
         </div>
     </div>
 </div>

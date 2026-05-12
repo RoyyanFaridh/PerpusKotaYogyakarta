@@ -75,9 +75,11 @@ class Buku extends Model
 
     public function scopeCari(Builder $query, string $keyword): Builder
     {
-        return $query->where('judul', 'like', "%{$keyword}%")
-                     ->orWhere('pengarang', 'like', "%{$keyword}%")
-                     ->orWhere('isbn', 'like', "%{$keyword}%");
+        return $query->where(function ($q) use ($keyword) {
+            $q->where('judul', 'like', "%{$keyword}%")
+            ->orWhere('pengarang', 'like', "%{$keyword}%")
+            ->orWhere('isbn', 'like', "%{$keyword}%");
+        });
     }
 
     public function getIsTersediaAttribute(): bool

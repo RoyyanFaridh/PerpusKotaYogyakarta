@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('judul');
             $table->string('pengarang');
             $table->string('penerbit')->nullable();
-            $table->string('isbn')->nullable()->unique();
+            $table->string('isbn')->nullable();
             $table->integer('tahun_terbit')->nullable();
             $table->string('tempat_terbit')->nullable();
             $table->text('resume')->nullable();

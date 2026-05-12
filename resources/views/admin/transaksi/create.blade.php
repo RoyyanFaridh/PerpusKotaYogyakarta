@@ -4,7 +4,6 @@
     <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
         <div class="absolute top-0 left-0 right-0 h-0.5 bg-primary-400"></div>
 
-        {{-- Header --}}
         <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-neutral-100">
             <div>
                 <h2 class="text-sm font-semibold text-neutral-800">Transaksi Baru</h2>
@@ -20,48 +19,31 @@
         @include('admin.transaksi._step-indicator', ['prefix' => 'create'])
 
         <div class="px-6 py-5 min-h-70">
-            @include('admin.transaksi._step-member',      ['prefix' => 'create'])
-            @include('admin.transaksi._step-diserahkan',  ['prefix' => 'create'])
-            @include('admin.transaksi._step-diterima',    ['prefix' => 'create'])
-            @include('admin.transaksi._step-konfirmasi',  ['prefix' => 'create'])
+            @include('admin.transaksi._step-member',     ['prefix' => 'create'])
+            @include('admin.transaksi._step-diserahkan', ['prefix' => 'create'])
+            @include('admin.transaksi._step-diterima',   ['prefix' => 'create'])
+            @include('admin.transaksi._step-konfirmasi', ['prefix' => 'create'])
         </div>
 
-        {{-- Footer --}}
         <div class="flex items-center justify-between px-6 py-4 border-t border-neutral-100 bg-neutral-50">
-            <button id="createBtnPrev" onclick="prevStep('create')" class="hidden text-xs font-medium px-4 py-2 rounded-lg border border-neutral-200 text-neutral-600 hover:bg-white transition-colors">
+            <button id="createBtnPrev" onclick="prevStep('create')"
+                    class="hidden text-xs font-medium px-4 py-2 rounded-lg border border-neutral-200 text-neutral-600 hover:bg-white transition-colors">
                 ← Sebelumnya
             </button>
             <div class="ml-auto flex gap-2">
-                <button onclick="closeCreate()" class="text-xs font-medium px-4 py-2 rounded-lg border border-neutral-200 text-neutral-500 hover:bg-white transition-colors">
+                <button onclick="closeCreate()"
+                        class="text-xs font-medium px-4 py-2 rounded-lg border border-neutral-200 text-neutral-500 hover:bg-white transition-colors">
                     Batal
                 </button>
-                <button id="createBtnNext" onclick="nextStep('create')" class="text-xs font-medium px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary-600 transition-colors">
+                <button id="createBtnNext" onclick="nextStep('create')"
+                        class="text-xs font-medium px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary-600 transition-colors">
                     Selanjutnya →
                 </button>
-                <button id="createBtnSimpan" onclick="simpanTransaksi()" class="hidden text-xs font-medium px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary-600 transition-colors">
+                <button id="createBtnSimpan" onclick="simpanTransaksi()"
+                        class="hidden text-xs font-medium px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary-600 transition-colors">
                     Simpan Transaksi
                 </button>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    const btn = document.getElementById('createBtnSimpan');
-    btn.disabled    = true;
-    btn.textContent = 'Menyimpan...';
-
-    fetch('{{ route("admin.transaksi.store") }}', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-        body: JSON.stringify(payload),
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) { closeCreate(); window.location.reload(); }
-        else alert(data.message ?? 'Terjadi kesalahan.');
-    })
-    .catch(() => alert('Gagal menyimpan transaksi.'))
-    .finally(() => { btn.disabled = false; btn.textContent = 'Simpan Transaksi'; });
-}
-</script>

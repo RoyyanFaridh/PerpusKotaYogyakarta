@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Transaksi;
+use App\Models\Lokasi;
 use App\Services\TransaksiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,23 +28,27 @@ class TransaksiController extends Controller
         $transaksiMingguIni = Transaksi::whereBetween('created_at', [now()->startOfWeek(), now()])->count();
         $transaksiBulanIni  = Transaksi::whereMonth('created_at', now()->month)->count();
 
+        $lokasis = Lokasi::all();
+
         return view('admin.transaksi.index', compact(
             'transaksi',
             'transaksiHariIni',
             'transaksiMingguIni',
             'transaksiBulanIni',
+            'lokasis',
         ));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'member.nama'                  => 'required|string|max:255',
-            'member.no_telp'               => 'required|string|max:15',
-            'buku_diserahkan.judul'        => 'required|string|max:255',
-            'buku_diserahkan.pengarang'    => 'required|string|max:255',
-            'buku_diserahkan.kondisi'      => 'required|in:baik,cukup,rusak',
-            'buku_diterima_id'             => 'required|exists:bukus,id',
+            'member.nama'               => 'required|string|max:255',
+            'member.no_telp'            => 'required|string|max:15',
+            'buku_diserahkan.judul'     => 'required|string|max:255',
+            'buku_diserahkan.pengarang' => 'required|string|max:255',
+            'buku_diserahkan.kondisi'   => 'required|in:baik,cukup,rusak',
+            'buku_diterima_id'          => 'required|exists:bukus,id',
+            'lokasi_id'                 => 'required|exists:lokasis,id',
         ]);
 
         try {
@@ -69,11 +74,21 @@ class TransaksiController extends Controller
             'member.nama'      => 'required|string|max:255',
             'member.no_telp'   => 'required|string|max:15',
             'buku_diterima_id' => 'required|exists:bukus,id',
+            // lokasi_id tidak divalidasi — lokasi sudah fix saat transaksi dibuat
         ]);
 
-        $this->service->update($id, $request->all());
+        try {
+            $this->service->update($id, $request->all());
 
-        return response()->json(['success' => true, 'message' => 'Transaksi berhasil diperbarui.']);
+            return response()->json(['success' => true, 'message' => 'Transaksi berhasil diperbarui.']);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+            ], 500);
+        }
     }
 
     public function destroy(int $id)
@@ -85,10 +100,13 @@ class TransaksiController extends Controller
 
     public function show(int $id)
     {
-        $transaksi = Transaksi::with(['member', 'bukuDiserahkan', 'bukuDiterima', 'user'])
+        $transaksi = Transaksi::with(['member', 'bukuDiserahkan.lokasi', 'bukuDiterima', 'user'])
             ->findOrFail($id);
 
-        return response()->json($transaksi);
+        return response()->json([
+            ...$transaksi->toArray(),
+            'lokasi_id' => $transaksi->bukuDiserahkan?->lokasi_id, // dari buku diserahkan
+        ]);
     }
 
     public function cariMember(Request $request)
@@ -112,5 +130,11 @@ class TransaksiController extends Controller
     {
         $buku = $this->service->cariBukuByIsbn($request->isbn ?? '');
         return response()->json($buku);
+    }
+
+    public function cariBukuJudul(Request $request)
+    {
+        $hasil = $this->service->cariBukuByJudul($request->keyword ?? '');
+        return response()->json($hasil);
     }
 }

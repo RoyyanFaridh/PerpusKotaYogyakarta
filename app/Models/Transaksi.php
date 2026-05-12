@@ -49,4 +49,19 @@ class Transaksi extends Model
     {
         return $query->where('member_id', $memberId);
     }
+
+    public function scopeHariIni(Builder $query): Builder
+    {
+        return $query->whereDate('tanggal_tukar', today());
+    }
+
+    public function scopeMingguIni(Builder $query): Builder
+    {
+        return $query->whereBetween('tanggal_tukar', [now()->startOfWeek(), now()]);
+    }
+
+    public function scopeBulanIni(Builder $query): Builder
+    {
+        return $query->whereMonth('tanggal_tukar', now()->month);
+    }
 }

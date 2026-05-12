@@ -26,40 +26,24 @@
         </div>
 
         <div class="flex items-center justify-between px-6 py-4 border-t border-neutral-100 bg-neutral-50">
-            <button id="editBtnPrev" onclick="prevStep('edit')" class="hidden text-xs font-medium px-4 py-2 rounded-lg border border-neutral-200 text-neutral-600 hover:bg-white transition-colors">
+            <button id="editBtnPrev" onclick="prevStep('edit')"
+                    class="hidden text-xs font-medium px-4 py-2 rounded-lg border border-neutral-200 text-neutral-600 hover:bg-white transition-colors">
                 ← Sebelumnya
             </button>
             <div class="ml-auto flex gap-2">
-                <button onclick="closeEdit()" class="text-xs font-medium px-4 py-2 rounded-lg border border-neutral-200 text-neutral-500 hover:bg-white transition-colors">
+                <button onclick="closeEdit()"
+                        class="text-xs font-medium px-4 py-2 rounded-lg border border-neutral-200 text-neutral-500 hover:bg-white transition-colors">
                     Batal
                 </button>
-                <button id="editBtnNext" onclick="nextStep('edit')" class="text-xs font-medium px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary-600 transition-colors">
+                <button id="editBtnNext" onclick="nextStep('edit')"
+                        class="text-xs font-medium px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary-600 transition-colors">
                     Selanjutnya →
                 </button>
-                <button id="editBtnSimpan" onclick="updateTransaksi()" class="hidden text-xs font-medium px-4 py-2 rounded-lg bg-warning-500 text-white hover:bg-warning-600 transition-colors">
+                <button id="editBtnSimpan" onclick="updateTransaksi()"
+                        class="hidden text-xs font-medium px-4 py-2 rounded-lg bg-warning-500 text-white hover:bg-warning-600 transition-colors">
                     Simpan Perubahan
                 </button>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    const btn = document.getElementById('editBtnSimpan');
-    btn.disabled = true;
-    btn.textContent = 'Menyimpan...';
-
-    fetch(`/admin/transaksi/${editId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-        body: JSON.stringify(payload),
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) { closeEdit(); window.location.reload(); }
-        else alert(data.message ?? 'Terjadi kesalahan.');
-    })
-    .catch(() => alert('Gagal menyimpan perubahan.'))
-    .finally(() => { btn.disabled = false; btn.textContent = 'Simpan Perubahan'; });
-}
-</script>

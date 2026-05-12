@@ -11,8 +11,10 @@ class TransaksiService
 {
     public function cariMember(string $keyword): \Illuminate\Database\Eloquent\Collection
     {
-        return Member::where('nama', 'like', "%{$keyword}%")
-            ->orWhere('no_telp', 'like', "%{$keyword}%")
+        return Member::where(function ($q) use ($keyword) {
+                $q->where('nama', 'like', "%{$keyword}%")
+                  ->orWhere('no_telp', 'like', "%{$keyword}%");
+            })
             ->limit(5)
             ->get(['id', 'nama', 'no_telp', 'alamat', 'email']);
     }
@@ -21,7 +23,7 @@ class TransaksiService
     {
         if (!empty($data['id'])) {
             $member = Member::findOrFail($data['id']);
-            $member->update(collect($data)->except('id')->toArray()); // ← exclude id
+            $member->update(collect($data)->except('id')->toArray());
             return $member->fresh();
         }
 
@@ -32,7 +34,24 @@ class TransaksiService
     {
         if (blank($isbn)) return null;
 
-        return Buku::where('isbn', $isbn)->first();
+        // ambil semua buku dengan isbn ini, kembalikan yang stok > 0 dulu
+        return Buku::where('isbn', $isbn)
+            ->where('stok', '>', 0)
+            ->with('lokasi')
+            ->first()
+            ?? Buku::where('isbn', $isbn)->with('lokasi')->first();
+    }
+
+    public function cariBukuByJudul(string $keyword): \Illuminate\Database\Eloquent\Collection
+    {
+        return Buku::where(function ($q) use ($keyword) {
+                $q->where('judul', 'like', "%{$keyword}%")
+                ->orWhere('pengarang', 'like', "%{$keyword}%");
+            })
+            ->where('stok', '>', 0) 
+            ->with('lokasi')
+            ->limit(10)
+            ->get(['id', 'judul', 'pengarang', 'isbn', 'stok', 'lokasi_id']);
     }
 
     public function simpan(array $data): Transaksi
@@ -44,10 +63,21 @@ class TransaksiService
 
             // 2. Simpan buku yang diserahkan member (sumber: tukar)
             $isbnDiserahkan = $data['buku_diserahkan']['isbn'] ?? null;
+            $lokasiId       = $data['lokasi_id'];
 
-            if ($isbnDiserahkan && $existing = Buku::where('isbn', $isbnDiserahkan)->first()) {
-                $bukuDiserahkan = $existing;
+            // cek apakah sudah ada buku dengan isbn + lokasi yang sama
+            $bukuDiserahkan = null;
+            if ($isbnDiserahkan) {
+                $bukuDiserahkan = Buku::where('isbn', $isbnDiserahkan)
+                    ->where('lokasi_id', $lokasiId)
+                    ->first();
+            }
+
+            if ($bukuDiserahkan) {
+                // sudah ada di lokasi ini, tambah stok saja
+                $bukuDiserahkan->tambahStok();
             } else {
+                // buat row baru (isbn baru, atau isbn sama tapi lokasi berbeda)
                 $bukuDiserahkan = Buku::create([
                     'judul'      => $data['buku_diserahkan']['judul'],
                     'pengarang'  => $data['buku_diserahkan']['pengarang'],
@@ -57,13 +87,15 @@ class TransaksiService
                     'kondisi'    => $data['buku_diserahkan']['kondisi'],
                     'deskripsi'  => $data['buku_diserahkan']['deskripsi'] ?? null,
                     'sumber'     => 'tukar',
-                    'stok'       => 0,
+                    'stok'       => 1, // langsung 1, tidak perlu tambahStok()
                     'member_id'  => $member->id,
                     'user_id'    => $data['user_id'],
+                    'lokasi_id'  => $lokasiId,
                 ]);
             }
 
             // 3. Kurangi stok buku yang diberikan ke member
+            // tidak perlu update lokasi_id — lokasi buku perpus tidak berubah
             $bukuDiterima = Buku::findOrFail($data['buku_diterima_id']);
             $bukuDiterima->kurangiStok();
 
@@ -77,9 +109,6 @@ class TransaksiService
                 'tanggal_tukar'      => now(),
             ]);
 
-            // 5. Opsi B: stok buku diserahkan +1 setelah transaksi selesai
-            $bukuDiserahkan->tambahStok();
-
             return $transaksi;
         });
     }
@@ -89,17 +118,17 @@ class TransaksiService
         return DB::transaction(function () use ($id, $data) {
             $transaksi = Transaksi::findOrFail($id);
 
-            // Kembalikan stok buku diterima lama
+            // kembalikan stok buku diterima lama
             $transaksi->bukuDiterima->tambahStok();
 
-            // Kurangi stok buku diterima baru
+            // kurangi stok buku diterima baru
             $bukuDiterima = Buku::findOrFail($data['buku_diterima_id']);
             $bukuDiterima->kurangiStok();
 
-            // Update member
+            // update member
             $this->simpanAtauUpdateMember($data['member']);
 
-            // Update transaksi
+            // update transaksi — tidak ada lokasi_id di tabel transaksis
             $transaksi->update([
                 'buku_diterima_id' => $bukuDiterima->id,
                 'catatan_petugas'  => $data['catatan_petugas'] ?? null,
@@ -114,11 +143,11 @@ class TransaksiService
         DB::transaction(function () use ($id) {
             $transaksi = Transaksi::findOrFail($id);
 
-            // Kembalikan stok buku diterima
+            // kembalikan stok buku diterima (buku perpus kembali +1)
             $transaksi->bukuDiterima->tambahStok();
 
-            // Kurangi stok buku diserahkan (hapus dari koleksi)
-            $transaksi->bukuDiserahkan->kurangiStok();
+            // buku diserahkan (dari member) TIDAK dikurangi stoknya
+            // karena buku itu tetap ada di koleksi perpustakaan
 
             $transaksi->delete();
         });

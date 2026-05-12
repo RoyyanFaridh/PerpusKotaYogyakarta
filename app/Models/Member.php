@@ -36,14 +36,14 @@ class Member extends Model
 
     public function scopeCari(Builder $query, string $keyword): Builder
     {
-        return $query->where('nama', 'like', "%{$keyword}%")
-                     ->orWhere('no_telp', 'like', "%{$keyword}%");
+        return $query->where(function ($q) use ($keyword) {
+            $q->where('nama', 'like', "%{$keyword}%")
+            ->orWhere('no_telp', 'like', "%{$keyword}%");
+        });
     }
 
     public function getTotalTukarAttribute(): int
     {
-        return $this->transaksiTukars()
-            ->where('status', 'disetujui')
-            ->count();
+        return $this->transaksis()->count();
     }
 }
