@@ -82,7 +82,7 @@
                             'Umum/Komputer',
                             'Filsafat & Psikologi',
                             'Agama',
-                            'ILmu Sosial',
+                            'Ilmu Sosial',
                             'Bahasa',
                             'Sains & Matematika',
                             'Teknologi',

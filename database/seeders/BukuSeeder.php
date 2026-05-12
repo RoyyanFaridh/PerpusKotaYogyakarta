@@ -84,7 +84,7 @@ class BukuSeeder extends Seeder
                 'tempat_terbit' => 'Jakarta',
                 'resume'        => 'Pelajaran tentang keuangan dan investasi dari dua sudut pandang ayah yang berbeda.',
                 'stok'          => 3,
-                'kategori'      => 'ILmu Sosial',
+                'kategori'      => 'Ilmu Sosial',
                 'lokasi_id'     => 3,
                 'user_id'       => 1,
             ],

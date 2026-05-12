@@ -3,12 +3,12 @@
         ['nama' => 'Umum/Komputer',        'jumlah' => 84,  'warna' => 'indigo'],
         ['nama' => 'Filsafat & Psikologi', 'jumlah' => 57,  'warna' => 'violet'],
         ['nama' => 'Agama',                'jumlah' => 43,  'warna' => 'rose'],
-        ['nama' => 'ILmu Sosial',          'jumlah' => 38,  'warna' => 'amber'],
+        ['nama' => 'Ilmu Sosial',          'jumlah' => 38,  'warna' => 'amber'],
         ['nama' => 'Bahasa',               'jumlah' => 29,  'warna' => 'teal'],
-        ['nama' => 'Sains & Matematika',   'jumlah' => 17,  'warna' => 'sky'],
-        ['nama' => 'Teknologi',            'jumlah' => 12,  'warna' => 'sky'],
-        ['nama' => 'Seni & Rekreasi',      'jumlah' => 9,   'warna' => 'sky'],
-        ['nama' => 'Literatur & Sastra',   'jumlah' => 7,   'warna' => 'sky'],
+        ['nama' => 'Sains & Matematika',   'jumlah' => 17,  'warna' => 'success'],
+        ['nama' => 'Teknologi',            'jumlah' => 12,  'warna' => 'danger'],
+        ['nama' => 'Seni & Rekreasi',      'jumlah' => 9,   'warna' => 'primary'],
+        ['nama' => 'Literatur & Sastra',   'jumlah' => 7,   'warna' => 'neutral'],
         ['nama' => 'Geografi & Sejarah',   'jumlah' => 5,   'warna' => 'sky'],
     ];
 
@@ -44,6 +44,26 @@
             'bar'   => 'bg-sky-400',
             'badge' => 'bg-sky-100 text-sky-500',
             'dot'   => 'bg-sky-400',
+        ],
+        'success' => [
+            'bar'   => 'bg-success-400',
+            'badge' => 'bg-success-50 text-success-700',
+            'dot'   => 'bg-success-400',
+        ],
+        'danger' => [
+            'bar'   => 'bg-danger-400',
+            'badge' => 'bg-danger-50 text-danger-700',
+            'dot'   => 'bg-danger-400',
+        ],
+        'primary' => [
+            'bar'   => 'bg-primary-400',
+            'badge' => 'bg-primary-50 text-primary-700',
+            'dot'   => 'bg-primary-400',
+        ],
+        'neutral' => [
+            'bar'   => 'bg-neutral-400',
+            'badge' => 'bg-neutral-100 text-neutral-600',
+            'dot'   => 'bg-neutral-400',
         ],
     ];
 

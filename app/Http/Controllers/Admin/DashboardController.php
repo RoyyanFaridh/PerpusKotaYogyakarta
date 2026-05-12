@@ -91,10 +91,10 @@ class DashboardController extends Controller
             'Agama'                => 'rose',
             'ILmu Sosial'          => 'amber',
             'Bahasa'               => 'teal',
-            'Sains & Matematika'   => 'sky',
-            'Teknologi'            => 'sky',
-            'Seni & Rekreasi'      => 'sky',
-            'Literatur & Sastra'   => 'sky',
+            'Sains & Matematika'   => 'success',
+            'Teknologi'            => 'danger',
+            'Seni & Rekreasi'      => 'primary',
+            'Literatur & Sastra'   => 'neutral',
             'Geografi & Sejarah'   => 'sky',
         ];
 
