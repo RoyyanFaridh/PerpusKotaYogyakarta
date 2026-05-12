@@ -19,13 +19,11 @@ class DashboardController extends Controller
             ? round((($transaksiHariIni - $transaksiKemarin) / $transaksiKemarin) * 100)
             : 0;
 
-        $bukuTersedia  = Buku::where('stok', '>', 0)->count();
-        $bukuMingguIni = Buku::whereBetween('created_at', [now()->startOfWeek(), now()])->count();
+        $bukuTersedia    = Buku::where('stok', '>', 0)->count();
+        $bukuMingguIni   = Buku::whereBetween('created_at', [now()->startOfWeek(), now()])->count();
         $perluVerifikasi = Transaksi::whereNull('tanggal_tukar')->count();
 
-        $kategoris        = $this->dummyKategoris();
-
-        $kategoris        = $this->dummyKategoris();
+        $kategoris        = $this->getKategoris();
         $aktivitas        = $this->getAktivitasTerkini();
         $transaksiTerbaru = Transaksi::with(['member', 'bukuDiserahkan', 'bukuDiterima'])
             ->latest()
@@ -85,15 +83,31 @@ class DashboardController extends Controller
             ->all();
     }
 
-    private function dummyKategoris(): array
+    private function getKategoris(): array
     {
-        return [
-            ['nama' => 'Novel',     'jumlah' => 84, 'warna' => 'primary'],
-            ['nama' => 'Sains',     'jumlah' => 57, 'warna' => 'success'],
-            ['nama' => 'Sejarah',   'jumlah' => 43, 'warna' => 'warning'],
-            ['nama' => 'Teknologi', 'jumlah' => 38, 'warna' => 'danger'],
-            ['nama' => 'Anak-anak', 'jumlah' => 29, 'warna' => 'primary'],
-            ['nama' => 'Lainnya',   'jumlah' => 17, 'warna' => 'neutral'],
+        $kategoriWarna = [
+            'Umum/Komputer'        => 'indigo',
+            'Filsafat & Psikologi' => 'violet',
+            'Agama'                => 'rose',
+            'ILmu Sosial'          => 'amber',
+            'Bahasa'               => 'teal',
+            'Sains & Matematika'   => 'sky',
+            'Teknologi'            => 'sky',
+            'Seni & Rekreasi'      => 'sky',
+            'Literatur & Sastra'   => 'sky',
+            'Geografi & Sejarah'   => 'sky',
         ];
+
+        return Buku::selectRaw('kategori, COUNT(*) as jumlah')
+            ->whereNotNull('kategori')
+            ->groupBy('kategori')
+            ->orderByDesc('jumlah')
+            ->get()
+            ->map(fn ($row) => [
+                'nama'   => $row->kategori,
+                'jumlah' => (int) $row->jumlah,
+                'warna'  => $kategoriWarna[$row->kategori] ?? 'sky',
+            ])
+            ->all();
     }
 }

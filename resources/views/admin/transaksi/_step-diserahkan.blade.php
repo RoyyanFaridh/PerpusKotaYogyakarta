@@ -32,7 +32,18 @@
                 <select id="{{ $prefix }}_diserahkanKategori"
                     class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition bg-white">
                     <option value="">Pilih kategori</option>
-                    @foreach (['Novel','Sains','Sejarah','Teknologi','Anak-anak','Lainnya'] as $kat)
+                    @foreach ([
+                        'Umum/Komputer',
+                        'Filsafat & Psikologi',
+                        'Agama',
+                        'ILmu Sosial',
+                        'Bahasa',
+                        'Sains & Matematika',
+                        'Teknologi',
+                        'Seni & Rekreasi',
+                        'Literatur & Sastra',
+                        'Geografi & Sejarah',
+                    ] as $kat)
                         <option value="{{ $kat }}">{{ $kat }}</option>
                     @endforeach
                 </select>

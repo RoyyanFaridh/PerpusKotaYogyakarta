@@ -4,6 +4,23 @@
 @section('page-subtitle', 'Koleksi buku perpustakaan dan buku tukar')
 
 @section('content')
+
+@php
+$categoryColorMap = [
+    'Umum/Komputer'     => 'bg-indigo-50 text-indigo-700',
+    'Filsafat & Psikologi'     => 'bg-violet-50 text-violet-700',
+    'Agama'   => 'bg-rose-50 text-rose-700',
+    'ILmu Sosial' => 'bg-amber-50 text-amber-700',
+    'Bahasa' => 'bg-teal-50 text-teal-700',
+    'Sains & Matematika'   => 'bg-sky-100 text-sky-500',
+    'Teknologi'   => 'bg-sky-100 text-sky-500',
+    'Seni & Rekreasi'   => 'bg-sky-100 text-sky-500',
+    'Literatur & Sastra'   => 'bg-sky-100 text-sky-500',
+    'Geografi & Sejarah'   => 'bg-sky-100 text-sky-500',
+    
+];
+@endphp
+
 <div class="flex flex-col gap-4">
 
     <x-admin.page-header
@@ -25,12 +42,16 @@
                 'name'        => 'kategori',
                 'placeholder' => 'Semua Kategori',
                 'options'     => [
-                    ['value' => 'Novel',     'label' => 'Novel'],
-                    ['value' => 'Sains',     'label' => 'Sains'],
-                    ['value' => 'Sejarah',   'label' => 'Sejarah'],
-                    ['value' => 'Teknologi', 'label' => 'Teknologi'],
-                    ['value' => 'Anak-anak', 'label' => 'Anak-anak'],
-                    ['value' => 'Lainnya',   'label' => 'Lainnya'],
+                    ['value' => 'Umum/Komputer',        'label' => 'Umum/Komputer'],
+                    ['value' => 'Filsafat & Psikologi', 'label' => 'Filsafat & Psikologi'],
+                    ['value' => 'Agama',                'label' => 'Agama'],
+                    ['value' => 'ILmu Sosial',          'label' => 'ILmu Sosial'],
+                    ['value' => 'Bahasa',               'label' => 'Bahasa'],
+                    ['value' => 'Sains & Matematika',   'label' => 'Sains & Matematika'],
+                    ['value' => 'Teknologi',            'label' => 'Teknologi'],
+                    ['value' => 'Seni & Rekreasi',      'label' => 'Seni & Rekreasi'],
+                    ['value' => 'Literatur & Sastra',   'label' => 'Literatur & Sastra'],
+                    ['value' => 'Geografi & Sejarah',   'label' => 'Geografi & Sejarah'],
                 ],
             ],
             [
@@ -74,25 +95,36 @@
                     @forelse ($bukus as $buku)
                         <tr class="hover:bg-neutral-50 transition-colors table-row-data"
                             data-search="{{ strtolower($buku->judul) }} {{ strtolower($buku->pengarang) }} {{ strtolower($buku->isbn ?? '') }}">
+
+                            {{-- Judul --}}
                             <td class="px-5 py-3.5">
                                 <p class="text-xs font-semibold text-neutral-800 max-w-50 truncate">{{ $buku->judul }}</p>
                                 <p class="text-[0.68rem] text-neutral-400 mt-0.5">{{ $buku->tahun_terbit ?? '-' }}</p>
                             </td>
+
+                            {{-- Pengarang --}}
                             <td class="px-5 py-3.5 text-xs text-neutral-600 whitespace-nowrap">
                                 {{ $buku->pengarang }}
                             </td>
+
+                            {{-- ISBN --}}
                             <td class="px-5 py-3.5 text-xs font-mono text-neutral-500">
                                 {{ $buku->isbn ?? '-' }}
                             </td>
+
+                            {{-- Kategori --}}
                             <td class="px-5 py-3.5">
                                 @if ($buku->kategori)
-                                    <span class="text-[0.68rem] font-medium px-2 py-0.5 rounded-full bg-primary-50 text-primary-700">
+                                    @php $catClass = $categoryColorMap[$buku->kategori] ?? 'bg-neutral-100 text-neutral-500'; @endphp
+                                    <span class="text-[0.68rem] font-medium px-2 py-0.5 rounded-full {{ $catClass }}">
                                         {{ $buku->kategori }}
                                     </span>
                                 @else
                                     <span class="text-[0.68rem] text-neutral-400">-</span>
                                 @endif
                             </td>
+
+                            {{-- Sumber --}}
                             <td class="px-5 py-3.5">
                                 @if ($buku->sumber === 'perpus')
                                     <span class="text-[0.68rem] font-medium px-2 py-0.5 rounded-full bg-primary-50 text-primary-700">Perpus</span>
@@ -100,6 +132,8 @@
                                     <span class="text-[0.68rem] font-medium px-2 py-0.5 rounded-full bg-warning-50 text-warning-700">Tukar</span>
                                 @endif
                             </td>
+
+                            {{-- Stok --}}
                             <td class="px-5 py-3.5">
                                 @if ($buku->stok > 0)
                                     <span class="text-[0.68rem] font-medium px-2 py-0.5 rounded-full bg-success-50 text-success-700">{{ $buku->stok }} tersedia</span>
@@ -107,29 +141,32 @@
                                     <span class="text-[0.68rem] font-medium px-2 py-0.5 rounded-full bg-danger-50 text-danger-700">Habis</span>
                                 @endif
                             </td>
+
+                            {{-- Lokasi --}}
                             <td class="px-5 py-3.5 text-xs text-neutral-500 whitespace-nowrap">
                                 {{ $buku->lokasi?->nama_lokasi ?? '-' }}
                             </td>
+
+                            {{-- Aksi --}}
                             <td class="px-5 py-3.5">
                                 <div class="flex items-center justify-end gap-1.5">
-                                    {{-- Edit --}}
                                     <button type="button"
                                         onclick="bukaModalEditBuku({{ json_encode([
-                                            'id'          => $buku->id,
-                                            'judul'       => $buku->judul,
-                                            'pengarang'   => $buku->pengarang,
-                                            'penerbit'    => $buku->penerbit,
-                                            'isbn'        => $buku->isbn,
-                                            'tahun_terbit'=> $buku->tahun_terbit,
+                                            'id'           => $buku->id,
+                                            'judul'        => $buku->judul,
+                                            'pengarang'    => $buku->pengarang,
+                                            'penerbit'     => $buku->penerbit,
+                                            'isbn'         => $buku->isbn,
+                                            'tahun_terbit' => $buku->tahun_terbit,
                                             'tempat_terbit'=> $buku->tempat_terbit,
-                                            'resume'      => $buku->resume,
-                                            'stok'        => $buku->stok,
-                                            'kategori'    => $buku->kategori,
-                                            'sumber'      => $buku->sumber,
-                                            'kondisi'     => $buku->kondisi,
-                                            'deskripsi'   => $buku->deskripsi,
-                                            'lokasi_id'   => $buku->lokasi_id,
-                                            'member_id'   => $buku->member_id,
+                                            'resume'       => $buku->resume,
+                                            'stok'         => $buku->stok,
+                                            'kategori'     => $buku->kategori,
+                                            'sumber'       => $buku->sumber,
+                                            'kondisi'      => $buku->kondisi,
+                                            'deskripsi'    => $buku->deskripsi,
+                                            'lokasi_id'    => $buku->lokasi_id,
+                                            'member_id'    => $buku->member_id,
                                         ]) }})"
                                         class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -139,7 +176,6 @@
                                         <span>Edit</span>
                                     </button>
 
-                                    {{-- Hapus --}}
                                     <button type="button"
                                         onclick="bukaModalHapusBuku(
                                             '{{ route('admin.buku.destroy', $buku) }}',
@@ -156,6 +192,7 @@
                                     </button>
                                 </div>
                             </td>
+
                         </tr>
                     @empty
                         <tr>
@@ -195,7 +232,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // Client-side search
     const searchInput = document.getElementById('searchInput');
     const rows        = document.querySelectorAll('.table-row-data');
     const noResultRow = document.getElementById('noResultRow');

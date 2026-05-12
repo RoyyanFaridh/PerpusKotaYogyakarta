@@ -23,7 +23,8 @@
         </div>
 
         {{-- Form --}}
-        <form id="formEditBuku" method="POST" action="" class="px-6 py-5 flex flex-col gap-4 max-h-[75vh] overflow-y-auto custom-scroll">
+        <form id="formEditBuku" method="POST" action=""
+              class="px-6 py-5 flex flex-col gap-4 max-h-[75vh] overflow-y-auto custom-scroll">
             @csrf
             @method('PUT')
 
@@ -89,9 +90,24 @@
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label for="edit_kategori" class="text-xs font-medium text-neutral-700">Kategori</label>
-                    <input type="text" id="edit_kategori" name="kategori"
-                           placeholder="Contoh: Fiksi"
-                           class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
+                    <select id="edit_kategori" name="kategori"
+                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
+                        <option value="">Pilih kategori</option>
+                        @foreach ([
+                            'Umum/Komputer',
+                            'Filsafat & Psikologi',
+                            'Agama',
+                            'ILmu Sosial',
+                            'Bahasa',
+                            'Sains & Matematika',
+                            'Teknologi',
+                            'Seni & Rekreasi',
+                            'Literatur & Sastra',
+                            'Geografi & Sejarah',
+                        ] as $kat)
+                            <option value="{{ $kat }}">{{ $kat }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
 
@@ -100,7 +116,7 @@
                 <div class="flex flex-col gap-1.5">
                     <label for="edit_sumber" class="text-xs font-medium text-neutral-700">Sumber</label>
                     <select id="edit_sumber" name="sumber"
-                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
+                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
                         <option value="perpus">Perpustakaan</option>
                         <option value="tukar">Tukar</option>
                     </select>
@@ -108,7 +124,7 @@
                 <div class="flex flex-col gap-1.5">
                     <label for="edit_kondisi" class="text-xs font-medium text-neutral-700">Kondisi</label>
                     <select id="edit_kondisi" name="kondisi"
-                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
+                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
                         <option value="">-- Pilih Kondisi --</option>
                         <option value="baik">Baik</option>
                         <option value="cukup">Cukup</option>
@@ -122,7 +138,7 @@
                 <div class="flex flex-col gap-1.5">
                     <label for="edit_lokasi_id" class="text-xs font-medium text-neutral-700">Lokasi</label>
                     <select id="edit_lokasi_id" name="lokasi_id"
-                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
+                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
                         <option value="">-- Pilih Lokasi --</option>
                         @foreach ($lokasis as $lokasi)
                             <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
@@ -132,7 +148,7 @@
                 <div class="flex flex-col gap-1.5">
                     <label for="edit_member_id" class="text-xs font-medium text-neutral-700">Member</label>
                     <select id="edit_member_id" name="member_id"
-                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
+                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
                         <option value="">-- Pilih Member --</option>
                         @foreach ($members as $member)
                             <option value="{{ $member->id }}">{{ $member->nama }}</option>
@@ -191,12 +207,16 @@
         document.getElementById('edit_lokasi_id').value     = data.lokasi_id ?? '';
         document.getElementById('edit_member_id').value     = data.member_id ?? '';
 
-        document.getElementById('modalEditBuku').classList.remove('hidden');
+        const el = document.getElementById('modalEditBuku');
+        el.classList.remove('hidden');
+        el.classList.add('flex');
         document.body.style.overflow = 'hidden';
     }
 
     function tutupModalEditBuku() {
-        document.getElementById('modalEditBuku').classList.add('hidden');
+        const el = document.getElementById('modalEditBuku');
+        el.classList.add('hidden');
+        el.classList.remove('flex');
         document.body.style.overflow = '';
     }
 

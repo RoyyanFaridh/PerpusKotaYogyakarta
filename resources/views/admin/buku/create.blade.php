@@ -23,7 +23,7 @@
         </div>
 
         {{-- Form --}}
-        <form method="POST" action="{{ route('admin.buku.store') }}"
+        <form id="formTambahBuku" method="POST" action="{{ route('admin.buku.store') }}"
               class="px-6 py-5 flex flex-col gap-4 max-h-[75vh] overflow-y-auto custom-scroll">
             @csrf
 
@@ -31,13 +31,15 @@
             <div class="grid grid-cols-2 gap-3">
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs font-medium text-neutral-700">Judul <span class="text-danger-500">*</span></label>
-                    <input type="text" name="judul" required placeholder="Judul buku"
+                    <input type="text" name="judul" id="tambah_judul" placeholder="Judul buku"
                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
+                    <p id="err_judul" class="hidden text-[0.68rem] text-danger-500">Judul buku wajib diisi.</p>
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs font-medium text-neutral-700">Pengarang <span class="text-danger-500">*</span></label>
-                    <input type="text" name="pengarang" required placeholder="Nama pengarang"
+                    <input type="text" name="pengarang" id="tambah_pengarang" placeholder="Nama pengarang"
                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
+                    <p id="err_pengarang" class="hidden text-[0.68rem] text-danger-500">Pengarang wajib diisi.</p>
                 </div>
             </div>
 
@@ -76,15 +78,27 @@
                     <select name="kategori"
                             class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
                         <option value="">Pilih kategori</option>
-                        @foreach (['Novel','Sains','Sejarah','Teknologi','Anak-anak','Lainnya'] as $kat)
+                        @foreach ([
+                            'Umum/Komputer',
+                            'Filsafat & Psikologi',
+                            'Agama',
+                            'ILmu Sosial',
+                            'Bahasa',
+                            'Sains & Matematika',
+                            'Teknologi',
+                            'Seni & Rekreasi',
+                            'Literatur & Sastra',
+                            'Geografi & Sejarah',
+                        ] as $kat)
                             <option value="{{ $kat }}">{{ $kat }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs font-medium text-neutral-700">Stok <span class="text-danger-500">*</span></label>
-                    <input type="number" name="stok" required min="0" value="0"
+                    <input type="number" name="stok" id="tambah_stok" min="0" value="0"
                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
+                    <p id="err_stok" class="hidden text-[0.68rem] text-danger-500">Stok wajib diisi dan tidak boleh nol.</p>
                 </div>
             </div>
 
@@ -92,11 +106,13 @@
             <div class="grid grid-cols-2 gap-3">
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs font-medium text-neutral-700">Sumber <span class="text-danger-500">*</span></label>
-                    <select name="sumber" required
+                    <select name="sumber" id="tambah_sumber"
                             class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
+                        <option value="">Pilih sumber</option>
                         <option value="perpus">Perpustakaan</option>
                         <option value="tukar">Tukar</option>
                     </select>
+                    <p id="err_sumber" class="hidden text-[0.68rem] text-danger-500">Sumber wajib dipilih.</p>
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs font-medium text-neutral-700">Kondisi</label>
@@ -154,7 +170,7 @@
                         class="px-4 py-2 text-xs font-medium rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-50 transition">
                     Batal
                 </button>
-                <button type="submit"
+                <button type="button" onclick="submitTambahBuku()"
                         class="px-4 py-2 text-xs font-medium rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition">
                     Simpan Buku
                 </button>
@@ -165,13 +181,65 @@
 
 <script>
     function bukaModalBuku() {
-        document.getElementById('modalTambahBuku').classList.remove('hidden');
+        const el = document.getElementById('modalTambahBuku');
+        el.classList.remove('hidden');
+        el.classList.add('flex');
         document.body.style.overflow = 'hidden';
     }
+
     function tutupModalBuku() {
-        document.getElementById('modalTambahBuku').classList.add('hidden');
+        const el = document.getElementById('modalTambahBuku');
+        el.classList.add('hidden');
+        el.classList.remove('flex');
         document.body.style.overflow = '';
+        resetErrorTambahBuku();
     }
+
+    function resetErrorTambahBuku() {
+        ['judul', 'pengarang', 'stok', 'sumber'].forEach(field => {
+            const err = document.getElementById('err_' + field);
+            const input = document.getElementById('tambah_' + field);
+            if (err) err.classList.add('hidden');
+            if (input) input.classList.remove('border-danger-400', 'focus:ring-danger-200', 'focus:border-danger-400');
+        });
+    }
+
+    function setError(fieldId, errId, show) {
+        const input = document.getElementById(fieldId);
+        const err   = document.getElementById(errId);
+        if (!input || !err) return;
+        if (show) {
+            err.classList.remove('hidden');
+            input.classList.add('border-danger-400', 'focus:ring-danger-200', 'focus:border-danger-400');
+            input.classList.remove('border-neutral-200');
+        } else {
+            err.classList.add('hidden');
+            input.classList.remove('border-danger-400', 'focus:ring-danger-200', 'focus:border-danger-400');
+            input.classList.add('border-neutral-200');
+        }
+    }
+
+    function submitTambahBuku() {
+        const judul    = document.getElementById('tambah_judul').value.trim();
+        const pengarang = document.getElementById('tambah_pengarang').value.trim();
+        const stok     = document.getElementById('tambah_stok').value;
+        const sumber   = document.getElementById('tambah_sumber').value;
+
+        const errJudul     = !judul;
+        const errPengarang = !pengarang;
+        const errStok = stok === '' || Number(stok) <= 0;
+        const errSumber    = !sumber;
+
+        setError('tambah_judul',     'err_judul',     errJudul);
+        setError('tambah_pengarang', 'err_pengarang', errPengarang);
+        setError('tambah_stok',      'err_stok',      errStok);
+        setError('tambah_sumber',    'err_sumber',    errSumber);
+
+        if (errJudul || errPengarang || errStok || errSumber) return;
+
+        document.getElementById('formTambahBuku').submit();
+    }
+
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') tutupModalBuku();
     });

@@ -47,12 +47,16 @@
     function bukaModalHapusBuku(action, nama) {
         document.getElementById('formHapusBuku').action = action;
         document.getElementById('hapusBukuNama').textContent = nama;
-        document.getElementById('modalHapusBuku').classList.remove('hidden');
+        const el = document.getElementById('modalHapusBuku');
+        el.classList.remove('hidden');
+        el.classList.add('flex');
         document.body.style.overflow = 'hidden';
     }
 
     function tutupModalHapusBuku() {
-        document.getElementById('modalHapusBuku').classList.add('hidden');
+        const el = document.getElementById('modalHapusBuku');
+        el.classList.add('hidden');
+        el.classList.remove('flex');
         document.body.style.overflow = '';
     }
 
