@@ -35,6 +35,7 @@
                 <input type="text" id="edit_nama_lokasi" name="nama_lokasi"
                        placeholder="Contoh: Perpustakaan Pusat"
                        class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
+                <p id="edit_err_nama_lokasi" class="hidden text-xs text-danger-500">Nama lokasi wajib diisi.</p>
             </div>
 
             {{-- Alamat --}}
@@ -45,6 +46,7 @@
                 <textarea id="edit_alamat" name="alamat" rows="3"
                           placeholder="Masukkan alamat lengkap lokasi"
                           class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition resize-none"></textarea>
+                <p id="edit_err_alamat" class="hidden text-xs text-danger-500">Alamat wajib diisi.</p>
             </div>
 
             {{-- No. Telepon --}}
@@ -67,6 +69,7 @@
                         <option value="{{ $user->id }}">{{ $user->nama }}</option>
                     @endforeach
                 </select>
+                <p id="edit_err_user_id" class="hidden text-xs text-danger-500">Penanggung jawab wajib dipilih.</p>
             </div>
 
             {{-- Actions --}}
@@ -75,7 +78,7 @@
                         class="px-4 py-2 text-xs font-medium rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-50 transition">
                     Batal
                 </button>
-                <button type="submit"
+                <button type="button" onclick="submitEditLokasi()"
                         class="px-4 py-2 text-xs font-medium rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition">
                     Simpan Perubahan
                 </button>
@@ -85,22 +88,79 @@
 </div>
 
 <script>
+    const editLokasiFields = [
+        { fieldId: 'edit_nama_lokasi', errId: 'edit_err_nama_lokasi' },
+        { fieldId: 'edit_alamat',      errId: 'edit_err_alamat'      },
+        { fieldId: 'edit_user_id',     errId: 'edit_err_user_id'     },
+    ];
+
+    function resetErrorsEditLokasi() {
+        editLokasiFields.forEach(({ fieldId, errId }) => {
+            const input = document.getElementById(fieldId);
+            const err   = document.getElementById(errId);
+            if (input) {
+                input.classList.remove('border-danger-400', 'bg-danger-50');
+                input.classList.add('border-neutral-200');
+            }
+            if (err) err.classList.add('hidden');
+        });
+    }
+
+    function setErrorEditLokasi(fieldId, errId, show, msg) {
+        const input = document.getElementById(fieldId);
+        const err   = document.getElementById(errId);
+        if (!input || !err) return;
+        if (show) {
+            if (msg) err.textContent = msg;
+            err.classList.remove('hidden');
+            input.classList.add('border-danger-400', 'bg-danger-50');
+            input.classList.remove('border-neutral-200');
+        } else {
+            err.classList.add('hidden');
+            input.classList.remove('border-danger-400', 'bg-danger-50');
+            input.classList.add('border-neutral-200');
+        }
+    }
+
     function bukaModalEditLokasi(data) {
         document.getElementById('formEditLokasi').action = `/admin/lokasi/${data.id}`;
-        document.getElementById('edit_nama_lokasi').value  = data.nama_lokasi ?? '';
-        document.getElementById('edit_alamat').value       = data.alamat ?? '';
-        document.getElementById('edit_no_telp').value      = data.no_telp ?? '';
+        document.getElementById('edit_nama_lokasi').value = data.nama_lokasi ?? '';
+        document.getElementById('edit_alamat').value      = data.alamat      ?? '';
+        document.getElementById('edit_no_telp').value     = data.no_telp     ?? '';
+        document.getElementById('edit_user_id').value     = data.user_id     ?? '';
 
-        const select = document.getElementById('edit_user_id');
-        select.value = data.user_id ?? '';
+        resetErrorsEditLokasi();
 
-        document.getElementById('modalEditLokasi').classList.remove('hidden');
+        const modal = document.getElementById('modalEditLokasi');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
         document.body.style.overflow = 'hidden';
     }
 
     function tutupModalEditLokasi() {
-        document.getElementById('modalEditLokasi').classList.add('hidden');
+        const modal = document.getElementById('modalEditLokasi');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
         document.body.style.overflow = '';
+        resetErrorsEditLokasi();
+    }
+
+    function submitEditLokasi() {
+        const nama   = document.getElementById('edit_nama_lokasi').value.trim();
+        const alamat = document.getElementById('edit_alamat').value.trim();
+        const userId = document.getElementById('edit_user_id').value;
+
+        const errNama   = !nama;
+        const errAlamat = !alamat;
+        const errUser   = !userId;
+
+        setErrorEditLokasi('edit_nama_lokasi', 'edit_err_nama_lokasi', errNama,   'Nama lokasi wajib diisi.');
+        setErrorEditLokasi('edit_alamat',      'edit_err_alamat',      errAlamat, 'Alamat wajib diisi.');
+        setErrorEditLokasi('edit_user_id',     'edit_err_user_id',     errUser,   'Penanggung jawab wajib dipilih.');
+
+        if (errNama || errAlamat || errUser) return;
+
+        document.getElementById('formEditLokasi').submit();
     }
 
     document.addEventListener('keydown', function (e) {

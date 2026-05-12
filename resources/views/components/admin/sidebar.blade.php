@@ -174,7 +174,7 @@
             <span x-show="open" class="text-sm font-medium whitespace-nowrap"
                   x-transition:enter="transition-opacity duration-150"
                   x-transition:enter-start="opacity-0"
-                  x-transition:enter-end="opacity-100">Rencana</span>
+                  x-transition:enter-end="opacity-100">Kegiatan</span>
             <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Rencana Kegiatan</span>
         </a>
 

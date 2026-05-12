@@ -47,12 +47,17 @@
     function bukaModalHapusLokasi(action, nama) {
         document.getElementById('formHapusLokasi').action = action;
         document.getElementById('hapusLokasiNama').textContent = nama;
-        document.getElementById('modalHapusLokasi').classList.remove('hidden');
+
+        const modal = document.getElementById('modalHapusLokasi');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
         document.body.style.overflow = 'hidden';
     }
 
     function tutupModalHapusLokasi() {
-        document.getElementById('modalHapusLokasi').classList.add('hidden');
+        const modal = document.getElementById('modalHapusLokasi');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
         document.body.style.overflow = '';
     }
 

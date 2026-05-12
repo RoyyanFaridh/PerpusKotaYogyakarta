@@ -16,7 +16,7 @@
             </button>
         </div>
 
-        <form method="POST" action="{{ route('admin.kegiatan.store') }}" class="overflow-y-auto">
+        <form id="formTambahKegiatan" method="POST" action="{{ route('admin.kegiatan.store') }}" class="overflow-y-auto">
             @csrf
             <div class="px-6 py-5 space-y-4">
 
@@ -25,14 +25,13 @@
                     <label class="block text-xs font-medium text-neutral-600 mb-1">
                         Nama Kegiatan <span class="text-danger-500">*</span>
                     </label>
-                    <input type="text" name="nama_kegiatan" required
+                    <input type="text" name="nama_kegiatan" id="tambah_nama_kegiatan"
                         value="{{ old('nama_kegiatan') }}"
                         placeholder="Contoh: Pameran Buku Nasional"
-                        class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition
-                            @error('nama_kegiatan') @enderror"/>
-                    @error('nama_kegiatan')
-                        <p class="text-[0.68rem] text-danger-500 mt-1">{{ $message }}</p>
-                    @enderror
+                        class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition"/>
+                    <p id="tambah_err_nama_kegiatan" class="hidden text-[0.68rem] text-danger-500 mt-1">
+                        Nama kegiatan wajib diisi.
+                    </p>
                 </div>
 
                 {{-- Tanggal Mulai, Jam Pelaksanaan, Jam Selesai --}}
@@ -41,33 +40,30 @@
                         <label class="block text-xs font-medium text-neutral-600 mb-1">
                             Tanggal Mulai <span class="text-danger-500">*</span>
                         </label>
-                        <input type="date" name="tanggal_mulai" required
+                        <input type="date" name="tanggal_mulai" id="tambah_tanggal_mulai"
                             value="{{ old('tanggal_mulai') }}"
-                            class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition
-                                @error('tanggal_mulai') @enderror"/>
-                        @error('tanggal_mulai')
-                            <p class="text-[0.68rem] text-danger-500 mt-1">{{ $message }}</p>
-                        @enderror
+                            class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition"/>
+                        <p id="tambah_err_tanggal_mulai" class="hidden text-[0.68rem] text-danger-500 mt-1">
+                            Tanggal mulai wajib diisi.
+                        </p>
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-neutral-600 mb-1">Jam Mulai</label>
-                        <input type="time" name="jam_pelaksanaan"
+                        <input type="time" name="jam_pelaksanaan" id="tambah_jam_pelaksanaan"
                             value="{{ old('jam_pelaksanaan') }}"
-                            class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition
-                                @error('jam_pelaksanaan') @enderror"/>
-                        @error('jam_pelaksanaan')
-                            <p class="text-[0.68rem] text-danger-500 mt-1">{{ $message }}</p>
-                        @enderror
+                            class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition"/>
+                        <p id="tambah_err_jam_pelaksanaan" class="hidden text-[0.68rem] text-danger-500 mt-1">
+                            Format jam tidak valid.
+                        </p>
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-neutral-600 mb-1">Jam Selesai</label>
-                        <input type="time" name="jam_selesai"
+                        <input type="time" name="jam_selesai" id="tambah_jam_selesai"
                             value="{{ old('jam_selesai') }}"
-                            class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition
-                                @error('jam_selesai') @enderror"/>
-                        @error('jam_selesai')
-                            <p class="text-[0.68rem] text-danger-500 mt-1">{{ $message }}</p>
-                        @enderror
+                            class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition"/>
+                        <p id="tambah_err_jam_selesai" class="hidden text-[0.68rem] text-danger-500 mt-1">
+                            Jam selesai harus setelah jam mulai.
+                        </p>
                     </div>
                 </div>
 
@@ -76,11 +72,7 @@
                     <label class="block text-xs font-medium text-neutral-600 mb-1">Deskripsi</label>
                     <textarea name="deskripsi" rows="3"
                         placeholder="Jelaskan kegiatan secara singkat..."
-                        class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition resize-none
-                            @error('deskripsi') @enderror">{{ old('deskripsi') }}</textarea>
-                    @error('deskripsi')
-                        <p class="text-[0.68rem] text-danger-500 mt-1">{{ $message }}</p>
-                    @enderror
+                        class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition resize-none">{{ old('deskripsi') }}</textarea>
                 </div>
 
             </div>
@@ -90,8 +82,8 @@
                     class="text-xs font-medium px-4 py-2 rounded-lg border border-neutral-200 text-neutral-500 hover:bg-white transition-colors">
                     Batal
                 </button>
-                <button type="submit"
-                    class="text-xs font-medium px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary-600 transition-colors">
+                <button type="button" onclick="submitTambahKegiatan()"
+                    class="text-xs font-medium px-4 py-2 rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-colors">
                     Simpan Kegiatan
                 </button>
             </div>
@@ -100,12 +92,96 @@
 </div>
 
 <script>
-function bukaModalKegiatan() {
-    document.getElementById('modalTambahKegiatan').classList.remove('hidden');
-    document.getElementById('modalTambahKegiatan').classList.add('flex');
-}
-function tutupModalKegiatan() {
-    document.getElementById('modalTambahKegiatan').classList.add('hidden');
-    document.getElementById('modalTambahKegiatan').classList.remove('flex');
-}
+    const kegiatanFields = [
+        { fieldId: 'tambah_nama_kegiatan',   errId: 'tambah_err_nama_kegiatan'   },
+        { fieldId: 'tambah_tanggal_mulai',   errId: 'tambah_err_tanggal_mulai'   },
+        { fieldId: 'tambah_jam_pelaksanaan', errId: 'tambah_err_jam_pelaksanaan' },
+        { fieldId: 'tambah_jam_selesai',     errId: 'tambah_err_jam_selesai'     },
+    ];
+
+    function resetErrorsKegiatan() {
+        kegiatanFields.forEach(({ fieldId, errId }) => {
+            const input = document.getElementById(fieldId);
+            const err   = document.getElementById(errId);
+            if (input) {
+                input.classList.remove('border-danger-400', 'bg-danger-50');
+                input.classList.add('border-neutral-200');
+            }
+            if (err) err.classList.add('hidden');
+        });
+    }
+
+    function bukaModalKegiatan() {
+        const el = document.getElementById('modalTambahKegiatan');
+        el.classList.remove('hidden');
+        el.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function tutupModalKegiatan() {
+        const el = document.getElementById('modalTambahKegiatan');
+        el.classList.add('hidden');
+        el.classList.remove('flex');
+        document.body.style.overflow = '';
+        resetErrorsKegiatan();
+    }
+
+    function setErrorKegiatan(fieldId, errId, show, msg) {
+        const input = document.getElementById(fieldId);
+        const err   = document.getElementById(errId);
+        if (!input || !err) return;
+        if (show) {
+            if (msg) err.textContent = msg;
+            err.classList.remove('hidden');
+            input.classList.add('border-danger-400', 'bg-danger-50');
+            input.classList.remove('border-neutral-200');
+        } else {
+            err.classList.add('hidden');
+            input.classList.remove('border-danger-400', 'bg-danger-50');
+            input.classList.add('border-neutral-200');
+        }
+    }
+
+    function submitTambahKegiatan() {
+        const nama       = document.getElementById('tambah_nama_kegiatan').value.trim();
+        const tanggal    = document.getElementById('tambah_tanggal_mulai').value;
+        const jamMulai   = document.getElementById('tambah_jam_pelaksanaan').value;
+        const jamSelesai = document.getElementById('tambah_jam_selesai').value;
+
+        const errNama       = !nama;
+        const errTanggal    = !tanggal;
+        const errJamSelesai = jamMulai && jamSelesai && jamSelesai <= jamMulai;
+
+        setErrorKegiatan('tambah_nama_kegiatan',   'tambah_err_nama_kegiatan',   errNama,       'Nama kegiatan wajib diisi.');
+        setErrorKegiatan('tambah_tanggal_mulai',   'tambah_err_tanggal_mulai',   errTanggal,    'Tanggal mulai wajib diisi.');
+        setErrorKegiatan('tambah_jam_pelaksanaan', 'tambah_err_jam_pelaksanaan', false,         null);
+        setErrorKegiatan('tambah_jam_selesai',     'tambah_err_jam_selesai',     errJamSelesai, 'Jam selesai harus setelah jam mulai.');
+
+        if (errNama || errTanggal || errJamSelesai) return;
+
+        document.getElementById('formTambahKegiatan').submit();
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') tutupModalKegiatan();
+    });
+
+    @if ($errors->hasAny(['nama_kegiatan', 'tanggal_mulai', 'jam_pelaksanaan', 'jam_selesai', 'deskripsi']))
+        document.addEventListener('DOMContentLoaded', () => {
+            bukaModalKegiatan();
+
+            @if ($errors->has('nama_kegiatan'))
+                setErrorKegiatan('tambah_nama_kegiatan', 'tambah_err_nama_kegiatan', true, '{{ $errors->first('nama_kegiatan') }}');
+            @endif
+            @if ($errors->has('tanggal_mulai'))
+                setErrorKegiatan('tambah_tanggal_mulai', 'tambah_err_tanggal_mulai', true, '{{ $errors->first('tanggal_mulai') }}');
+            @endif
+            @if ($errors->has('jam_pelaksanaan'))
+                setErrorKegiatan('tambah_jam_pelaksanaan', 'tambah_err_jam_pelaksanaan', true, '{{ $errors->first('jam_pelaksanaan') }}');
+            @endif
+            @if ($errors->has('jam_selesai'))
+                setErrorKegiatan('tambah_jam_selesai', 'tambah_err_jam_selesai', true, '{{ $errors->first('jam_selesai') }}');
+            @endif
+        });
+    @endif
 </script>
