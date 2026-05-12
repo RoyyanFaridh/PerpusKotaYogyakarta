@@ -26,9 +26,9 @@
             <table class="w-full text-sm">
                 <thead>
                     <tr class="border-b border-neutral-100 bg-neutral-50">
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">No. Telepon</th>
                         <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Nama</th>
                         <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Email</th>
+                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">No. Telepon</th>
                         <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Alamat</th>
                         <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">User</th>
                         <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Aksi</th>
@@ -38,13 +38,13 @@
                     @forelse ($members as $member)
                         <tr class="hover:bg-neutral-50 transition-colors">
                             <td class="px-5 py-3.5">
-                                <span class="text-xs font-mono font-semibold text-neutral-800">{{ $member->no_telp }}</span>
-                            </td>
-                            <td class="px-5 py-3.5">
                                 <p class="text-xs font-semibold text-neutral-800">{{ $member->nama }}</p>
                             </td>
                             <td class="px-5 py-3.5 text-xs text-neutral-600 text-center">
                                 {{ $member->email ?? '-' }}
+                            </td>
+                            <td class="px-5 py-3.5">
+                                <span class="text-xs font-mono font-semibold text-neutral-800">{{ $member->no_telp }}</span>
                             </td>
                             <td class="px-5 py-3.5">
                                 <p class="text-xs text-neutral-500 max-w-50 whitespace-normal leading-relaxed">{{ $member->alamat ?? '-' }}</p>
@@ -52,7 +52,7 @@
                             <td class="px-5 py-3.5 text-center">
                                 @if ($member->user)
                                     <span class="text-[0.68rem] font-medium px-2 py-0.5 rounded-full bg-primary-50 text-primary-700">
-                                        {{ $member->user->name }}
+                                        {{ $member->user->nama }}
                                     </span>
                                 @else
                                     <span class="text-[0.68rem] text-neutral-400">-</span>
@@ -68,6 +68,7 @@
                                                 'nama'    => $member->nama,
                                                 'email'   => $member->email,
                                                 'alamat'  => $member->alamat,
+                                                'user_id' => $member->user_id,
                                             ]) }})"
                                             class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50 transition-colors">
                                         <x-icons.edit/>

@@ -1,5 +1,5 @@
 <div id="modalEditMember"
-     class="hidden fixed inset-0 z-50 items-center justify-center bg-black/50 backdrop-blur-sm">
+     class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm px-4">
 
     {{-- Backdrop --}}
     <div class="absolute inset-0" onclick="tutupModalEdit()"></div>
@@ -29,14 +29,21 @@
             @csrf
             @method('PUT')
 
-            {{-- No. Telepon --}}
-            <div class="flex flex-col gap-1.5">
-                <label for="edit_no_telp" class="text-xs font-medium text-neutral-700">
-                    Nomor Telepon
-                </label>
-                <input type="text" id="edit_no_telp" name="no_telp"
-                       maxlength="15" placeholder="Contoh: 08123456789"
-                       class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition font-mono">
+            <div class="grid grid-cols-2 gap-3">
+                <div class="flex flex-col gap-1.5">
+                    <label for="edit_no_telp" class="text-xs font-medium text-neutral-700">
+                        Nomor Telepon
+                    </label>
+                    <input type="text" id="edit_no_telp" name="no_telp"
+                        maxlength="15" placeholder="Contoh: 08123456789"
+                        class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition font-mono">
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label for="edit_email" class="text-xs font-medium text-neutral-700">Email</label>
+                    <input type="email" id="edit_email" name="email"
+                        placeholder="contoh@email.com"
+                        class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
+                </div>
             </div>
 
             {{-- Nama --}}
@@ -46,14 +53,6 @@
                 </label>
                 <input type="text" id="edit_nama" name="nama"
                        placeholder="Masukkan nama lengkap"
-                       class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
-            </div>
-
-            {{-- Email --}}
-            <div class="flex flex-col gap-1.5">
-                <label for="edit_email" class="text-xs font-medium text-neutral-700">Email</label>
-                <input type="email" id="edit_email" name="email"
-                       placeholder="contoh@email.com"
                        class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
             </div>
 
@@ -70,12 +69,18 @@
                     User <span class="text-danger-500">*</span>
                 </label>
                 <select id="edit_user_id" name="user_id"
-                        class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
+                        class="w-full text-sm px-3.5 py-2.5 rounded-lg border {{ $errors->has('user_id') ? 'border-danger-400 bg-danger-50' : 'border-neutral-200' }} text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
                     <option value="">-- Pilih User --</option>
                     @foreach ($users as $user)
-                        <option value="{{ $user->id }}">{{ $user->nama }}</option>
+                        <option value="{{ $user->id }}"
+                            {{ old('user_id', $member->user_id) == $user->id ? 'selected' : '' }}>
+                            {{ $user->nama }}
+                        </option>
                     @endforeach
                 </select>
+                @error('user_id')
+                    <p class="text-xs text-danger-500">{{ $message }}</p>
+                @enderror
             </div>
 
             {{-- Actions --}}
@@ -109,12 +114,16 @@
 
         document.getElementById('formEditMember').action = editRouteBase + '/' + member.id;
 
-        document.getElementById('modalEditMember').classList.remove('hidden');
+        const modal = document.getElementById('modalEditMember');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
         document.body.style.overflow = 'hidden';
     }
 
     function tutupModalEdit() {
-        document.getElementById('modalEditMember').classList.add('hidden');
+        const modal = document.getElementById('modalEditMember');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
         document.body.style.overflow = '';
     }
 

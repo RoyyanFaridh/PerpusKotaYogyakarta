@@ -1,6 +1,5 @@
-{{-- Modal Konfirmasi Hapus Member --}}
 <div id="modalHapusMember"
-     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+     class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm px-4">
 
     {{-- Backdrop --}}
     <div class="absolute inset-0" onclick="tutupModalHapusMember()"></div>
@@ -53,12 +52,17 @@
     function bukaModalHapusMember(action, nama) {
         document.getElementById('formHapusMember').action = action;
         document.getElementById('hapusMemberNama').textContent = nama;
-        document.getElementById('modalHapusMember').classList.remove('hidden');
+
+        const modal = document.getElementById('modalHapusMember');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
         document.body.style.overflow = 'hidden';
     }
 
     function tutupModalHapusMember() {
-        document.getElementById('modalHapusMember').classList.add('hidden');
+        const modal = document.getElementById('modalHapusMember');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
         document.body.style.overflow = '';
     }
 

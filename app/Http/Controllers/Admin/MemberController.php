@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Member;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class MemberController extends Controller
 {
@@ -32,7 +31,7 @@ class MemberController extends Controller
             'no_telp' => ['required', 'string', 'max:15', 'unique:members,no_telp'],
             'nama'    => ['required', 'string', 'max:255'],
             'email'   => ['nullable', 'email', 'max:255'],
-            'alamat'  => ['nullable', 'string'],
+            'alamat'  => ['required', 'string'],
             'user_id' => ['required', 'exists:users,id'],
         ], [
             'no_telp.required' => 'Nomor telepon wajib diisi.',
@@ -44,12 +43,10 @@ class MemberController extends Controller
             'user_id.exists'   => 'User tidak ditemukan.',
         ]);
 
-        $validated['user_id'] = Auth::id();
-
         Member::create($validated);
 
         return redirect()->route('admin.member.index')
-                         ->with('success', 'Member berhasil ditambahkan.');
+                        ->with('success', 'Member berhasil ditambahkan.');
     }
 
     public function show(string $id)
