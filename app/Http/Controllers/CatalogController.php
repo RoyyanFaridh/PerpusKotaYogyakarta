@@ -47,8 +47,14 @@ class CatalogController extends Controller
             });
         }
 
-        if ($request->filled('genre') && $request->genre !== 'Semua') {
-            $query->where('kategori', $request->genre);
+        // Ganti 'genre' → 'kategori'
+        if ($request->filled('kategori')) {
+            $query->where('kategori', $request->kategori);
+        }
+
+        // Tambah filter lokasi
+        if ($request->filled('lokasi_id')) {
+            $query->where('lokasi_id', $request->lokasi_id);
         }
 
         $buku = $query->get();
@@ -63,12 +69,13 @@ class CatalogController extends Controller
                 'tahun_terbit' => $b->tahun_terbit,
                 'resume'       => $b->resume,
                 'stok'         => $b->stok,
+                'lokasi_id'    => $b->lokasi_id,
                 'lokasi'       => $b->lokasi?->nama_lokasi ?? null,
             ]),
         ]);
     }
 
-    public function show($book)
+    public function show(int $book)
     {
         $buku = Buku::findOrFail($book);
         return view('katalog.show', compact('buku'));

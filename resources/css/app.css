@@ -158,23 +158,19 @@
 
 }
 
-.custom-scroll::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
+#dropdown-kategori.custom-scroll::-webkit-scrollbar {
+    width: 3px;
 }
-.custom-scroll::-webkit-scrollbar-track {
+#dropdown-kategori.custom-scroll::-webkit-scrollbar-track {
     background: transparent;
+    margin: 16px 0;
 }
-.custom-scroll::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, #04448d, #e5e5e5);
+#dropdown-kategori.custom-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
     border-radius: 99px;
 }
-.custom-scroll::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(to bottom, #012145, #d4d4d4);
-}
-.custom-scroll::-webkit-scrollbar-corner {
-    background: #eff6ff;
-    border-radius: 99px;
+#dropdown-kategori.custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }
 
 [x-cloak] { display: none !important; }

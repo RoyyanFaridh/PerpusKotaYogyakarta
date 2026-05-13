@@ -87,6 +87,31 @@
             border-left: none; border-right: none; border-radius: 0;
             transition: border-color 0.35s ease, transform 0.35s ease;
         }
+
+        /* Dropdown filter */
+        #dropdown-kategori,
+        #dropdown-lokasi {
+            animation: fadeIn 0.18s ease both;
+            z-index: 9999 !important;  /* ← tambah ini */
+        }
+
+        /* Pastikan wrapper dropdown punya stacking context */
+        #dropdown-kategori-wrapper,
+        #dropdown-lokasi-wrapper {
+            position: relative;
+            z-index: 100;
+        }
+
+        /* Filter row harus di atas katalog */
+        .animate-fade-up-5 {
+            position: relative;
+            z-index: 9999;
+        }
+
+        #katalog-grid > div {
+            transform: none;
+            will-change: auto;
+        }
     </style>
 </head>
 
@@ -99,9 +124,6 @@
     @include('components.home.footer')
 
     <script>
-    /* ══════════════════════════════════════════════
-       SEARCH & KATALOG LOGIC
-    ══════════════════════════════════════════════ */
     (() => {
         const searchInput    = document.getElementById('search-input');
         const searchBtn      = document.getElementById('search-btn');
@@ -111,71 +133,196 @@
         const katalogLoading = document.getElementById('katalog-loading');
         const katalogEmpty   = document.getElementById('katalog-empty');
         const katalogClose   = document.getElementById('katalog-close');
-        const chips          = document.querySelectorAll('.chip');
+        const resetFilter    = document.getElementById('reset-filter');
 
-        let activeGenre   = 'Semua';
-        let searchTimeout = null;
+        let activeKategori    = '';
+        let activeLokasi      = '';
+        let activeLokasiLabel = '';
+        let searchTimeout     = null;
 
-        chips.forEach(chip => {
-            chip.addEventListener('click', () => {
-                chips.forEach(c => c.classList.remove('bg-primary','text-white','border-primary'));
-                chip.classList.add('bg-primary','text-white','border-primary');
-                activeGenre = chip.dataset.genre;
-                const q = searchInput.value.trim();
-                if (activeGenre === 'Semua' && !q) doSearch('', 'Semua');
-                else doSearch(q, activeGenre);
+        // ── Dropdown toggle ───────────────────────────────────────────────
+        window.toggleDropdown = function (type) {
+            const dropdown = document.getElementById(`dropdown-${type}`);
+            const chevron  = document.getElementById(`chevron-${type}`);
+            const isHidden = dropdown.classList.contains('hidden');
+
+            ['kategori', 'lokasi'].forEach(t => {
+                document.getElementById(`dropdown-${t}`).classList.add('hidden');
+                document.getElementById(`chevron-${t}`).classList.remove('rotate-180');
+            });
+
+            if (isHidden) {
+                dropdown.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+            }
+        };
+
+        // Tutup dropdown saat klik di luar
+        document.addEventListener('click', (e) => {
+            ['kategori', 'lokasi'].forEach(type => {
+                const wrapper = document.getElementById(`dropdown-${type}-wrapper`);
+                if (wrapper && !wrapper.contains(e.target)) {
+                    document.getElementById(`dropdown-${type}`).classList.add('hidden');
+                    document.getElementById(`chevron-${type}`).classList.remove('rotate-180');
+                }
             });
         });
 
-        searchBtn.addEventListener('click', () => {
-            const q = searchInput.value.trim();
-            if (q || activeGenre !== 'Semua') doSearch(q, activeGenre);
+        // ── Pilih Kategori ────────────────────────────────────────────────
+        document.querySelectorAll('.dropdown-item-kategori').forEach(item => {
+            item.addEventListener('click', () => {
+                activeKategori = item.dataset.value;
+                document.getElementById('label-kategori').textContent =
+                    activeKategori ? activeKategori : 'Semua Kategori';
+
+                document.querySelectorAll('.dropdown-item-kategori').forEach(i =>
+                    i.classList.remove('text-primary', 'font-semibold', 'bg-primary-50'));
+                item.classList.add('text-primary', 'font-semibold', 'bg-primary-50');
+
+                const btn = document.getElementById('dropdown-kategori-btn');
+                btn.classList.toggle('bg-primary-50',    !!activeKategori);
+                btn.classList.toggle('text-primary-700', !!activeKategori);
+                btn.classList.toggle('border-primary',   !!activeKategori);
+                btn.classList.toggle('font-semibold',    !!activeKategori);
+
+                document.getElementById('dropdown-kategori').classList.add('hidden');
+                document.getElementById('chevron-kategori').classList.remove('rotate-180');
+
+                updateResetBtn();
+                triggerSearch();
+            });
         });
 
-        searchInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                const q = searchInput.value.trim();
-                if (q || activeGenre !== 'Semua') doSearch(q, activeGenre);
+        // ── Pilih Lokasi ──────────────────────────────────────────────────
+        document.querySelectorAll('.dropdown-item-lokasi').forEach(item => {
+            item.addEventListener('click', () => {
+                activeLokasi      = item.dataset.value;
+                activeLokasiLabel = item.dataset.label ?? '';
+                document.getElementById('label-lokasi').textContent =
+                    activeLokasi ? activeLokasiLabel : 'Semua Lokasi';
+
+                document.querySelectorAll('.dropdown-item-lokasi').forEach(i =>
+                    i.classList.remove('text-primary', 'font-semibold', 'bg-primary-50'));
+                item.classList.add('text-primary', 'font-semibold', 'bg-primary-50');
+
+                const btn = document.getElementById('dropdown-lokasi-btn');
+                btn.classList.toggle('bg-primary-50',    !!activeLokasi);
+                btn.classList.toggle('text-primary-700', !!activeLokasi);
+                btn.classList.toggle('border-primary',   !!activeLokasi);
+                btn.classList.toggle('font-semibold',    !!activeLokasi);
+
+                document.getElementById('dropdown-lokasi').classList.add('hidden');
+                document.getElementById('chevron-lokasi').classList.remove('rotate-180');
+
+                updateResetBtn();
+                triggerSearch();
+            });
+        });
+
+        // ── Reset filter ──────────────────────────────────────────────────
+        resetFilter?.addEventListener('click', () => {
+            activeKategori    = '';
+            activeLokasi      = '';
+            activeLokasiLabel = '';
+
+            document.getElementById('label-kategori').textContent = 'Semua Kategori';
+            document.getElementById('label-lokasi').textContent   = 'Semua Lokasi';
+
+            ['kategori', 'lokasi'].forEach(type => {
+                const btn = document.getElementById(`dropdown-${type}-btn`);
+                btn.classList.remove('bg-primary', 'text-white', 'border-primary');
+                document.querySelectorAll(`.dropdown-item-${type}`).forEach(i =>
+                    i.classList.remove('text-primary', 'font-semibold', 'bg-primary-50'));
+            });
+
+            updateResetBtn();
+
+            const q = searchInput.value.trim();
+            if (q) triggerSearch();
+            else hideKatalog();
+        });
+
+        function updateResetBtn() {
+            if (!resetFilter) return;
+            if (activeKategori || activeLokasi) {
+                resetFilter.classList.remove('hidden');
+                resetFilter.classList.add('flex');
+            } else {
+                resetFilter.classList.add('hidden');
+                resetFilter.classList.remove('flex');
             }
+        }
+
+        // ── Search triggers ───────────────────────────────────────────────
+        searchBtn.addEventListener('click', () => triggerSearch());
+
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') triggerSearch();
         });
 
         searchInput.addEventListener('input', () => {
             clearTimeout(searchTimeout);
             const q = searchInput.value.trim();
-            if (!q && activeGenre === 'Semua') { hideKatalog(); return; }
-            searchTimeout = setTimeout(() => doSearch(q, activeGenre), 400);
+            if (!q && !activeKategori && !activeLokasi) { hideKatalog(); return; }
+            searchTimeout = setTimeout(() => triggerSearch(), 400);
         });
 
         katalogClose.addEventListener('click', () => {
             hideKatalog();
             searchInput.value = '';
-            activeGenre = 'Semua';
-            chips.forEach(c => c.classList.remove('bg-primary','text-white','border-primary'));
+            activeKategori    = '';
+            activeLokasi      = '';
+            activeLokasiLabel = '';
+            document.getElementById('label-kategori').textContent = 'Semua Kategori';
+            document.getElementById('label-lokasi').textContent   = 'Semua Lokasi';
+            ['kategori', 'lokasi'].forEach(type => {
+                document.getElementById(`dropdown-${type}-btn`)
+                    .classList.remove('bg-primary', 'text-white', 'border-primary');
+            });
+            updateResetBtn();
         });
 
-        async function doSearch(q, genre) {
+        function triggerSearch() {
+            const q = searchInput.value.trim();
+            if (!q && !activeKategori && !activeLokasi) { hideKatalog(); return; }
+
+            // Tutup semua dropdown sebelum search
+            ['kategori', 'lokasi'].forEach(t => {
+                document.getElementById(`dropdown-${t}`)?.classList.add('hidden');
+                document.getElementById(`chevron-${t}`)?.classList.remove('rotate-180');
+            });
+
+            doSearch(q, activeKategori, activeLokasi);
+        }
+
+        // ── Fetch ─────────────────────────────────────────────────────────
+        async function doSearch(q, kategori, lokasi) {
             showLoading();
             const params = new URLSearchParams();
-            if (q)                          params.set('q', q);
-            if (genre && genre !== 'Semua') params.set('genre', genre);
+            if (q)        params.set('q', q);
+            if (kategori) params.set('kategori', kategori);
+            if (lokasi)   params.set('lokasi_id', lokasi);
             try {
                 const res  = await fetch(`/search-buku?${params.toString()}`, {
                     headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
                 });
                 const json = await res.json();
-                renderKatalog(json, q, genre);
+                renderKatalog(json, q, kategori, lokasi);
             } catch (err) {
                 console.error('Search error:', err);
                 showEmpty();
             }
         }
 
-        function renderKatalog(json, q, genre) {
+        function renderKatalog(json, q, kategori, lokasi) {
             hideLoading();
-            if (q && genre && genre !== 'Semua')   katalogTitle.textContent = `"${q}" · ${genre}  —  ${json.total} buku ditemukan`;
-            else if (q)                             katalogTitle.textContent = `"${q}"  —  ${json.total} buku ditemukan`;
-            else if (genre && genre !== 'Semua')    katalogTitle.textContent = `Genre: ${genre}  —  ${json.total} buku ditemukan`;
-            else                                    katalogTitle.textContent = `Semua Buku  —  ${json.total} buku ditemukan`;
+
+            const parts = [];
+            if (q)        parts.push(`"${q}"`);
+            if (kategori) parts.push(kategori);
+            if (lokasi)   parts.push(activeLokasiLabel);
+            katalogTitle.textContent = (parts.length ? parts.join(' · ') : 'Semua Buku')
+                + `  —  ${json.total} buku ditemukan`;
 
             if (!json.data || json.data.length === 0) { showEmpty(); return; }
             katalogEmpty.classList.add('hidden');
@@ -316,7 +463,7 @@
             card.style.opacity    = '0';
             card.style.transform  = 'scale(0.88) translateY(16px)';
             card.style.transition = 'opacity 0.55s ease, transform 0.55s ease';
-            setTimeout(() => {min-w-13
+            setTimeout(() => {
                 card.style.opacity   = '1';
                 card.style.transform = 'scale(1) translateY(0)';
             }, 120 * i + 80);

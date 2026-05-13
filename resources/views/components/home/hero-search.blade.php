@@ -1,4 +1,4 @@
-<section class="relative z-10 min-h-screen flex flex-col items-center justify-center pt-25 pb-16 px-6 text-center">
+<section class="relative z-50 min-h-screen flex flex-col items-center justify-center pt-25 pb-16 px-6 text-center">
 
     {{-- Glow orb --}}
     <div class="hero-glow absolute w-[clamp(400px,70vw,860px)] h-[clamp(400px,70vw,860px)] rounded-full pointer-events-none"
@@ -26,7 +26,7 @@
     </p>
 
     {{-- Search --}}
-    <div class="animate-fade-up-4 w-full max-w-160">
+    <div class="animate-fade-up-4 w-full max-w-160 relative z-100">
         <div class="search-box relative flex items-center bg-white border border-primary-100 rounded-lg shadow-lg transition-all duration-200 overflow-hidden">
             <span class="shrink-0 px-4 pl-5 grid place-items-center text-neutral-400">
                 <svg class="w-5 h-5 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2">
@@ -38,7 +38,7 @@
                 id="search-input"
                 type="text"
                 class="flex-1 border-none outline-none font-sans text-[0.95rem] text-primary-900 bg-transparent py-4 placeholder-neutral-400"
-                placeholder="Cari judul buku, penulis, atau genre…"
+                placeholder="Cari judul buku, penulis…"
                 autocomplete="off"
             >
             <button id="search-btn"
@@ -48,20 +48,81 @@
             </button>
         </div>
 
-        {{-- Filter chips --}}
-        <div class="animate-fade-up-5 flex flex-wrap gap-2 justify-center mt-4">
-            @foreach (['Semua', 'Novel', 'Sains', 'Sejarah', 'Teknologi', 'Anak-anak'] as $genre)
-                <span
-                    data-genre="{{ $genre }}"
-                    class="chip px-[0.95rem] py-[0.35rem] border border-primary-100 rounded-full text-[0.78rem] font-medium text-neutral-500 bg-white/70 cursor-pointer transition-all duration-200 hover:bg-primary hover:text-white hover:border-primary">
-                    {{ $genre }}
-                </span>
-            @endforeach
+        {{-- Filter row: Kategori + Lokasi --}}
+        <div class="animate-fade-up-5 relative z-50 flex flex-wrap items-center gap-2 justify-center mt-4">
+
+            {{-- Filter Kategori --}}
+            <div class="relative" id="dropdown-kategori-wrapper">
+                <button id="dropdown-kategori-btn"
+                        class="flex items-center gap-1.5 px-[0.95rem] py-[0.35rem] border border-primary-100 rounded-full text-[0.78rem] font-medium text-neutral-500 bg-white/70 cursor-pointer transition-all duration-200 hover:bg-primary hover:text-white hover:border-primary"
+                        onclick="toggleDropdown('kategori')">
+                    <svg class="w-3.5 h-3.5 stroke-current fill-none shrink-0" viewBox="0 0 24 24" stroke-width="2">
+                        <path d="M4 6h16M4 12h8M4 18h4" stroke-linecap="round"/>
+                    </svg>
+                    <span id="label-kategori">Semua Kategori</span>
+                    <svg class="w-3 h-3 stroke-current fill-none shrink-0 transition-transform" id="chevron-kategori" viewBox="0 0 24 24" stroke-width="2.5">
+                        <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <div id="dropdown-kategori"
+                    class="hidden absolute left-0 top-[calc(100%+6px)] z-9999 bg-white border border-neutral-200 rounded-xl shadow-lg py-1.5 min-w-55 max-h-70 overflow-y-auto text-left custom-scroll">
+                    @foreach (['Semua Kategori', 'Filsafat & Psikologi', 'Agama', 'Ilmu Sosial', 'Bahasa', 'Sains & Matematika', 'Teknologi', 'Seni & Rekreasi', 'Literatur & Sastra', 'Geografi & Sejarah'] as $kat)
+                        <button
+                            data-value="{{ $kat === 'Semua Kategori' ? '' : $kat }}"
+                            class="dropdown-item-kategori w-full text-left px-3.5 py-2 text-[0.78rem] text-neutral-600 hover:bg-primary-50 hover:text-primary transition-colors">
+                            {{ $kat }}
+                        </button>
+                    @endforeach
+                </div>
+            </div>
+
+            {{-- Filter Lokasi --}}
+            <div class="relative" id="dropdown-lokasi-wrapper">
+                <button id="dropdown-lokasi-btn"
+                        class="flex items-center gap-1.5 px-[0.95rem] py-[0.35rem] border border-primary-100 rounded-full text-[0.78rem] font-medium text-neutral-500 bg-white/70 cursor-pointer transition-all duration-200 hover:bg-primary hover:text-white hover:border-primary"
+                        onclick="toggleDropdown('lokasi')">
+                    <svg class="w-3.5 h-3.5 stroke-current fill-none shrink-0" viewBox="0 0 24 24" stroke-width="2">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                        <circle cx="12" cy="9" r="2.5"/>
+                    </svg>
+                    <span id="label-lokasi">Semua Lokasi</span>
+                    <svg class="w-3 h-3 stroke-current fill-none shrink-0 transition-transform" id="chevron-lokasi" viewBox="0 0 24 24" stroke-width="2.5">
+                        <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <div id="dropdown-lokasi"
+                    class="hidden absolute left-0 top-[calc(100%+6px)] z-9999 bg-white border border-neutral-200 rounded-xl shadow-lg py-1.5 min-w-70 text-left custom-scroll">
+                    <button
+                        data-value=""
+                        class="dropdown-item-lokasi w-full text-left px-3.5 py-2 text-[0.78rem] text-neutral-600 hover:bg-primary-50 hover:text-primary transition-colors">
+                        Semua Lokasi
+                    </button>
+                    @foreach ($lokasis as $lokasi)
+                        <button
+                            data-value="{{ $lokasi->id }}"
+                            data-label="{{ $lokasi->nama_lokasi }}"
+                            class="dropdown-item-lokasi w-full text-left px-3.5 py-2 text-[0.78rem] text-neutral-600 hover:bg-primary-50 hover:text-primary transition-colors">
+                            {{ $lokasi->nama_lokasi }}
+                            <span class="block text-[0.68rem] text-neutral-400">{{ $lokasi->alamat }}</span>
+                        </button>
+                    @endforeach
+                </div>
+            </div>
+
+            {{-- Reset filter --}}
+            <button id="reset-filter"
+                    class="hidden items-center gap-1 px-[0.95rem] py-[0.35rem] border border-danger-200 rounded-full text-[0.78rem] font-medium text-danger-500 bg-white/70 cursor-pointer transition-all duration-200 hover:bg-danger-50">
+                <svg class="w-3 h-3 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2.5">
+                    <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/>
+                </svg>
+                Reset Filter
+            </button>
+
         </div>
     </div>
 
     {{-- ══ KATALOG SECTION ══ --}}
-    <div id="katalog-section" class="w-full max-w-6xl mt-14">
+    <div id="katalog-section" class="relative z-1 w-full max-w-6xl mt-14">
 
         {{-- Header hasil --}}
         <div class="flex items-center justify-between mb-6 px-1">
@@ -92,7 +153,7 @@
                 <path d="M9 12h6M9 16h4" stroke-linecap="round"/>
             </svg>
             <p class="font-semibold text-primary-800">Buku tidak ditemukan</p>
-            <p class="text-sm text-neutral-400">Coba kata kunci lain atau pilih genre yang berbeda</p>
+            <p class="text-sm text-neutral-400">Coba kata kunci lain atau ubah filter</p>
         </div>
 
         {{-- Grid buku --}}
