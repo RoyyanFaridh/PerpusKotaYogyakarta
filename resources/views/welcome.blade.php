@@ -115,7 +115,7 @@
     </style>
 </head>
 
-<body class="font-sans bg-primary-50 text-primary-900 min-h-screen overflow-x-hidden relative">
+<body class="font-sans bg-primary-50 text-primary-900 min-h-screen overflow-x-hidden relative custom-scroll">
 
     @include('components.home.navbar')
     @include('components.home.hero-search')
@@ -173,7 +173,7 @@
             item.addEventListener('click', () => {
                 activeKategori = item.dataset.value;
                 document.getElementById('label-kategori').textContent =
-                    activeKategori ? activeKategori : 'Semua Kategori';
+                    activeKategori ? activeKategori : 'Kategori';
 
                 document.querySelectorAll('.dropdown-item-kategori').forEach(i =>
                     i.classList.remove('text-primary', 'font-semibold', 'bg-primary-50'));
@@ -199,7 +199,7 @@
                 activeLokasi      = item.dataset.value;
                 activeLokasiLabel = item.dataset.label ?? '';
                 document.getElementById('label-lokasi').textContent =
-                    activeLokasi ? activeLokasiLabel : 'Semua Lokasi';
+                    activeLokasi ? activeLokasiLabel : 'Lokasi';
 
                 document.querySelectorAll('.dropdown-item-lokasi').forEach(i =>
                     i.classList.remove('text-primary', 'font-semibold', 'bg-primary-50'));
@@ -225,8 +225,8 @@
             activeLokasi      = '';
             activeLokasiLabel = '';
 
-            document.getElementById('label-kategori').textContent = 'Semua Kategori';
-            document.getElementById('label-lokasi').textContent   = 'Semua Lokasi';
+            document.getElementById('label-kategori').textContent = 'Kategori';
+            document.getElementById('label-lokasi').textContent   = 'Lokasi';
 
             ['kategori', 'lokasi'].forEach(type => {
                 const btn = document.getElementById(`dropdown-${type}-btn`);
@@ -273,8 +273,8 @@
             activeKategori    = '';
             activeLokasi      = '';
             activeLokasiLabel = '';
-            document.getElementById('label-kategori').textContent = 'Semua Kategori';
-            document.getElementById('label-lokasi').textContent   = 'Semua Lokasi';
+            document.getElementById('label-kategori').textContent = 'Kategori';
+            document.getElementById('label-lokasi').textContent   = 'Lokasi';
             ['kategori', 'lokasi'].forEach(type => {
                 document.getElementById(`dropdown-${type}-btn`)
                     .classList.remove('bg-primary', 'text-white', 'border-primary');

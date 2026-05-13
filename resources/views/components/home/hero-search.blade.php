@@ -59,16 +59,16 @@
                     <svg class="w-3.5 h-3.5 stroke-current fill-none shrink-0" viewBox="0 0 24 24" stroke-width="2">
                         <path d="M4 6h16M4 12h8M4 18h4" stroke-linecap="round"/>
                     </svg>
-                    <span id="label-kategori">Semua Kategori</span>
+                    <span id="label-kategori">Kategori</span>
                     <svg class="w-3 h-3 stroke-current fill-none shrink-0 transition-transform" id="chevron-kategori" viewBox="0 0 24 24" stroke-width="2.5">
                         <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </button>
                 <div id="dropdown-kategori"
                     class="hidden absolute left-0 top-[calc(100%+6px)] z-9999 bg-white border border-neutral-200 rounded-xl shadow-lg py-1.5 min-w-55 max-h-70 overflow-y-auto text-left custom-scroll">
-                    @foreach (['Semua Kategori', 'Filsafat & Psikologi', 'Agama', 'Ilmu Sosial', 'Bahasa', 'Sains & Matematika', 'Teknologi', 'Seni & Rekreasi', 'Literatur & Sastra', 'Geografi & Sejarah'] as $kat)
+                    @foreach (['Kategori', 'Filsafat & Psikologi', 'Agama', 'Ilmu Sosial', 'Bahasa', 'Sains & Matematika', 'Teknologi', 'Seni & Rekreasi', 'Literatur & Sastra', 'Geografi & Sejarah'] as $kat)
                         <button
-                            data-value="{{ $kat === 'Semua Kategori' ? '' : $kat }}"
+                            data-value="{{ $kat === 'Kategori' ? '' : $kat }}"
                             class="dropdown-item-kategori w-full text-left px-3.5 py-2 text-[0.78rem] text-neutral-600 hover:bg-primary-50 hover:text-primary transition-colors">
                             {{ $kat }}
                         </button>
@@ -85,7 +85,7 @@
                         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
                         <circle cx="12" cy="9" r="2.5"/>
                     </svg>
-                    <span id="label-lokasi">Semua Lokasi</span>
+                    <span id="label-lokasi">Lokasi</span>
                     <svg class="w-3 h-3 stroke-current fill-none shrink-0 transition-transform" id="chevron-lokasi" viewBox="0 0 24 24" stroke-width="2.5">
                         <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -95,7 +95,7 @@
                     <button
                         data-value=""
                         class="dropdown-item-lokasi w-full text-left px-3.5 py-2 text-[0.78rem] text-neutral-600 hover:bg-primary-50 hover:text-primary transition-colors">
-                        Semua Lokasi
+                        Lokasi
                     </button>
                     @foreach ($lokasis as $lokasi)
                         <button
