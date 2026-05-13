@@ -3,9 +3,37 @@
 @section('page-title', 'Transaksi')
 @section('page-subtitle', 'Kelola data transaksi tukar buku')
 
+@push('scripts')
+    <script>
+        window.Routes = {
+            transaksiStore: "{{ route('admin.transaksi.store') }}",
+        };
+        const csrf = document.querySelector('meta[name="csrf-token"]')?.content ?? '{{ csrf_token() }}';
+    </script>
+    @vite('resources/js/transaksi-wizard.js')
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchInput');
+            const rows        = document.querySelectorAll('.table-row-data');
+            const noResultRow = document.getElementById('noResultRow');
+
+            searchInput?.addEventListener('input', () => {
+                const q = searchInput.value.toLowerCase().trim();
+                let visible = 0;
+                rows.forEach(row => {
+                    const match = !q || row.dataset.search.includes(q);
+                    row.classList.toggle('hidden', !match);
+                    if (match) visible++;
+                });
+                noResultRow.classList.toggle('hidden', visible > 0);
+            });
+        });
+    </script>
+@endpush
+
 @section('content')
 <div class="flex flex-col gap-4">
-    <meta name="route-transaksi-store" content="{{ route('admin.transaksi.store') }}">
 
     <x-admin.page-header
         title="Semua Transaksi"
@@ -62,12 +90,15 @@
                 </thead>
                 <tbody class="divide-y divide-neutral-50" id="tableBody">
                     @forelse ($transaksi as $item)
+                        @php
+                            $txnId = '#TXN-' . str_pad($item->id, 4, '0', STR_PAD_LEFT);
+                        @endphp
                         <tr class="hover:bg-neutral-50 transition-colors table-row-data"
                             data-search="{{ strtolower($item->member->nama ?? '') }} {{ strtolower($item->bukuDiserahkan->judul ?? '') }} {{ strtolower($item->bukuDiterima->judul ?? '') }}">
 
                             <td class="px-5 py-3.5">
                                 <span class="text-xs font-mono font-medium text-neutral-500">
-                                    #TXN-{{ str_pad($item->id, 4, '0', STR_PAD_LEFT) }}
+                                    {{ $txnId }}
                                 </span>
                             </td>
 
@@ -110,7 +141,7 @@
                                     <button type="button"
                                             onclick="bukaModalHapusTransaksi(
                                                 '{{ route('admin.transaksi.destroy', $item) }}',
-                                                '#TXN-{{ str_pad($item->id, 4, '0', STR_PAD_LEFT) }}'
+                                                '{{ $txnId }}'
                                             )"
                                             class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-danger-300 hover:text-danger-600 hover:bg-danger-50 transition-colors">
                                         <x-icons.delete/>
@@ -145,22 +176,28 @@
         @if ($transaksi->hasPages())
             <div class="px-5 py-3 bg-neutral-50 border-t border-neutral-100 flex items-center justify-between gap-4 flex-wrap">
                 <p class="text-[0.7rem] text-neutral-400">
-                    Menampilkan <span class="font-semibold text-neutral-600">{{ $transaksi->firstItem() }}</span>–<span class="font-semibold text-neutral-600">{{ $transaksi->lastItem() }}</span>
+                    Menampilkan
+                    <span class="font-semibold text-neutral-600">{{ $transaksi->firstItem() }}</span>–<span class="font-semibold text-neutral-600">{{ $transaksi->lastItem() }}</span>
                     dari <span class="font-semibold text-neutral-600">{{ $transaksi->total() }}</span> transaksi
                 </p>
                 <div class="flex items-center gap-1">
+                    {{-- Prev --}}
                     @if ($transaksi->onFirstPage())
                         <span class="px-3 py-1.5 rounded-lg text-[0.75rem] text-neutral-300 border border-neutral-100 cursor-not-allowed">← Prev</span>
                     @else
                         <a href="{{ $transaksi->previousPageUrl() }}" class="px-3 py-1.5 rounded-lg text-[0.75rem] text-primary-600 border border-neutral-200 hover:bg-primary-50 transition-colors">← Prev</a>
                     @endif
+
+                    {{-- Nomor halaman — fix: pakai $page bukan $url untuk teks --}}
                     @foreach ($transaksi->getUrlRange(1, $transaksi->lastPage()) as $page => $url)
                         @if ($page == $transaksi->currentPage())
                             <span class="px-3 py-1.5 rounded-lg text-[0.75rem] bg-primary text-white font-semibold">{{ $page }}</span>
                         @else
-                            <a href="{{ $url }}" class="px-3 py-1.5 rounded-lg text-[0.75rem] text-neutral-600 border border-neutral-200 hover:bg-neutral-50 transition-colors">{{ $url }}</a>
+                            <a href="{{ $url }}" class="px-3 py-1.5 rounded-lg text-[0.75rem] text-neutral-600 border border-neutral-200 hover:bg-neutral-50 transition-colors">{{ $page }}</a>
                         @endif
                     @endforeach
+
+                    {{-- Next --}}
                     @if ($transaksi->hasMorePages())
                         <a href="{{ $transaksi->nextPageUrl() }}" class="px-3 py-1.5 rounded-lg text-[0.75rem] text-primary-600 border border-neutral-200 hover:bg-primary-50 transition-colors">Next →</a>
                     @else
@@ -176,28 +213,5 @@
 @include('admin.transaksi.create')
 @include('admin.transaksi.edit')
 @include('admin.transaksi.destroy')
-
-@push('scripts')
-    @vite('resources/js/transaksi-wizard.js')
-@endpush
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('searchInput');
-    const rows        = document.querySelectorAll('.table-row-data');
-    const noResultRow = document.getElementById('noResultRow');
-
-    searchInput?.addEventListener('input', () => {
-        const q = searchInput.value.toLowerCase().trim();
-        let visible = 0;
-        rows.forEach(row => {
-            const match = !q || row.dataset.search.includes(q);
-            row.classList.toggle('hidden', !match);
-            if (match) visible++;
-        });
-        noResultRow.classList.toggle('hidden', visible > 0);
-    });
-});
-</script>
 
 @endsection

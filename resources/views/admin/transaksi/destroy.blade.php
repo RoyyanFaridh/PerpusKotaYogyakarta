@@ -4,7 +4,6 @@
     <div class="absolute inset-0" onclick="tutupModalHapusTransaksi()"></div>
 
     <div class="relative z-10 w-full max-w-sm rounded-xl bg-white border border-neutral-200 overflow-hidden shadow-lg">
-
         <div class="absolute top-0 left-0 right-0 h-0.5 bg-danger-400"></div>
 
         <div class="px-6 pt-6 pb-5 flex flex-col items-center text-center gap-3">
@@ -42,25 +41,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    function bukaModalHapusTransaksi(action, label) {
-        document.getElementById('formHapusTransaksi').action = action;
-        document.getElementById('hapusTransaksiId').textContent = label;
-        const modal = document.getElementById('modalHapusTransaksi');
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');        // ← tambah flex saat buka
-        document.body.style.overflow = 'hidden';
-    }
-
-    function tutupModalHapusTransaksi() {
-        const modal = document.getElementById('modalHapusTransaksi');
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');     // ← hapus flex saat tutup
-        document.body.style.overflow = '';
-    }
-
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') tutupModalHapusTransaksi();
-    });
-</script>
