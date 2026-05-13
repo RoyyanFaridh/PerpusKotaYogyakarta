@@ -360,7 +360,6 @@
             `).join('');
 
             showKatalog();
-            setTimeout(() => katalogSection.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
         }
 
         function showLoading() {
