@@ -30,28 +30,43 @@ class TransaksiService
         return Member::create($data);
     }
 
-    public function cariBukuByIsbn(string $isbn): ?Buku
+    public function cariBukuByIsbn(string $isbn, ?int $lokasiId = null): ?Buku
     {
-        if (blank($isbn)) return null;
+        $query = Buku::where('isbn', $isbn)->with('lokasi');
 
-        // ambil semua buku dengan isbn ini, kembalikan yang stok > 0 dulu
-        return Buku::where('isbn', $isbn)
-            ->where('stok', '>', 0)
-            ->with('lokasi')
-            ->first()
-            ?? Buku::where('isbn', $isbn)->with('lokasi')->first();
+        if ($lokasiId) {
+            // prioritaskan buku di lokasi yang sama & stok > 0
+            $buku = (clone $query)->where('lokasi_id', $lokasiId)->where('stok', '>', 0)->first();
+            if ($buku) return $buku;
+
+            // ada di lokasi ini tapi stok habis → kembalikan dengan stok 0 (biar FE tahu)
+            $buku = (clone $query)->where('lokasi_id', $lokasiId)->first();
+            if ($buku) return $buku;
+
+            // tidak ada di lokasi ini sama sekali → return null (bukan buku lokasi lain)
+            return null;
+        }
+
+        return $query->where('stok', '>', 0)->first()
+            ?? $query->first();
     }
 
-    public function cariBukuByJudul(string $keyword): \Illuminate\Database\Eloquent\Collection
+    public function cariBukuByJudul(string $keyword, ?int $lokasiId = null): \Illuminate\Database\Eloquent\Collection
     {
-        return Buku::where(function ($q) use ($keyword) {
+        $query = Buku::where(function ($q) use ($keyword) {
                 $q->where('judul', 'like', "%{$keyword}%")
                 ->orWhere('pengarang', 'like', "%{$keyword}%");
             })
-            ->where('stok', '>', 0) 
             ->with('lokasi')
             ->limit(10)
-            ->get(['id', 'judul', 'pengarang', 'isbn', 'stok', 'lokasi_id']);
+            ->select(['id', 'judul', 'pengarang', 'isbn', 'stok', 'lokasi_id']);
+
+        if ($lokasiId) {
+            $query->where('lokasi_id', $lokasiId);
+        }
+
+        // kembalikan semua (termasuk stok 0) biar FE bisa tampilkan pesan yang tepat
+        return $query->orderByDesc('stok')->get();
     }
 
     public function simpan(array $data): Transaksi

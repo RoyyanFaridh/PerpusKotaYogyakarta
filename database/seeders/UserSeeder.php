@@ -16,6 +16,7 @@ class UserSeeder extends Seeder
             'no_hp'    => '081234567890',
             'password' => Hash::make('password'),
             'role'     => 'superadmin',
+            'lokasi_id' => null,
         ]);
 
         User::create([
@@ -23,6 +24,7 @@ class UserSeeder extends Seeder
             'email'    => 'petugas1@perpus.com',
             'password' => Hash::make('password'),
             'role'     => 'admin',
+            'lokasi_id' => 1,
         ]);
 
         User::create([
@@ -30,6 +32,7 @@ class UserSeeder extends Seeder
             'email'    => 'petugas2@perpus.com',
             'password' => Hash::make('password'),
             'role'     => 'admin',
+            'lokasi_id' => 2,
         ]);
     }
 }

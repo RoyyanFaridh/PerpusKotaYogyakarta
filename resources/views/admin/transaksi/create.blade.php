@@ -19,6 +19,11 @@
         @include('admin.transaksi._step-indicator', ['prefix' => 'create'])
 
         <div class="px-6 py-5 min-h-70">
+            {{-- Global hidden inputs --}}
+            <input type="hidden" id="{{ 'create' }}_lokasiId"   value="{{ $lokasiUser?->id ?? '' }}"/>
+            <input type="hidden" id="{{ 'create' }}_lokasiNama" value="{{ $lokasiUser?->nama_lokasi ?? '' }}"/>
+            <input type="hidden" id="{{ 'create' }}_memberId"/>
+
             @include('admin.transaksi._step-member',     ['prefix' => 'create'])
             @include('admin.transaksi._step-diserahkan', ['prefix' => 'create'])
             @include('admin.transaksi._step-diterima',   ['prefix' => 'create'])

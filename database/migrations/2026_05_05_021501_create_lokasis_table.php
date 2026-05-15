@@ -13,7 +13,6 @@ return new class extends Migration
             $table->string('nama_lokasi');
             $table->string('alamat');
             $table->string('no_telp')->nullable();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });
     }

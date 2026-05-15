@@ -1,28 +1,23 @@
 <div class="step-content-{{ $prefix }} hidden" data-step="3">
 
-    {{-- Cari by ISBN --}}
-    <div class="mb-3">
-        <label class="block text-xs font-medium text-neutral-600 mb-1.5">Cari by ISBN</label>
-        <div class="flex gap-2">
-            <input type="text" id="{{ $prefix }}_isbnDiterima" placeholder="Scan atau ketik ISBN..."
-                class="flex-1 px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition font-mono"/>
-            <button onclick="cariIsbnDiterima('{{ $prefix }}')" class="px-3 py-2 text-xs rounded-lg bg-primary-50 text-primary-700 hover:bg-primary-100 transition-colors font-medium">Cari</button>
-        </div>
-        <p id="{{ $prefix }}_isbnDiterimaInfo" class="text-[0.68rem] mt-1"></p>
-    </div>
-
-    {{-- Cari by Judul --}}
+    {{-- Cari by ISBN atau Judul --}}
     <div class="mb-4">
-        <label class="block text-xs font-medium text-neutral-600 mb-1.5">Cari by Judul / Pengarang</label>
+        <label class="block text-xs font-medium text-neutral-600 mb-1.5">Cari Buku</label>
         <div class="flex gap-2">
-            <input type="text" id="{{ $prefix }}_judulDiterima" placeholder="Ketik judul atau pengarang..."
-                class="flex-1 px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition"/>
-            <button onclick="cariJudulDiterima('{{ $prefix }}')" class="px-3 py-2 text-xs rounded-lg bg-primary-50 text-primary-700 hover:bg-primary-100 transition-colors font-medium">Cari</button>
+            <input type="text" id="{{ $prefix }}_cariBukuDiterima" placeholder="ISBN, judul, atau pengarang..."
+                class="flex-1 px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition font-mono"/>
+            <button onclick="cariBukuDiterima('{{ $prefix }}')"
+                class="px-3 py-2 text-xs rounded-lg bg-primary-50 text-primary-700 hover:bg-primary-100 transition-colors font-medium">
+                Cari
+            </button>
         </div>
-        {{-- Hasil pencarian judul --}}
-        <div id="{{ $prefix }}_judulDiterimaResults" class="hidden mt-1.5 rounded-lg border border-neutral-200 bg-white overflow-hidden shadow-sm max-h-40 overflow-y-auto">
+        <p class="text-[0.68rem] text-neutral-400 mt-1">Masukkan ISBN untuk pencarian tepat, atau ketik judul/pengarang</p>
+
+        {{-- Hasil pencarian --}}
+        <div id="{{ $prefix }}_cariBukuDiterimaResults"
+            class="hidden mt-1.5 rounded-lg border border-neutral-200 bg-white overflow-hidden shadow-sm max-h-40 overflow-y-auto">
         </div>
-        <p id="{{ $prefix }}_judulDiterimaInfo" class="text-[0.68rem] mt-1"></p>
+        <p id="{{ $prefix }}_cariBukuDiterimaInfo" class="text-[0.68rem] mt-1"></p>
     </div>
 
     {{-- Hasil buku terpilih --}}

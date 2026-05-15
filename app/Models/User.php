@@ -15,6 +15,7 @@ class User extends Authenticatable
         'nama',
         'email',
         'no_hp',
+        'lokasi_id',
         'password',
         'role',
     ];
@@ -29,9 +30,9 @@ class User extends Authenticatable
         return $this->hasMany(UserPermission::class);
     }
 
-    public function lokasis()
+    public function lokasi()
     {
-        return $this->hasMany(Lokasi::class);
+        return $this->belongsTo(Lokasi::class, 'lokasi_id');
     }
 
     public function members()

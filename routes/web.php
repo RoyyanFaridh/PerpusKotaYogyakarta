@@ -50,11 +50,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::delete('/kegiatan/{kegiatan}', [KegiatanController::class, 'destroy'])->name('kegiatan.destroy')->middleware('has.permission:kegiatan.delete');
 
     Route::prefix('buku')->name('buku.')->group(function () {
-        Route::get('/',          [BukuController::class, 'index'])->name('index');
-        Route::get('/create',    [BukuController::class, 'create'])->name('create')->middleware('has.permission:buku.create');
-        Route::post('/',         [BukuController::class, 'store'])->name('store')->middleware('has.permission:buku.create');
-        Route::put('/{buku}',    [BukuController::class, 'update'])->name('update')->middleware('has.permission:buku.edit');
-        Route::delete('/{buku}', [BukuController::class, 'destroy'])->name('destroy')->middleware('has.permission:buku.delete');
+        Route::get('/',              [BukuController::class, 'index'])->name('index');
+        Route::get('/create',        [BukuController::class, 'create'])->name('create')->middleware('has.permission:buku.create');
+        Route::post('/',             [BukuController::class, 'store'])->name('store')->middleware('has.permission:buku.create');
+        Route::get('/{buku}',        [BukuController::class, 'show'])->name('show');
+        Route::get('/{buku}/edit',   [BukuController::class, 'edit'])->name('edit')->middleware('has.permission:buku.edit');
+        Route::put('/{buku}',        [BukuController::class, 'update'])->name('update')->middleware('has.permission:buku.edit');
+        Route::delete('/{buku}',     [BukuController::class, 'destroy'])->name('destroy')->middleware('has.permission:buku.delete');
     });
 
     Route::prefix('transaksi')->name('transaksi.')->group(function () {

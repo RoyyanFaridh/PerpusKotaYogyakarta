@@ -10,7 +10,7 @@ $categoryColorMap = [
     'Umum/Komputer'        => 'bg-indigo-50 text-indigo-700',
     'Filsafat & Psikologi' => 'bg-violet-50 text-violet-700',
     'Agama'                => 'bg-rose-50 text-rose-700',
-    'ILmu Sosial'          => 'bg-amber-50 text-amber-700',
+    'Ilmu Sosial'          => 'bg-amber-50 text-amber-700',
     'Bahasa'               => 'bg-teal-50 text-teal-700',
     'Sains & Matematika'   => 'bg-success-50 text-success-700',
     'Teknologi'            => 'bg-danger-50 text-danger-700',
@@ -44,7 +44,7 @@ $categoryColorMap = [
                     ['value' => 'Umum/Komputer',        'label' => 'Umum/Komputer'],
                     ['value' => 'Filsafat & Psikologi', 'label' => 'Filsafat & Psikologi'],
                     ['value' => 'Agama',                'label' => 'Agama'],
-                    ['value' => 'ILmu Sosial',          'label' => 'ILmu Sosial'],
+                    ['value' => 'Ilmu Sosial',          'label' => 'Ilmu Sosial'],
                     ['value' => 'Bahasa',               'label' => 'Bahasa'],
                     ['value' => 'Sains & Matematika',   'label' => 'Sains & Matematika'],
                     ['value' => 'Teknologi',            'label' => 'Teknologi'],
@@ -90,10 +90,9 @@ $categoryColorMap = [
                         <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-neutral-50" id="tableBody">
+                <tbody class="divide-y divide-neutral-50">
                     @forelse ($bukus as $buku)
-                        <tr class="hover:bg-neutral-50 transition-colors table-row-data"
-                            data-search="{{ strtolower($buku->judul) }} {{ strtolower($buku->pengarang) }} {{ strtolower($buku->isbn ?? '') }}">
+                        <tr class="hover:bg-neutral-50 transition-colors">
 
                             {{-- Judul --}}
                             <td class="px-5 py-3.5">
@@ -151,21 +150,20 @@ $categoryColorMap = [
                                 <div class="flex items-center justify-end gap-1.5">
                                     <button type="button"
                                         onclick="bukaModalEditBuku({{ json_encode([
-                                            'id'           => $buku->id,
-                                            'judul'        => $buku->judul,
-                                            'pengarang'    => $buku->pengarang,
-                                            'penerbit'     => $buku->penerbit,
-                                            'isbn'         => $buku->isbn,
-                                            'tahun_terbit' => $buku->tahun_terbit,
-                                            'tempat_terbit'=> $buku->tempat_terbit,
-                                            'resume'       => $buku->resume,
-                                            'stok'         => $buku->stok,
-                                            'kategori'     => $buku->kategori,
-                                            'sumber'       => $buku->sumber,
-                                            'kondisi'      => $buku->kondisi,
-                                            'deskripsi'    => $buku->deskripsi,
-                                            'lokasi_id'    => $buku->lokasi_id,
-                                            'member_id'    => $buku->member_id,
+                                            'id'            => $buku->id,
+                                            'judul'         => $buku->judul,
+                                            'pengarang'     => $buku->pengarang,
+                                            'penerbit'      => $buku->penerbit,
+                                            'isbn'          => $buku->isbn,
+                                            'tahun_terbit'  => $buku->tahun_terbit,
+                                            'tempat_terbit' => $buku->tempat_terbit,
+                                            'resume'        => $buku->resume,
+                                            'stok'          => $buku->stok,
+                                            'kategori'      => $buku->kategori,
+                                            'sumber'        => $buku->sumber,
+                                            'kondisi'       => $buku->kondisi,
+                                            'deskripsi'     => $buku->deskripsi,
+                                            'lokasi_id'     => $buku->lokasi_id,
                                         ]) }})"
                                         class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50 transition-colors">
                                         <x-icons.edit/>
@@ -198,12 +196,6 @@ $categoryColorMap = [
                             </td>
                         </tr>
                     @endforelse
-
-                    <tr id="noResultRow" class="hidden">
-                        <td colspan="8" class="px-5 py-10 text-center text-xs text-neutral-400">
-                            Tidak ada hasil yang cocok.
-                        </td>
-                    </tr>
                 </tbody>
             </table>
         </div>
@@ -220,32 +212,5 @@ $categoryColorMap = [
 @include('admin.buku.create')
 @include('admin.buku.edit')
 @include('admin.buku.destroy')
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('searchInput');
-    const rows        = document.querySelectorAll('.table-row-data');
-    const noResultRow = document.getElementById('noResultRow');
-
-    searchInput?.addEventListener('input', () => {
-        const q = searchInput.value.toLowerCase().trim();
-        let visible = 0;
-        rows.forEach(row => {
-            const match = !q || row.dataset.search.includes(q);
-            row.classList.toggle('hidden', !match);
-            if (match) visible++;
-        });
-        noResultRow.classList.toggle('hidden', visible > 0);
-    });
-});
-
-function confirmHapus(e, judul) {
-    if (!confirm(`Hapus buku "${judul}"?\nTindakan ini tidak bisa dibatalkan.`)) {
-        e.preventDefault();
-        return false;
-    }
-    return true;
-}
-</script>
 
 @endsection

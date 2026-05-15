@@ -26,6 +26,7 @@ return new class extends Migration
             $table->foreignId('member_id')->nullable()->constrained('members')->nullOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
+            $table->unique(['isbn', 'lokasi_id']);
         });
     }
 

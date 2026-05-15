@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SimpanBukuRequest;
 use App\Models\Buku;
 use App\Models\Lokasi;
-use App\Models\Member;
 use App\Services\BukuService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,56 +21,45 @@ class BukuController extends Controller
 
     public function index(Request $request)
     {
-        $filters  = $request->only(['search', 'kategori', 'kondisi', 'stok']);
-        $bukus    = $this->service->getAll($filters);
-        $lokasis  = Lokasi::all();
-        $members  = Member::all();
-        $stats    = $this->getStats();
+        $filters = $request->only(['search', 'kategori', 'kondisi', 'stok']);
+        $bukus   = $this->service->getAll($filters);
+        $lokasis = Lokasi::all();
+        $stats   = $this->getStats();
 
-        return view('admin.buku.index', compact('bukus', 'lokasis', 'members', 'filters', 'stats'));
-    }
-
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'judul'         => ['required', 'string', 'max:255'],
-            'pengarang'     => ['required', 'string', 'max:255'],
-            'penerbit'      => ['nullable', 'string', 'max:255'],
-            'isbn'          => ['nullable', 'string', 'max:20'],
-            'tahun_terbit'  => ['nullable', 'integer'],
-            'tempat_terbit' => ['nullable', 'string', 'max:255'],
-            'resume'        => ['nullable', 'string'],
-            'stok'          => ['required', 'integer', 'min:0'],
-            'kategori'      => ['nullable', 'string', 'max:100'],
-            'sumber'        => ['required', 'in:perpus,tukar'],
-            'kondisi'       => ['nullable', 'string', 'max:100'],
-            'deskripsi'     => ['nullable', 'string'],
-            'lokasi_id'     => ['required', 'exists:lokasis,id'],
-        ]);
-
-        $validated['user_id'] = Auth::id();
-
-        $this->service->store($validated); 
-
-        return redirect()->route('admin.buku.index')
-                        ->with('success', 'Buku berhasil ditambahkan.');
-    }
-
-    public function edit(int $id)
-    {
-        $buku = Buku::findOrFail($id);
-
-        if (request()->ajax()) {
-            return response()->json($buku);
-        }
-
-        return view('admin.buku.edit', compact('buku'));
+        // Bug 4 fix: hapus Member::all() yang tidak dipakai di view buku
+        return view('admin.buku.index', compact('bukus', 'lokasis', 'filters', 'stats'));
     }
 
     public function create()
     {
         $lokasis = Lokasi::all();
         return view('admin.buku.create', compact('lokasis'));
+    }
+
+    // Bug 1 fix: store sekarang pakai SimpanBukuRequest seperti update
+    public function store(SimpanBukuRequest $request)
+    {
+        $validated            = $request->validated();
+        $validated['user_id'] = Auth::id();
+
+        $this->service->store($validated);
+
+        return redirect()->route('admin.buku.index')
+                         ->with('success', 'Buku berhasil ditambahkan.');
+    }
+
+    // Bug 3 fix: edit hanya return view, tidak campur dengan response JSON
+    public function edit(int $id)
+    {
+        $buku    = Buku::findOrFail($id);
+        $lokasis = Lokasi::all();
+        return view('admin.buku.edit', compact('buku', 'lokasis'));
+    }
+
+    // Bug 3 fix: show khusus untuk AJAX — terpisah dari edit
+    public function show(int $id)
+    {
+        return response()->json(Buku::with('lokasi')->findOrFail($id));
     }
 
     public function update(SimpanBukuRequest $request, int $id)
@@ -88,14 +76,17 @@ class BukuController extends Controller
         return redirect()->back()->with('success', 'Buku berhasil dihapus.');
     }
 
+    // Bug 5 fix: 5 query terpisah digabung jadi 1 query
     private function getStats(): array
     {
-        return [
-            'total'    => Buku::count(),
-            'perpus'   => Buku::perpus()->count(),
-            'tukar'    => Buku::tukar()->count(),
-            'tersedia' => Buku::where('stok', '>', 0)->count(),
-            'habis'    => Buku::where('stok', 0)->count(),
-        ];
+        $stats = Buku::selectRaw("
+            COUNT(*) as total,
+            SUM(sumber = 'perpus') as perpus,
+            SUM(sumber = 'tukar') as tukar,
+            SUM(stok > 0) as tersedia,
+            SUM(stok = 0) as habis
+        ")->first();
+
+        return $stats->toArray();
     }
 }

@@ -1,3 +1,6 @@
+<input type="hidden" id="{{ $prefix }}_lokasiId" value="{{ $lokasiUser?->id ?? '' }}"/>
+<input type="hidden" id="{{ $prefix }}_memberId"/>
+
 <div class="step-content-{{ $prefix }} hidden" data-step="2">
     <div class="mb-4">
         <label class="block text-xs font-medium text-neutral-600 mb-1.5">Scan / Cari ISBN</label>
@@ -67,18 +70,19 @@
                 class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition resize-none"></textarea>
         </div>
 
-        {{-- Lokasi Penerimaan --}}
+        {{-- Lokasi otomatis dari user yang login — tidak bisa diubah --}}
         <div>
-            <label class="block text-xs font-medium text-neutral-600 mb-1">
-                Lokasi Perpustakaan <span class="text-danger-500">*</span>
-            </label>
-            <select id="{{ $prefix }}_lokasiId"
-                    class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition bg-white">
-                <option value="">-- Pilih Lokasi Perpustakaan --</option>
-                @foreach ($lokasis as $lokasi)
-                    <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
-                @endforeach
-            </select>
+            <label class="block text-xs font-medium text-neutral-600 mb-1">Lokasi Perpustakaan</label>
+            <div class="flex items-center gap-2 px-3 py-2 rounded-lg border border-neutral-200 bg-neutral-50">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-neutral-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                </svg>
+                <span class="text-xs text-neutral-700 font-medium">
+                    {{ $lokasiUser?->nama_lokasi ?? 'Lokasi tidak ditemukan' }}
+                </span>
+            </div>
+            {{-- hidden input tetap dikirim ke JS untuk fillKonfirmasi
+            <input type="hidden" id="{{ $prefix }}_lokasiId" value="{{ $lokasiUser?->id ?? '' }}"/> --}}
         </div>
     </div>
 </div>

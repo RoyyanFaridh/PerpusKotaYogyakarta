@@ -98,7 +98,7 @@
                     <label class="text-xs font-medium text-neutral-700">Stok <span class="text-danger-500">*</span></label>
                     <input type="number" name="stok" id="tambah_stok" min="0" value="0"
                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
-                    <p id="err_stok" class="hidden text-[0.68rem] text-danger-500">Stok wajib diisi dan tidak boleh nol.</p>
+                    <p id="err_stok" class="hidden text-[0.68rem] text-danger-500">Stok wajib diisi.</p>
                 </div>
             </div>
 
@@ -126,28 +126,18 @@
                 </div>
             </div>
 
-            {{-- Lokasi & Member --}}
-            <div class="grid grid-cols-2 gap-3">
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-xs font-medium text-neutral-700">Lokasi</label>
-                    <select name="lokasi_id"
-                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
-                        <option value="">Pilih lokasi</option>
-                        @foreach ($lokasis as $lokasi)
-                            <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-xs font-medium text-neutral-700">Member</label>
-                    <select name="member_id"
-                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
-                        <option value="">Pilih member</option>
-                        @foreach ($members as $member)
-                            <option value="{{ $member->id }}">{{ $member->nama }}</option>
-                        @endforeach
-                    </select>
-                </div>
+            {{-- Lokasi --}}
+            {{-- Fix: hapus input member — member_id hanya diisi via transaksi tukar, bukan form manual --}}
+            <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-medium text-neutral-700">Lokasi <span class="text-danger-500">*</span></label>
+                <select name="lokasi_id" id="tambah_lokasi_id"
+                        class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
+                    <option value="">Pilih lokasi</option>
+                    @foreach ($lokasis as $lokasi)
+                        <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
+                    @endforeach
+                </select>
+                <p id="err_lokasi_id" class="hidden text-[0.68rem] text-danger-500">Lokasi wajib dipilih.</p>
             </div>
 
             {{-- Resume --}}
@@ -196,10 +186,10 @@
     }
 
     function resetErrorTambahBuku() {
-        ['judul', 'pengarang', 'stok', 'sumber'].forEach(field => {
-            const err = document.getElementById('err_' + field);
+        ['judul', 'pengarang', 'stok', 'sumber', 'lokasi_id'].forEach(field => {
+            const err   = document.getElementById('err_' + field);
             const input = document.getElementById('tambah_' + field);
-            if (err) err.classList.add('hidden');
+            if (err)   err.classList.add('hidden');
             if (input) input.classList.remove('border-danger-400', 'focus:ring-danger-200', 'focus:border-danger-400');
         });
     }
@@ -220,22 +210,26 @@
     }
 
     function submitTambahBuku() {
-        const judul    = document.getElementById('tambah_judul').value.trim();
+        const judul     = document.getElementById('tambah_judul').value.trim();
         const pengarang = document.getElementById('tambah_pengarang').value.trim();
-        const stok     = document.getElementById('tambah_stok').value;
-        const sumber   = document.getElementById('tambah_sumber').value;
+        const stok      = document.getElementById('tambah_stok').value;
+        const sumber    = document.getElementById('tambah_sumber').value;
+        const lokasiId  = document.getElementById('tambah_lokasi_id').value;
 
-        const errJudul     = !judul;
+        // Fix: validasi stok cukup tidak boleh kosong, boleh 0
+        const errJudul    = !judul;
         const errPengarang = !pengarang;
-        const errStok = stok === '' || Number(stok) <= 0;
-        const errSumber    = !sumber;
+        const errStok     = stok === '';
+        const errSumber   = !sumber;
+        const errLokasi   = !lokasiId;
 
         setError('tambah_judul',     'err_judul',     errJudul);
         setError('tambah_pengarang', 'err_pengarang', errPengarang);
         setError('tambah_stok',      'err_stok',      errStok);
         setError('tambah_sumber',    'err_sumber',    errSumber);
+        setError('tambah_lokasi_id', 'err_lokasi_id', errLokasi);
 
-        if (errJudul || errPengarang || errStok || errSumber) return;
+        if (errJudul || errPengarang || errStok || errSumber || errLokasi) return;
 
         document.getElementById('formTambahBuku').submit();
     }

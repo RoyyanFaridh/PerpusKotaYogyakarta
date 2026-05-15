@@ -89,10 +89,12 @@ class Buku extends Model
 
     public function kurangiStok(): void
     {
-        if ($this->stok <= 0) {
+        $fresh = Buku::lockForUpdate()->findOrFail($this->id);
+
+        if ($fresh->stok <= 0) {
             throw new \Exception("Stok buku '{$this->judul}' sudah habis.");
         }
-        $this->decrement('stok');
+        $fresh->decrement('stok');
     }
 
     public function tambahStok(): void

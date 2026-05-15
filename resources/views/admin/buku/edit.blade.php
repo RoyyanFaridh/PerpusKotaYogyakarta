@@ -70,7 +70,7 @@
                     <label for="edit_isbn" class="text-xs font-medium text-neutral-700">ISBN</label>
                     <input type="text" id="edit_isbn" name="isbn"
                            placeholder="Contoh: 978-xxx"
-                           class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
+                           class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 font-mono focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label for="edit_tempat_terbit" class="text-xs font-medium text-neutral-700">Tempat Terbit</label>
@@ -83,12 +83,13 @@
             {{-- Stok & Kategori --}}
             <div class="grid grid-cols-2 gap-3">
                 <div class="flex flex-col gap-1.5">
-                    <label for="edit_stok" class="text-xs font-medium text-neutral-700">Stok</label>
+                    <label for="edit_stok" class="text-xs font-medium text-neutral-700">Stok <span class="text-danger-500">*</span></label>
                     <input type="number" id="edit_stok" name="stok"
                            placeholder="0" min="0"
                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
                 </div>
                 <div class="flex flex-col gap-1.5">
+                    {{-- Fix 1: 'ILmu Sosial' → 'Ilmu Sosial' --}}
                     <label for="edit_kategori" class="text-xs font-medium text-neutral-700">Kategori</label>
                     <select id="edit_kategori" name="kategori"
                             class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
@@ -97,7 +98,7 @@
                             'Umum/Komputer',
                             'Filsafat & Psikologi',
                             'Agama',
-                            'ILmu Sosial',
+                            'Ilmu Sosial',
                             'Bahasa',
                             'Sains & Matematika',
                             'Teknologi',
@@ -133,28 +134,16 @@
                 </div>
             </div>
 
-            {{-- Lokasi & Member --}}
-            <div class="grid grid-cols-2 gap-3">
-                <div class="flex flex-col gap-1.5">
-                    <label for="edit_lokasi_id" class="text-xs font-medium text-neutral-700">Lokasi</label>
-                    <select id="edit_lokasi_id" name="lokasi_id"
-                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
-                        <option value="">-- Pilih Lokasi --</option>
-                        @foreach ($lokasis as $lokasi)
-                            <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="flex flex-col gap-1.5">
-                    <label for="edit_member_id" class="text-xs font-medium text-neutral-700">Member</label>
-                    <select id="edit_member_id" name="member_id"
-                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
-                        <option value="">-- Pilih Member --</option>
-                        @foreach ($members as $member)
-                            <option value="{{ $member->id }}">{{ $member->nama }}</option>
-                        @endforeach
-                    </select>
-                </div>
+            {{-- Fix 3: lokasi tidak lagi dibungkus grid-cols-2 karena member sudah dihapus --}}
+            <div class="flex flex-col gap-1.5">
+                <label for="edit_lokasi_id" class="text-xs font-medium text-neutral-700">Lokasi <span class="text-danger-500">*</span></label>
+                <select id="edit_lokasi_id" name="lokasi_id"
+                        class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
+                    <option value="">-- Pilih Lokasi --</option>
+                    @foreach ($lokasis as $lokasi)
+                        <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
+                    @endforeach
+                </select>
             </div>
 
             {{-- Resume --}}
@@ -192,20 +181,19 @@
     function bukaModalEditBuku(data) {
         document.getElementById('formEditBuku').action = `/admin/buku/${data.id}`;
 
-        document.getElementById('edit_judul').value         = data.judul ?? '';
-        document.getElementById('edit_pengarang').value     = data.pengarang ?? '';
-        document.getElementById('edit_penerbit').value      = data.penerbit ?? '';
-        document.getElementById('edit_isbn').value          = data.isbn ?? '';
-        document.getElementById('edit_tahun_terbit').value  = data.tahun_terbit ?? '';
+        document.getElementById('edit_judul').value         = data.judul         ?? '';
+        document.getElementById('edit_pengarang').value     = data.pengarang     ?? '';
+        document.getElementById('edit_penerbit').value      = data.penerbit      ?? '';
+        document.getElementById('edit_isbn').value          = data.isbn          ?? '';
+        document.getElementById('edit_tahun_terbit').value  = data.tahun_terbit  ?? '';
         document.getElementById('edit_tempat_terbit').value = data.tempat_terbit ?? '';
-        document.getElementById('edit_resume').value        = data.resume ?? '';
-        document.getElementById('edit_stok').value          = data.stok ?? 0;
-        document.getElementById('edit_kategori').value      = data.kategori ?? '';
-        document.getElementById('edit_sumber').value        = data.sumber ?? 'perpus';
-        document.getElementById('edit_kondisi').value       = data.kondisi ?? '';
-        document.getElementById('edit_deskripsi').value     = data.deskripsi ?? '';
-        document.getElementById('edit_lokasi_id').value     = data.lokasi_id ?? '';
-        document.getElementById('edit_member_id').value     = data.member_id ?? '';
+        document.getElementById('edit_resume').value        = data.resume        ?? '';
+        document.getElementById('edit_stok').value          = data.stok          ?? 0;
+        document.getElementById('edit_kategori').value      = data.kategori      ?? '';
+        document.getElementById('edit_sumber').value        = data.sumber        ?? 'perpus';
+        document.getElementById('edit_kondisi').value       = data.kondisi       ?? '';
+        document.getElementById('edit_deskripsi').value     = data.deskripsi     ?? '';
+        document.getElementById('edit_lokasi_id').value     = data.lokasi_id     ?? '';
 
         const el = document.getElementById('modalEditBuku');
         el.classList.remove('hidden');

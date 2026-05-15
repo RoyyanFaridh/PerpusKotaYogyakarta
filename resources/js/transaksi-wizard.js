@@ -3,13 +3,11 @@ const state = {
     edit:   { step: 1, id: null },
 };
 
-const el        = (id)        => document.getElementById(id);
-const pEl       = (pfx, id)   => el(`${pfx}_${id}`);
-const pVal      = (pfx, id)   => pEl(pfx, id)?.value ?? '';
-const pText     = (pfx, id)   => pEl(pfx, id)?.textContent ?? '';
+const el      = (id)      => document.getElementById(id);
+const pEl     = (pfx, id) => el(`${pfx}_${id}`);
+const pVal    = (pfx, id) => pEl(pfx, id)?.value ?? '';
 
 function apiFetch(url, options = {}) {
-    const route = window.Routes.transaksiStore;
     return fetch(url, {
         headers: {
             'Content-Type': 'application/json',
@@ -40,6 +38,8 @@ function hideModal(id) {
     el(id)?.classList.remove('flex');
 }
 
+// ─── Create ────────────────────────────────────────────────────────────────
+
 function openModal() {
     resetCreate();
     showModal('modalCreate');
@@ -56,21 +56,17 @@ function resetCreate() {
         'memberId', 'memberNama', 'memberNoTelp', 'memberAlamat', 'memberEmail',
         'cariMemberInput', 'isbnDiserahkan', 'diserahkanJudul', 'diserahkanPengarang',
         'diserahkanPenerbit', 'diserahkanKategori', 'diserahkanDeskripsi',
-        'catatanPetugas', 'lokasiId', 'isbnDiterima', 'judulDiterima',
+        'catatanPetugas',
     ];
     fields.forEach(id => {
         const e = pEl('create', id);
         if (e) e.value = '';
     });
 
-    ['isbnDiserahkanInfo', 'isbnDiterimaInfo', 'judulDiterimaInfo'].forEach(id => {
-        const e = pEl('create', id);
-        if (e) e.textContent = '';
-    });
+    const isbnDiserahkanInfo = pEl('create', 'isbnDiserahkanInfo');
+    if (isbnDiserahkanInfo) isbnDiserahkanInfo.textContent = '';
 
-    ['cariMemberResults', 'judulDiterimaResults'].forEach(id => {
-        pEl('create', id)?.classList.add('hidden');
-    });
+    pEl('create', 'cariMemberResults')?.classList.add('hidden');
 
     setKondisi('create', '');
     resetBukuDiterima('create');
@@ -79,7 +75,6 @@ function resetCreate() {
 
 function simpanTransaksi() {
     const payload = buildPayload('create');
-    payload.lokasi_id = pVal('create', 'lokasiId');
 
     setBtn('createBtnSimpan', true, 'Menyimpan...');
 
@@ -92,6 +87,8 @@ function simpanTransaksi() {
         .finally(() => setBtn('createBtnSimpan', false, 'Simpan Transaksi'));
 }
 
+// ─── Edit ──────────────────────────────────────────────────────────────────
+
 function openEditTransaksi(id) {
     state.edit.id = id;
 
@@ -100,26 +97,26 @@ function openEditTransaksi(id) {
             const m = data.member;
             const b = data.buku_diserahkan;
 
-            pEl('edit', 'memberId').value            = m.id;
-            pEl('edit', 'memberNama').value           = m.nama;
-            pEl('edit', 'memberNoTelp').value         = m.no_telp;
-            pEl('edit', 'memberAlamat').value         = m.alamat   ?? '';
-            pEl('edit', 'memberEmail').value          = m.email    ?? '';
+            pEl('edit', 'memberId').value           = m.id;
+            pEl('edit', 'memberNama').value          = m.nama;
+            pEl('edit', 'memberNoTelp').value        = m.no_telp;
+            pEl('edit', 'memberAlamat').value        = m.alamat   ?? '';
+            pEl('edit', 'memberEmail').value         = m.email    ?? '';
 
-            pEl('edit', 'diserahkanJudul').value      = b.judul;
-            pEl('edit', 'diserahkanPengarang').value  = b.pengarang;
-            pEl('edit', 'diserahkanPenerbit').value   = b.penerbit  ?? '';
-            pEl('edit', 'diserahkanKategori').value   = b.kategori  ?? '';
-            pEl('edit', 'diserahkanDeskripsi').value  = b.deskripsi ?? '';
-            pEl('edit', 'isbnDiserahkan').value       = b.isbn      ?? '';
+            pEl('edit', 'diserahkanJudul').value     = b.judul;
+            pEl('edit', 'diserahkanPengarang').value = b.pengarang;
+            pEl('edit', 'diserahkanPenerbit').value  = b.penerbit  ?? '';
+            pEl('edit', 'diserahkanKategori').value  = b.kategori  ?? '';
+            pEl('edit', 'diserahkanDeskripsi').value = b.deskripsi ?? '';
+            pEl('edit', 'isbnDiserahkan').value      = b.isbn      ?? '';
+
+            const lokasiSel = pEl('edit', 'lokasiId');
+            if (lokasiSel) lokasiSel.value = b.lokasi_id ?? '';
 
             setKondisi('edit', b.kondisi ?? '');
             setBukuDiterima('edit', data.buku_diterima);
 
             pEl('edit', 'catatanPetugas').value = data.catatan_petugas ?? '';
-
-            const lokasiSel = pEl('edit', 'lokasiId');
-            if (lokasiSel) lokasiSel.value = data.lokasi_id ?? '';
 
             showModal('modalEdit');
             goToStep('edit', 1);
@@ -149,6 +146,8 @@ function updateTransaksi() {
         .finally(() => setBtn('editBtnSimpan', false, 'Simpan Perubahan'));
 }
 
+// ─── Payload ───────────────────────────────────────────────────────────────
+
 function buildPayload(prefix) {
     return {
         member: {
@@ -164,13 +163,16 @@ function buildPayload(prefix) {
             penerbit:  pVal(prefix, 'diserahkanPenerbit'),
             isbn:      pVal(prefix, 'isbnDiserahkan'),
             kategori:  pVal(prefix, 'diserahkanKategori'),
-            kondisi:   document.querySelector(`input[name="${prefix}_diserahkanKondisi"]:checked`)?.value,
+            kondisi:   document.querySelector(`input[name="${prefix}_diserahkanKondisi"]:checked`)?.value ?? null,
             deskripsi: pVal(prefix, 'diserahkanDeskripsi'),
         },
         buku_diterima_id: pVal(prefix, 'bukuDiterimaId'),
+        lokasi_id:        pVal(prefix, 'lokasiId'),
         catatan_petugas:  pVal(prefix, 'catatanPetugas'),
     };
 }
+
+// ─── Step navigation ───────────────────────────────────────────────────────
 
 const TOTAL_STEPS = 4;
 
@@ -180,7 +182,6 @@ function goToStep(prefix, step) {
     document.querySelector(`.step-content-${prefix}[data-step="${step}"]`)
         ?.classList.remove('hidden');
 
-    // Update indikator dot & label
     for (let i = 1; i <= TOTAL_STEPS; i++) {
         const dot   = el(`${prefix}_dot_${i}`);
         const label = el(`${prefix}_label_${i}`);
@@ -241,10 +242,6 @@ function validateStep(prefix, step) {
         if (!document.querySelector(`input[name="${prefix}_diserahkanKondisi"]:checked`)) {
             alert('Kondisi wajib dipilih.'); return false;
         }
-        // Lokasi hanya wajib saat create; di edit sudah fix dari transaksi awal
-        if (prefix === 'create' && !pEl('create', 'lokasiId')?.value) {
-            alert('Pilih lokasi perpustakaan.'); return false;
-        }
         return true;
     }
 
@@ -256,6 +253,8 @@ function validateStep(prefix, step) {
 
     return true;
 }
+
+// ─── Konfirmasi ────────────────────────────────────────────────────────────
 
 function fillKonfirmasi(prefix) {
     const set = (id, text) => {
@@ -271,9 +270,10 @@ function fillKonfirmasi(prefix) {
     ));
     set('konfirmasiBukuDiterima', pEl(prefix, 'bukuDiterimaJudul')?.textContent ?? '-');
 
-    const lokasiSel = pEl(prefix, 'lokasiId');
-    set('konfirmasiLokasi', lokasiSel?.options[lokasiSel.selectedIndex]?.text ?? '-');
+    set('konfirmasiLokasi', pVal(prefix, 'lokasiNama'));
 }
+
+// ─── Kondisi & Buku Diterima ───────────────────────────────────────────────
 
 function setKondisi(prefix, val) {
     document.querySelectorAll(`.kondisi-option-${prefix}`).forEach(e => {
@@ -286,59 +286,74 @@ function setKondisi(prefix, val) {
 }
 
 function setBukuDiterima(prefix, buku) {
-    pEl(prefix, 'bukuDiterimaId').value              = buku.id;
-    pEl(prefix, 'bukuDiterimaJudul').textContent     = buku.judul;
-    pEl(prefix, 'bukuDiterimaPengarang').textContent = buku.pengarang;
-    pEl(prefix, 'bukuDiterimaStok').textContent      = buku.stok;
+    const idEl = pEl(prefix, 'bukuDiterimaId');
+    if (idEl) idEl.value = buku.id;
+
+    const judulEl = pEl(prefix, 'bukuDiterimaJudul');
+    if (judulEl) judulEl.textContent = buku.judul;
+
+    const pengarangEl = pEl(prefix, 'bukuDiterimaPengarang');
+    if (pengarangEl) pengarangEl.textContent = buku.pengarang;
+
+    const stokEl = pEl(prefix, 'bukuDiterimaStok');
+    if (stokEl) stokEl.textContent = buku.stok;
 
     const lokasiEl = pEl(prefix, 'bukuDiterimaLokasi');
     if (lokasiEl) lokasiEl.textContent = buku.lokasi?.nama_lokasi ?? '-';
 
-    pEl(prefix, 'bukuDiterimaResult').classList.remove('hidden');
-    pEl(prefix, 'bukuDiterimaEmpty').classList.add('hidden');
+    pEl(prefix, 'bukuDiterimaResult')?.classList.remove('hidden');
+    pEl(prefix, 'bukuDiterimaEmpty')?.classList.add('hidden');
 
-    // Sembunyikan hasil pencarian judul setelah buku dipilih
-    pEl(prefix, 'judulDiterimaResults')?.classList.add('hidden');
+    // sembunyikan hasil pencarian setelah buku dipilih
+    const results = pEl(prefix, 'cariBukuDiterimaResults');
+    if (results) { results.innerHTML = ''; results.classList.add('hidden'); }
 }
 
 function resetBukuDiterima(prefix) {
-    pEl(prefix, 'bukuDiterimaId').value         = '';
-    pEl(prefix, 'isbnDiterima').value           = '';
-    pEl(prefix, 'isbnDiterimaInfo').textContent = '';
-    pEl(prefix, 'bukuDiterimaResult').classList.add('hidden');
-    pEl(prefix, 'bukuDiterimaEmpty').classList.remove('hidden');
+    const idEl = pEl(prefix, 'bukuDiterimaId');
+    if (idEl) idEl.value = '';
 
-    const judulInput   = pEl(prefix, 'judulDiterima');
-    const judulResults = pEl(prefix, 'judulDiterimaResults');
-    const judulInfo    = pEl(prefix, 'judulDiterimaInfo');
-    if (judulInput)   judulInput.value       = '';
-    if (judulResults) judulResults.classList.add('hidden');
-    if (judulInfo)    judulInfo.textContent  = '';
+    const cariInput = pEl(prefix, 'cariBukuDiterima');
+    if (cariInput) cariInput.value = '';
+
+    const cariInfo = pEl(prefix, 'cariBukuDiterimaInfo');
+    if (cariInfo) cariInfo.textContent = '';
+
+    const cariResults = pEl(prefix, 'cariBukuDiterimaResults');
+    if (cariResults) { cariResults.innerHTML = ''; cariResults.classList.add('hidden'); }
+
+    pEl(prefix, 'bukuDiterimaResult')?.classList.add('hidden');
+    pEl(prefix, 'bukuDiterimaEmpty')?.classList.remove('hidden');
 }
 
+// ─── Pencarian ISBN Diserahkan ─────────────────────────────────────────────
 
 function cariIsbnDiserahkan(prefix) {
     const isbn = pEl(prefix, 'isbnDiserahkan')?.value.trim();
     if (!isbn) return;
 
+    const info = pEl(prefix, 'isbnDiserahkanInfo');
+
     apiFetch(`/admin/transaksi/cari-buku-isbn?isbn=${encodeURIComponent(isbn)}`)
         .then(data => {
-            const info = pEl(prefix, 'isbnDiserahkanInfo');
             if (data) {
-                pEl(prefix, 'diserahkanJudul').value     = data.judul;
-                pEl(prefix, 'diserahkanPengarang').value = data.pengarang;
+                pEl(prefix, 'diserahkanJudul').value     = data.judul     ?? '';
+                pEl(prefix, 'diserahkanPengarang').value = data.pengarang ?? '';
                 pEl(prefix, 'diserahkanPenerbit').value  = data.penerbit  ?? '';
                 pEl(prefix, 'diserahkanKategori').value  = data.kategori  ?? '';
                 setKondisi(prefix, data.kondisi ?? '');
-                info.textContent = '✓ Data buku ditemukan dan diisi otomatis.';
-                info.className   = 'text-[0.68rem] text-success-600 mt-1';
+                if (info) {
+                    info.textContent = '✓ Data buku ditemukan dan diisi otomatis.';
+                    info.className   = 'text-[0.68rem] text-success-600 mt-1';
+                }
             } else {
-                info.textContent = 'ISBN tidak ditemukan. Isi data buku secara manual.';
-                info.className   = 'text-[0.68rem] text-warning-600 mt-1';
+                if (info) {
+                    info.textContent = 'ISBN tidak ditemukan. Isi data buku secara manual.';
+                    info.className   = 'text-[0.68rem] text-warning-600 mt-1';
+                }
             }
         })
         .catch(() => {
-            const info = pEl(prefix, 'isbnDiserahkanInfo');
             if (info) {
                 info.textContent = 'Gagal mencari ISBN.';
                 info.className   = 'text-[0.68rem] text-danger-600 mt-1';
@@ -346,89 +361,106 @@ function cariIsbnDiserahkan(prefix) {
         });
 }
 
-function cariIsbnDiterima(prefix) {
-    const isbn = pEl(prefix, 'isbnDiterima')?.value.trim();
-    if (!isbn) return;
+// ─── Pencarian Buku Diterima (gabungan ISBN + judul) ───────────────────────
 
-    apiFetch(`/admin/transaksi/cari-buku-isbn?isbn=${encodeURIComponent(isbn)}`)
-        .then(data => {
-            const info = pEl(prefix, 'isbnDiterimaInfo');
-            if (data?.stok > 0) {
-                setBukuDiterima(prefix, data);
-                info.textContent = '';
-            } else if (data?.stok === 0) {
-                info.textContent = 'Stok buku ini habis.';
-                info.className   = 'text-[0.68rem] text-danger-600 mt-1';
-            } else {
-                info.textContent = 'ISBN tidak ditemukan di koleksi perpustakaan.';
-                info.className   = 'text-[0.68rem] text-warning-600 mt-1';
-            }
-        })
-        .catch(() => {
-            const info = pEl(prefix, 'isbnDiterimaInfo');
-            if (info) {
-                info.textContent = 'Gagal mencari ISBN.';
-                info.className   = 'text-[0.68rem] text-danger-600 mt-1';
-            }
-        });
-}
+function cariBukuDiterima(prefix) {
+    const input   = pEl(prefix, 'cariBukuDiterima')?.value.trim();
+    const lokasiId = pEl(prefix, 'lokasiId')?.value ?? '';
+    if (!input) return;
 
-function cariJudulDiterima(prefix) {
-    const keyword = pEl(prefix, 'judulDiterima')?.value.trim();
-    if (!keyword) return;
+    const info    = pEl(prefix, 'cariBukuDiterimaInfo');
+    const results = pEl(prefix, 'cariBukuDiterimaResults');
+    if (info)    info.textContent = '';
+    if (results) { results.innerHTML = ''; results.classList.add('hidden'); }
 
-    const info    = pEl(prefix, 'judulDiterimaInfo');
-    const results = pEl(prefix, 'judulDiterimaResults');
+    const lokasiParam = lokasiId ? `&lokasi_id=${lokasiId}` : '';
+    const isIsbn = /^[\d\-]{10,}$/.test(input);
 
-    apiFetch(`/admin/transaksi/cari-buku-judul?keyword=${encodeURIComponent(keyword)}`)
-        .then(data => {
-            if (!data.length) {
-                results.classList.add('hidden');
-                info.textContent = 'Buku tidak ditemukan atau stok habis.';
-                info.className   = 'text-[0.68rem] text-warning-600 mt-1';
-                return;
-            }
-
-            info.textContent  = '';
-            results.innerHTML = '';
-
-            data.forEach(buku => {
-                const btn = document.createElement('button');
-                btn.type      = 'button';
-                btn.className = 'w-full text-left px-3 py-2.5 text-xs hover:bg-primary-50 transition-colors border-b border-neutral-50 last:border-0';
-
-                const judul = document.createElement('span');
-                judul.className   = 'font-semibold text-neutral-800';
-                judul.textContent = buku.judul;
-
-                const pengarang = document.createElement('span');
-                pengarang.className   = 'text-neutral-400 ml-1';
-                pengarang.textContent = `— ${buku.pengarang}`;
-
-                const meta = document.createElement('span');
-                meta.className   = 'ml-2 text-[0.65rem] text-primary-600 font-medium';
-                meta.textContent = `Stok: ${buku.stok} · ${buku.lokasi?.nama_lokasi ?? '-'}`;
-
-                btn.append(judul, pengarang, meta);
-                btn.addEventListener('click', () => pilihBukuDiterima(prefix, buku));
-                results.appendChild(btn);
+    if (isIsbn) {
+        const isbn = input.replace(/-/g, '');
+        apiFetch(`/admin/transaksi/cari-buku-isbn?isbn=${encodeURIComponent(isbn)}${lokasiParam}`)
+            .then(data => {
+                if (!data) {
+                    if (info) {
+                        info.textContent = 'Buku tidak ditemukan di lokasi ini.';
+                        info.className   = 'text-[0.68rem] text-warning-600 mt-1';
+                    }
+                } else if (data.stok <= 0) {
+                    if (info) {
+                        info.textContent = 'Stok buku ini habis di lokasi Anda.';
+                        info.className   = 'text-[0.68rem] text-danger-600 mt-1';
+                    }
+                } else {
+                    setBukuDiterima(prefix, data);
+                }
+            })
+            .catch(() => {
+                if (info) {
+                    info.textContent = 'Gagal mencari ISBN.';
+                    info.className   = 'text-[0.68rem] text-danger-600 mt-1';
+                }
             });
+    } else {
+        apiFetch(`/admin/transaksi/cari-buku-judul?keyword=${encodeURIComponent(input)}${lokasiParam}`)
+            .then(data => {
+                if (!data.length) {
+                    if (info) {
+                        info.textContent = 'Buku tidak ditemukan di lokasi ini atau stok habis.';
+                        info.className   = 'text-[0.68rem] text-warning-600 mt-1';
+                    }
+                    return;
+                }
 
-            results.classList.remove('hidden');
-        })
-        .catch(() => {
-            if (info) {
-                info.textContent = 'Gagal mencari buku.';
-                info.className   = 'text-[0.68rem] text-danger-600 mt-1';
-            }
-        });
+                if (results) {
+                    data.forEach(buku => {
+                        const btn = document.createElement('button');
+                        btn.type      = 'button';
+                        btn.disabled  = buku.stok <= 0;
+                        btn.className = `w-full text-left px-3 py-2.5 text-xs border-b border-neutral-50 last:border-0 transition-colors ${
+                            buku.stok > 0
+                                ? 'hover:bg-primary-50 cursor-pointer'
+                                : 'opacity-50 cursor-not-allowed bg-neutral-50'
+                        }`;
+
+                        const judul = document.createElement('span');
+                        judul.className   = 'font-semibold text-neutral-800';
+                        judul.textContent = buku.judul;
+
+                        const pengarang = document.createElement('span');
+                        pengarang.className   = 'text-neutral-400 ml-1';
+                        pengarang.textContent = `— ${buku.pengarang}`;
+
+                        const meta = document.createElement('span');
+                        meta.className   = `ml-2 text-[0.65rem] font-medium ${buku.stok > 0 ? 'text-primary-600' : 'text-danger-500'}`;
+                        meta.textContent = buku.stok > 0
+                            ? `Stok: ${buku.stok} · ${buku.lokasi?.nama_lokasi ?? '-'}`
+                            : 'Stok habis';
+
+                        btn.append(judul, pengarang, meta);
+                        if (buku.stok > 0) {
+                            btn.addEventListener('click', () => pilihBukuDiterima(prefix, buku));
+                        }
+                        results.appendChild(btn);
+                    });
+                    results.classList.remove('hidden');
+                }
+            })
+            .catch(() => {
+                if (info) {
+                    info.textContent = 'Gagal mencari buku.';
+                    info.className   = 'text-[0.68rem] text-danger-600 mt-1';
+                }
+            });
+    }
 }
 
 function pilihBukuDiterima(prefix, buku) {
     setBukuDiterima(prefix, buku);
-    const judulInput = pEl(prefix, 'judulDiterima');
-    if (judulInput) judulInput.value = '';
+    const input = pEl(prefix, 'cariBukuDiterima');
+    if (input) input.value = '';
 }
+
+// ─── Member ────────────────────────────────────────────────────────────────
 
 function pilihMember(prefix, m) {
     pEl(prefix, 'memberId').value     = m.id;
@@ -436,12 +468,14 @@ function pilihMember(prefix, m) {
     pEl(prefix, 'memberNoTelp').value = m.no_telp;
     pEl(prefix, 'memberAlamat').value = m.alamat ?? '';
     pEl(prefix, 'memberEmail').value  = m.email  ?? '';
-    pEl(prefix, 'cariMemberResults').classList.add('hidden');
+    pEl(prefix, 'cariMemberResults')?.classList.add('hidden');
     pEl(prefix, 'cariMemberInput').value = '';
 }
 
+// ─── Modal Hapus ───────────────────────────────────────────────────────────
+
 function bukaModalHapusTransaksi(action, label) {
-    document.getElementById('formHapusTransaksi').action = action;
+    document.getElementById('formHapusTransaksi').action    = action;
     document.getElementById('hapusTransaksiId').textContent = label;
     const modal = document.getElementById('modalHapusTransaksi');
     modal.classList.remove('hidden');
@@ -455,6 +489,8 @@ function tutupModalHapusTransaksi() {
     modal.classList.remove('flex');
     document.body.style.overflow = '';
 }
+
+// ─── DOMContentLoaded ──────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
     ['create', 'edit'].forEach(prefix => {
@@ -501,11 +537,10 @@ document.addEventListener('DOMContentLoaded', () => {
         pEl(prefix, 'isbnDiserahkan')?.addEventListener('keydown', e => {
             if (e.key === 'Enter') cariIsbnDiserahkan(prefix);
         });
-        pEl(prefix, 'isbnDiterima')?.addEventListener('keydown', e => {
-            if (e.key === 'Enter') cariIsbnDiterima(prefix);
-        });
-        pEl(prefix, 'judulDiterima')?.addEventListener('keydown', e => {
-            if (e.key === 'Enter') cariJudulDiterima(prefix);
+
+        // update: listener gabungan untuk ISBN + judul buku diterima
+        pEl(prefix, 'cariBukuDiterima')?.addEventListener('keydown', e => {
+            if (e.key === 'Enter') cariBukuDiterima(prefix);
         });
 
         document.querySelectorAll(`.kondisi-option-${prefix}`).forEach(e => {
@@ -513,12 +548,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Tutup modal hapus transaksi dengan tombol Escape
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape') tutupModalHapusTransaksi();
     });
 });
 
+// ─── Global exports ────────────────────────────────────────────────────────
 
 Object.assign(window, {
     openModal,
@@ -532,8 +567,7 @@ Object.assign(window, {
     pilihMember,
     pilihBukuDiterima,
     cariIsbnDiserahkan,
-    cariIsbnDiterima,
-    cariJudulDiterima,
+    cariBukuDiterima,
     resetBukuDiterima,
     bukaModalHapusTransaksi,
     tutupModalHapusTransaksi,

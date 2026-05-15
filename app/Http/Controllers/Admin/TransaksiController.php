@@ -28,7 +28,8 @@ class TransaksiController extends Controller
         $transaksiMingguIni = Transaksi::whereBetween('created_at', [now()->startOfWeek(), now()])->count();
         $transaksiBulanIni  = Transaksi::whereMonth('created_at', now()->month)->count();
 
-        $lokasis = Lokasi::all();
+        $lokasis    = Lokasi::all();
+        $lokasiUser = Auth::user()->lokasi;
 
         return view('admin.transaksi.index', compact(
             'transaksi',
@@ -36,6 +37,7 @@ class TransaksiController extends Controller
             'transaksiMingguIni',
             'transaksiBulanIni',
             'lokasis',
+            'lokasiUser',
         ));
     }
 
@@ -48,13 +50,16 @@ class TransaksiController extends Controller
             'buku_diserahkan.pengarang' => 'required|string|max:255',
             'buku_diserahkan.kondisi'   => 'required|in:baik,cukup,rusak',
             'buku_diterima_id'          => 'required|exists:bukus,id',
-            'lokasi_id'                 => 'required|exists:lokasis,id',
+            // lokasi_id tidak dari request — diambil dari user yang login
         ]);
 
         try {
             $this->service->simpan(array_merge(
                 $request->all(),
-                ['user_id' => Auth::id()]
+                [
+                    'user_id'   => Auth::id(),
+                    'lokasi_id' => Auth::user()->lokasi_id, // otomatis dari cabang petugas
+                ]
             ));
 
             return response()->json(['success' => true, 'message' => 'Transaksi berhasil disimpan.']);
@@ -74,7 +79,6 @@ class TransaksiController extends Controller
             'member.nama'      => 'required|string|max:255',
             'member.no_telp'   => 'required|string|max:15',
             'buku_diterima_id' => 'required|exists:bukus,id',
-            // lokasi_id tidak divalidasi — lokasi sudah fix saat transaksi dibuat
         ]);
 
         try {
@@ -105,7 +109,7 @@ class TransaksiController extends Controller
 
         return response()->json([
             ...$transaksi->toArray(),
-            'lokasi_id' => $transaksi->bukuDiserahkan?->lokasi_id, // dari buku diserahkan
+            'lokasi_id' => $transaksi->bukuDiserahkan?->lokasi_id,
         ]);
     }
 
@@ -128,13 +132,19 @@ class TransaksiController extends Controller
 
     public function cariBukuIsbn(Request $request)
     {
-        $buku = $this->service->cariBukuByIsbn($request->isbn ?? '');
+        $buku = $this->service->cariBukuByIsbn(
+            $request->isbn    ?? '',
+            $request->integer('lokasi_id') ?: null,
+        );
         return response()->json($buku);
     }
 
     public function cariBukuJudul(Request $request)
     {
-        $hasil = $this->service->cariBukuByJudul($request->keyword ?? '');
+        $hasil = $this->service->cariBukuByJudul(
+            $request->keyword ?? '',
+            $request->integer('lokasi_id') ?: null,
+        );
         return response()->json($hasil);
     }
 }

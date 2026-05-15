@@ -14,6 +14,8 @@ return new class extends Migration
             $table->string('email')->nullable()->unique();
             $table->string('no_hp', 15)->nullable();
             $table->string('password');
+            $table->enum('role', ['superadmin', 'admin'])->default('admin');
+            $table->foreignId('lokasi_id')->nullable()->constrained('lokasis')->nullOnDelete();
             $table->rememberToken();
             $table->timestamps();
         });
