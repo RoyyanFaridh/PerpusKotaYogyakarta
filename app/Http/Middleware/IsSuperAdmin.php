@@ -15,7 +15,8 @@ class IsSuperAdmin
         $user = Auth::user();
 
         if (!$user || !$user->isSuperAdmin()) {
-            abort(403, 'Akses ditolak. Hanya superadmin yang diizinkan.');
+            return redirect()->route('admin.dashboard')
+                            ->with('permission_denied', 'Akses ditolak. Hanya superadmin yang diizinkan.');
         }
 
         return $next($request);

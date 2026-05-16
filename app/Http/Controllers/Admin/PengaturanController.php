@@ -217,4 +217,16 @@ class PengaturanController extends Controller
 
         return response()->download($filePath, $filename)->deleteFileAfterSend(true);
     }
+
+    public function profilPage()
+    {
+        /** @var User $user */
+        $user = Auth::user();
+
+        if ($user->isSuperAdmin()) {
+            return redirect()->route('admin.pengaturan.index');
+        }
+
+        return view('admin.pengaturan.profil');
+    }
 }

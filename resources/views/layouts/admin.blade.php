@@ -49,6 +49,29 @@
         </main>
 
     </div>
+    @if (session('permission_denied'))
+    <div id="modalDenied"
+         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+        <div class="relative w-full max-w-sm rounded-xl bg-white border border-neutral-200 overflow-hidden shadow-lg">
+            <div class="absolute top-0 left-0 right-0 h-0.5 bg-danger-400"></div>
+            <div class="px-6 py-5 flex flex-col items-center gap-3 text-center">
+                <div class="w-10 h-10 rounded-full bg-danger-50 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-danger-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-neutral-800">Akses Ditolak</p>
+                    <p class="text-xs text-neutral-400 mt-1">{{ session('permission_denied') }}</p>
+                </div>
+                <button onclick="document.getElementById('modalDenied').remove()"
+                        class="px-4 py-2 text-xs font-medium rounded-lg bg-danger-500 text-white hover:bg-danger-600 transition">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+    @endif
 
     @stack('scripts')
     <script>

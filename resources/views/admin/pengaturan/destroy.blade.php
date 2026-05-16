@@ -44,7 +44,7 @@
                 </div>
             </div>
 
-            <form method="POST" action="{{ route('admin.pengaturan.user.destroy', $user) }}">
+            <form method="POST" action="{{ route('admin.pengaturan.user.destroy', $user) }}"></form>
                 @csrf
                 @method('DELETE')
                 <div class="flex items-center justify-between pt-2 border-t border-neutral-100">

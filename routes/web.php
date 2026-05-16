@@ -71,6 +71,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::delete('/{id}',         [TransaksiController::class, 'destroy'])->name('destroy')->middleware('has.permission:transaksi.delete');
     });
 
+    Route::prefix('pengaturan')->name('pengaturan.')->group(function () {
+        Route::get('/profil-saya', [PengaturanController::class, 'profilPage'])->name('profil.page');
+        Route::put('/password',    [PengaturanController::class, 'updatePassword'])->name('password');
+        Route::put('/profil',      [PengaturanController::class, 'updateProfil'])->name('profil');
+    });
+
     Route::prefix('pengaturan')->name('pengaturan.')->middleware('superadmin')->group(function () {
         Route::get('/',                         [PengaturanController::class, 'index'])->name('index');
         Route::get('/backup',                   [PengaturanController::class, 'backup'])->name('backup');
@@ -80,7 +86,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 
         Route::get('/user/{user}/edit',         [PengaturanController::class, 'editUser'])->name('edit');
         Route::put('/user/{user}',              [PengaturanController::class, 'updateUser'])->name('user.update');
-        Route::put('/user/{user}/password',     [PengaturanController::class, 'updateUserPassword'])->name('user.password');
         Route::post('/user/{user}/permissions', [PengaturanController::class, 'updatePermissions'])->name('user.permissions');
 
         Route::get('/user/{user}/destroy',      [PengaturanController::class, 'confirmDestroyUser'])->name('destroy');

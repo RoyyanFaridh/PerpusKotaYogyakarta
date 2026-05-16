@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\UserPermission;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements Auditable
 {
     use HasFactory, Notifiable;
+    use \OwenIt\Auditing\Auditable;
 
     protected $fillable = [
         'nama',
@@ -21,6 +23,11 @@ class User extends Authenticatable
     ];
 
     protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected $auditExclude = [
         'password',
         'remember_token',
     ];

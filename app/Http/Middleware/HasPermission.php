@@ -19,7 +19,7 @@ class HasPermission
         }
 
         if (!$user->hasPermission($permission)) {
-            abort(403, 'Anda tidak memiliki izin untuk melakukan aksi ini.');
+            return redirect()->back()->with('permission_denied', 'Anda tidak memiliki izin untuk melakukan aksi ini.');
         }
 
         return $next($request);

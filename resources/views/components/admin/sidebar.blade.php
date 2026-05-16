@@ -184,7 +184,7 @@
         <div x-show="!open" class="my-2 mx-3 border-t border-white/10"></div>
 
         {{-- Pengaturan --}}
-        <a href="{{ route('admin.pengaturan.index') }}"
+        <a href="{{ auth()->user()->isSuperAdmin() ? route('admin.pengaturan.index') : route('admin.pengaturan.profil.page') }}"
             :class="[
                 activeMenu === 'pengaturan' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
                 open ? 'px-3 gap-3' : 'px-0 gap-0 justify-center'
