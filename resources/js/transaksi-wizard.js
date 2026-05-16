@@ -211,6 +211,7 @@ function goToStep(prefix, step) {
     el(`${prefix}BtnSimpan`)?.classList.toggle('hidden', step !== TOTAL_STEPS);
 
     if (step === TOTAL_STEPS) fillKonfirmasi(prefix);
+    if (step === 3) loadBukuLokasi(prefix);
 
     state[prefix].step = step;
 }
@@ -452,6 +453,47 @@ function cariBukuDiterima(prefix) {
                 }
             });
     }
+}
+
+function loadBukuLokasi(prefix) {
+    const container = pEl(prefix, 'listBukuLokasi');
+    if (!container) return;
+
+    container.innerHTML = '<div class="px-3 py-4 text-center text-xs text-neutral-400">Memuat daftar buku...</div>';
+
+    apiFetch('/admin/transaksi/cari-buku-lokasi')
+        .then(data => {
+            if (!data.length) {
+                container.innerHTML = '<div class="px-3 py-4 text-center text-xs text-neutral-400">Tidak ada buku tersedia di cabang ini.</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            data.forEach(buku => {
+                const btn = document.createElement('button');
+                btn.type      = 'button';
+                btn.className = 'w-full text-left px-3 py-2.5 text-xs hover:bg-primary-50 transition-colors border-b border-neutral-50 last:border-0 cursor-pointer';
+
+                const judul = document.createElement('span');
+                judul.className   = 'font-semibold text-neutral-800';
+                judul.textContent = buku.judul;
+
+                const pengarang = document.createElement('span');
+                pengarang.className   = 'text-neutral-400 ml-1';
+                pengarang.textContent = `— ${buku.pengarang}`;
+
+                const stok = document.createElement('span');
+                stok.className   = 'ml-2 text-[0.65rem] font-medium text-primary-600';
+                stok.textContent = `Stok: ${buku.stok}`;
+
+                btn.append(judul, pengarang, stok);
+                btn.addEventListener('click', () => pilihBukuDiterima(prefix, buku));
+                container.appendChild(btn);
+            });
+        })
+        .catch(() => {
+            container.innerHTML = '<div class="px-3 py-4 text-center text-xs text-danger-400">Gagal memuat daftar buku.</div>';
+        });
 }
 
 function pilihBukuDiterima(prefix, buku) {

@@ -65,7 +65,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::get('/cari-member',     [TransaksiController::class, 'cariMember'])->name('cari-member');
         Route::post('/simpan-member',  [TransaksiController::class, 'simpanMember'])->name('simpan-member');
         Route::get('/cari-buku-isbn',  [TransaksiController::class, 'cariBukuIsbn'])->name('cari-buku-isbn');
-        Route::get('/cari-buku-judul', [TransaksiController::class, 'cariBukuJudul'])->name('cari-buku-judul'); // tambah ini
+        Route::get('/cari-buku-judul', [TransaksiController::class, 'cariBukuJudul'])->name('cari-buku-judul');
+        Route::get('/cari-buku-lokasi', [TransaksiController::class, 'bukuByLokasi'])->name('cari-buku-lokasi');
         Route::get('/{id}',            [TransaksiController::class, 'show'])->name('show');
         Route::put('/{id}',            [TransaksiController::class, 'update'])->name('update')->middleware('has.permission:transaksi.edit');
         Route::delete('/{id}',         [TransaksiController::class, 'destroy'])->name('destroy')->middleware('has.permission:transaksi.delete');

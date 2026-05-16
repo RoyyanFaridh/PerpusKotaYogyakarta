@@ -101,17 +101,17 @@ $categoryColorMap = [
                             </td>
 
                             {{-- Pengarang --}}
-                            <td class="px-5 py-3.5 text-xs text-neutral-600 whitespace-nowrap">
+                            <td class="px-5 py-3.5 text-xs text-neutral-600 whitespace-nowrap text-center">
                                 {{ $buku->pengarang }}
                             </td>
 
                             {{-- ISBN --}}
-                            <td class="px-5 py-3.5 text-xs font-mono text-neutral-500">
+                            <td class="px-5 py-3.5 text-xs font-mono text-neutral-500 text-center">
                                 {{ $buku->isbn ?? '-' }}
                             </td>
 
                             {{-- Kategori --}}
-                            <td class="px-5 py-3.5">
+                            <td class="px-5 py-3.5 text-center">
                                 @if ($buku->kategori)
                                     @php $catClass = $categoryColorMap[$buku->kategori] ?? 'bg-neutral-100 text-neutral-500'; @endphp
                                     <span class="text-[0.68rem] font-medium px-2 py-0.5 rounded-full {{ $catClass }}">
@@ -123,7 +123,7 @@ $categoryColorMap = [
                             </td>
 
                             {{-- Sumber --}}
-                            <td class="px-5 py-3.5">
+                            <td class="px-5 py-3.5 text-center">
                                 @if ($buku->sumber === 'perpus')
                                     <span class="text-[0.68rem] font-medium px-2 py-0.5 rounded-full bg-primary-50 text-primary-700">Perpus</span>
                                 @else
@@ -132,7 +132,7 @@ $categoryColorMap = [
                             </td>
 
                             {{-- Stok --}}
-                            <td class="px-5 py-3.5">
+                            <td class="px-5 py-3.5 text-center">
                                 @if ($buku->stok > 0)
                                     <span class="text-[0.68rem] font-medium px-2 py-0.5 rounded-full bg-success-50 text-success-700">{{ $buku->stok }} tersedia</span>
                                 @else

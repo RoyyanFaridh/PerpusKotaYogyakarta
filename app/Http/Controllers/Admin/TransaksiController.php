@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Transaksi;
 use App\Models\Lokasi;
+use App\Models\Buku;
 use App\Services\TransaksiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -146,5 +147,19 @@ class TransaksiController extends Controller
             $request->integer('lokasi_id') ?: null,
         );
         return response()->json($hasil);
+    }
+
+    public function bukuByLokasi()
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        $buku = Buku::where('lokasi_id', $user->lokasi_id)
+                    ->where('stok', '>', 0)
+                    ->where('sumber', 'perpus')
+                    ->orderBy('judul')
+                    ->get(['id', 'judul', 'pengarang', 'stok', 'lokasi_id']);
+
+        return response()->json($buku);
     }
 }

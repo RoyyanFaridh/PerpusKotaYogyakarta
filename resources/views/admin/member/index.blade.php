@@ -26,11 +26,11 @@
             <table class="w-full text-sm">
                 <thead>
                     <tr class="border-b border-neutral-100 bg-neutral-50">
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Nama</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Nama</th>
                         <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Email</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">No. Telepon</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">No. Telepon</th>
                         <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Alamat</th>
-                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">User</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Ditambahkan oleh</th>
                         <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Aksi</th>
                     </tr>
                 </thead>
@@ -43,11 +43,11 @@
                             <td class="px-5 py-3.5 text-xs text-neutral-600 text-center">
                                 {{ $member->email ?? '-' }}
                             </td>
-                            <td class="px-5 py-3.5">
+                            <td class="px-5 py-3.5 text-center">
                                 <span class="text-xs font-mono font-semibold text-neutral-800">{{ $member->no_telp }}</span>
                             </td>
-                            <td class="px-5 py-3.5">
-                                <p class="text-xs text-neutral-500 max-w-50 whitespace-normal leading-relaxed">{{ $member->alamat ?? '-' }}</p>
+                            <td class="px-5 py-3.5 text-left">
+                                <p class="text-xs text-neutral-500 whitespace-normal leading-relaxed">{{ $member->alamat ?? '-' }}</p>
                             </td>
                             <td class="px-5 py-3.5 text-center">
                                 @if ($member->user)
