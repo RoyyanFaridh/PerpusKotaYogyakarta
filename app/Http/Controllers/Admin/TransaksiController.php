@@ -9,6 +9,8 @@ use App\Models\Buku;
 use App\Services\TransaksiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Exports\TransaksiExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TransaksiController extends Controller
 {
@@ -19,11 +21,32 @@ class TransaksiController extends Controller
         $this->service = $service;
     }
 
-    public function index()
+    public function index(Request $request)
     {
+        $filters = $request->only(['search', 'tanggal']);
+
         $transaksi = Transaksi::with(['member', 'bukuDiserahkan', 'bukuDiterima'])
+            ->when($filters['search'] ?? null, function ($q, $search) {
+                $q->where(function ($q) use ($search) {
+                    $q->whereHas('member', fn($m) =>
+                            $m->where('nama', 'like', "%{$search}%")
+                            ->orWhere('no_telp', 'like', "%{$search}%"))
+                    ->orWhereHas('bukuDiserahkan', fn($b) => $b->where('judul', 'like', "%{$search}%"))
+                    ->orWhereHas('bukuDiterima',   fn($b) => $b->where('judul', 'like', "%{$search}%"));
+                });
+            })
+            ->when($filters['tanggal'] ?? null, function ($q, $tanggal) {
+                match ($tanggal) {
+                    'hari_ini'   => $q->whereDate('tanggal_tukar', today()),
+                    'minggu_ini' => $q->whereBetween('tanggal_tukar', [now()->startOfWeek(), now()->endOfWeek()]),
+                    'bulan_ini'  => $q->whereMonth('tanggal_tukar', now()->month)
+                                    ->whereYear('tanggal_tukar', now()->year),
+                    default      => null,
+                };
+            })
             ->latest()
-            ->paginate(15);
+            ->paginate(15)
+            ->withQueryString();
 
         $transaksiHariIni   = Transaksi::whereDate('created_at', today())->count();
         $transaksiMingguIni = Transaksi::whereBetween('created_at', [now()->startOfWeek(), now()])->count();
@@ -161,5 +184,11 @@ class TransaksiController extends Controller
                     ->get(['id', 'judul', 'pengarang', 'stok', 'lokasi_id']);
 
         return response()->json($buku);
+    }
+
+    public function export()
+    {
+        $filename = 'transaksi-' . now()->format('Y-m-d') . '.xlsx';
+        return Excel::download(new TransaksiExport, $filename);
     }
 }

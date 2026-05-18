@@ -9,6 +9,7 @@
     'placeholder'   => 'Cari...',
     'filters'       => [],
     'stats'         => [],
+    'exportRoute'   => null,
 ])
 
 <div class="relative overflow-hidden rounded-xl bg-white border border-neutral-200">
@@ -38,23 +39,38 @@
             </div>
         </div>
 
-        @if ($route)
-            <a href="{{ route($route) }}"
-               class="flex items-center gap-2 text-xs font-medium px-3.5 py-2 rounded-lg bg-primary text-white hover:bg-primary-600 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-                {{ $routeLabel }}
-            </a>
-        @elseif ($buttonOnclick)
-            <button type="button" onclick="{{ $buttonOnclick }}"
-                    class="flex items-center gap-2 text-xs font-medium px-3.5 py-2 rounded-lg bg-primary text-white hover:bg-primary-600 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-                {{ $routeLabel }}
-            </button>
-        @endif
+        {{-- Tombol kanan: export + tambah dibungkus flex supaya rapi berdampingan --}}
+        <div class="flex items-center gap-2">
+            @if ($exportRoute)
+                <a href="{{ $exportRoute }}"
+                   class="flex items-center gap-1.5 text-xs font-medium px-3.5 py-2 rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-50 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Export Excel
+                </a>
+            @endif
+
+            @if ($route)
+                <a href="{{ route($route) }}"
+                   class="flex items-center gap-2 text-xs font-medium px-3.5 py-2 rounded-lg bg-primary text-white hover:bg-primary-600 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    {{ $routeLabel }}
+                </a>
+            @elseif ($buttonOnclick)
+                <button type="button" onclick="{{ $buttonOnclick }}"
+                        class="flex items-center gap-2 text-xs font-medium px-3.5 py-2 rounded-lg bg-primary text-white hover:bg-primary-600 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    {{ $routeLabel }}
+                </button>
+            @endif
+        </div>
     </div>
 
     {{-- Stats (opsional) --}}

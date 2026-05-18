@@ -11,24 +11,34 @@
         const csrf = document.querySelector('meta[name="csrf-token"]')?.content ?? '{{ csrf_token() }}';
     </script>
     @vite('resources/js/transaksi-wizard.js')
-
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const searchInput = document.getElementById('searchInput');
-            const rows        = document.querySelectorAll('.table-row-data');
-            const noResultRow = document.getElementById('noResultRow');
+    (function () {
+        const searchInput     = document.getElementById('searchInput');
+        const selectTanggal   = document.getElementById('filterTanggal');
 
-            searchInput?.addEventListener('input', () => {
-                const q = searchInput.value.toLowerCase().trim();
-                let visible = 0;
-                rows.forEach(row => {
-                    const match = !q || row.dataset.search.includes(q);
-                    row.classList.toggle('hidden', !match);
-                    if (match) visible++;
-                });
-                noResultRow.classList.toggle('hidden', visible > 0);
-            });
+        function applyFilters() {
+            const params = new URLSearchParams();
+
+            const q = searchInput?.value.trim();
+            if (q) params.set('search', q);
+
+            if (selectTanggal?.value) params.set('tanggal', selectTanggal.value);
+
+            window.location.href = `${window.location.pathname}?${params.toString()}`;
+        }
+
+        let debounce;
+        searchInput?.addEventListener('input', function () {
+            clearTimeout(debounce);
+            debounce = setTimeout(applyFilters, 400);
         });
+
+        selectTanggal?.addEventListener('change', applyFilters);
+
+        const params = new URLSearchParams(window.location.search);
+        if (searchInput && params.get('search'))     searchInput.value    = params.get('search');
+        if (selectTanggal && params.get('tanggal'))  selectTanggal.value  = params.get('tanggal');
+    })();
     </script>
 @endpush
 
@@ -43,13 +53,13 @@
         route-label="Tambah Transaksi"
         placeholder="Cari member, buku..."
         search-id="searchInput"
+        :export-route="route('admin.transaksi.export')"
         :stats="[
             ['label' => 'Total',      'value' => $transaksi->total(), 'color' => 'text-neutral-800'],
             ['label' => 'Hari Ini',   'value' => $transaksiHariIni,  'color' => 'text-primary-700'],
             ['label' => 'Minggu Ini', 'value' => $transaksiMingguIni,'color' => 'text-success-700'],
             ['label' => 'Bulan Ini',  'value' => $transaksiBulanIni, 'color' => 'text-warning-700'],
         ]"
-        :action="['label' => 'Transaksi Baru', 'onclick' => 'openModal()']"
         :filters="[
             [
                 'name'        => 'tanggal',
@@ -80,12 +90,12 @@
             <table class="w-full text-sm">
                 <thead>
                     <tr class="border-b border-neutral-100 bg-neutral-50">
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">ID</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Member</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Buku Diserahkan</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Buku Diterima</th>
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Tanggal</th>
-                        <th class="text-right text-xs font-medium text-neutral-400 px-5 py-3">Aksi</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-2 py-3">ID</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-2 py-3">Member</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Buku Diserahkan</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Buku Diterima</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Tanggal</th>
+                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-neutral-50" id="tableBody">
@@ -96,13 +106,13 @@
                         <tr class="hover:bg-neutral-50 transition-colors table-row-data"
                             data-search="{{ strtolower($item->member->nama ?? '') }} {{ strtolower($item->bukuDiserahkan->judul ?? '') }} {{ strtolower($item->bukuDiterima->judul ?? '') }}">
 
-                            <td class="px-5 py-3.5">
+                            <td class="px-2 py-3.5 text-center">
                                 <span class="text-xs font-mono font-medium text-neutral-500">
                                     {{ $txnId }}
                                 </span>
                             </td>
 
-                            <td class="px-5 py-3.5">
+                            <td class="px-2 py-3.5 ">
                                 <div class="flex items-center gap-2">
                                     <div class="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-white text-[0.65rem] font-bold shrink-0">
                                         {{ strtoupper(substr($item->member->nama ?? 'U', 0, 1)) }}
@@ -114,23 +124,23 @@
                                 </div>
                             </td>
 
-                            <td class="px-5 py-3.5 max-w-40">
+                            <td class="px-5 py-3.5 max-w-40 text-center">
                                 <p class="text-xs font-medium text-neutral-700 truncate">{{ $item->bukuDiserahkan->judul ?? '-' }}</p>
                                 <p class="text-[0.68rem] text-neutral-400 mt-0.5">{{ $item->bukuDiserahkan->pengarang ?? '' }}</p>
                             </td>
 
-                            <td class="px-5 py-3.5 max-w-40">
+                            <td class="px-5 py-3.5 max-w-40 text-center">
                                 <p class="text-xs font-medium text-neutral-700 truncate">{{ $item->bukuDiterima->judul ?? '-' }}</p>
                                 <p class="text-[0.68rem] text-neutral-400 mt-0.5">{{ $item->bukuDiterima->pengarang ?? '' }}</p>
                             </td>
 
-                            <td class="px-5 py-3.5 whitespace-nowrap">
+                            <td class="px-5 py-3.5 whitespace-nowrap text-center">
                                 <p class="text-xs font-medium text-neutral-700">{{ $item->tanggal_tukar?->format('d M Y') ?? '-' }}</p>
                                 <p class="text-[0.68rem] text-neutral-400 mt-0.5">{{ $item->tanggal_tukar?->diffForHumans() ?? '' }}</p>
                             </td>
 
-                            <td class="px-5 py-3.5">
-                                <div class="flex items-center justify-end gap-1.5">
+                            <td class="py-3.5">
+                                <div class="flex items-center justify-center gap-1.5">
                                     <button type="button"
                                             onclick="openEditTransaksi({{ $item->id }})"
                                             class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-warning-300 hover:text-warning-600 hover:bg-warning-50 transition-colors">
