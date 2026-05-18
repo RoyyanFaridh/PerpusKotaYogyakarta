@@ -23,6 +23,10 @@
             from { opacity: 0; transform: translateY(24px); }
             to   { opacity: 1; transform: translateY(0); }
         }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -48%) scale(0.96); }
+            to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
         .anim-1 { animation: fadeUp 0.7s 0.05s ease both; }
         .anim-2 { animation: fadeUp 0.7s 0.15s ease both; }
         .anim-3 { animation: fadeUp 0.7s 0.25s ease both; }
@@ -36,7 +40,7 @@
 
     {{-- NAVBAR --}}
     <nav class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-primary-100 shadow-sm">
-        <div class="w-full max-w-7xl mx-auto px-[clamp(1rem,5vw,3rem)] h-16 flex items-center justify-between gap-4">
+        <div class="w-full max-w-8xl mx-auto px-[clamp(1rem,5vw,3rem)] h-18 sm:h-20 flex items-center justify-between gap-4">
             <a href="{{ url('/') }}" class="flex items-center gap-2.5 no-underline shrink-0">
                 <div class="w-9 h-9 bg-primary rounded-[9px] grid place-items-center shadow-sm">
                     <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24">
@@ -50,9 +54,6 @@
             </a>
             <a href="{{ url('/') }}"
                class="inline-flex items-center gap-2 px-4 py-2 border border-primary-100 text-primary text-sm font-semibold rounded-lg no-underline bg-white transition-all duration-200 hover:bg-primary-50 hover:border-primary-200">
-                <svg class="w-4 h-4 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19 12H5M12 5l-7 7 7 7"/>
-                </svg>
                 <span class="hidden sm:inline">Kembali ke Beranda</span>
             </a>
         </div>
@@ -65,7 +66,7 @@
              style="width:clamp(360px,60vw,720px);height:clamp(360px,60vw,720px);background:radial-gradient(circle,rgba(4,68,141,0.09) 0%,transparent 68%);">
         </div>
 
-        <div class="w-full max-w-md">
+        <div class="w-full max-w-lg">
 
             <p class="anim-1 text-[0.70rem] font-semibold tracking-[0.22em] uppercase text-primary-500 mb-4 flex items-center justify-center gap-3">
                 <span class="block w-7 h-px bg-primary-400 rounded"></span>
@@ -83,30 +84,7 @@
             </p>
 
             {{-- CARD --}}
-            <div class="anim-4 bg-white/90 backdrop-blur-lg rounded-2xl border border-primary-100 shadow-xl p-8">
-
-                @if (session('error'))
-                    <div class="mb-5 flex items-start gap-3 px-4 py-3 rounded-lg bg-danger-50 border border-danger-100 text-danger-600 text-sm">
-                        <svg class="w-4 h-4 mt-0.5 shrink-0 fill-current" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-.75-11.25a.75.75 0 011.5 0v4.5a.75.75 0 01-1.5 0v-4.5zm.75 7.5a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd"/>
-                        </svg>
-                        <span>{{ session('error') }}</span>
-                    </div>
-                @endif
-
-                @if ($errors->any())
-                    <div class="mb-5 flex items-start gap-3 px-4 py-3 rounded-lg bg-danger-50 border border-danger-100 text-danger-600 text-sm">
-                        <svg class="w-4 h-4 mt-0.5 shrink-0 fill-current" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-.75-11.25a.75.75 0 011.5 0v4.5a.75.75 0 01-1.5 0v-4.5zm.75 7.5a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd"/>
-                        </svg>
-                        <ul class="list-none space-y-0.5">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-
+            <div class="anim-4 bg-white/90 backdrop-blur-lg rounded-2xl border border-primary-100 shadow-xl p-10">
                 <form action="{{ route('auth.login.post') }}" method="POST" class="space-y-5">
                     @csrf
 
@@ -130,26 +108,13 @@
                                 class="w-full pl-10 pr-4 py-3 rounded-lg border bg-white font-sans text-[0.9rem] text-primary-900 placeholder-neutral-300 transition-all duration-200 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary-100 {{ $errors->has('email') ? 'border-danger-400 bg-danger-50' : 'border-primary-100' }}"
                             >
                         </div>
-                        @error('email')
-                            <p class="mt-1.5 text-[0.73rem] text-danger-500 flex items-center gap-1">
-                                <svg class="w-3 h-3 fill-current shrink-0" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-.75-11.25a.75.75 0 011.5 0v4.5a.75.75 0 01-1.5 0v-4.5zm.75 7.5a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd"/></svg>
-                                {{ $message }}
-                            </p>
-                        @enderror
                     </div>
 
                     {{-- Password --}}
                     <div>
-                        <div class="flex items-center justify-between mb-1.5">
-                            <label for="password" class="block text-[0.75rem] font-semibold tracking-widest text-primary-800 uppercase">
-                                Password
-                            </label>
-                            @if (Route::has('password.request'))
-                                <a href="{{ route('password.request') }}" class="text-[0.73rem] text-primary font-medium no-underline hover:underline">
-                                    Lupa password?
-                                </a>
-                            @endif
-                        </div>
+                        <label for="password" class="block text-[0.75rem] font-semibold tracking-widest text-primary-800 uppercase mb-1.5">
+                            Password
+                        </label>
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-300">
                                 <svg class="w-4 h-4 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round">
@@ -176,21 +141,6 @@
                                 </svg>
                             </button>
                         </div>
-                        @error('password')
-                            <p class="mt-1.5 text-[0.73rem] text-danger-500 flex items-center gap-1">
-                                <svg class="w-3 h-3 fill-current shrink-0" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-.75-11.25a.75.75 0 011.5 0v4.5a.75.75 0 01-1.5 0v-4.5zm.75 7.5a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd"/></svg>
-                                {{ $message }}
-                            </p>
-                        @enderror
-                    </div>
-
-                    {{-- Remember me --}}
-                    <div class="flex items-center gap-2.5">
-                        <input id="remember" type="checkbox" name="remember"
-                               class="w-4 h-4 rounded border-primary-200 accent-primary cursor-pointer">
-                        <label for="remember" class="text-[0.82rem] text-neutral-500 cursor-pointer select-none">
-                            Ingat saya selama 30 hari
-                        </label>
                     </div>
 
                     <div class="border-t border-primary-50"></div>
@@ -198,9 +148,6 @@
                     {{-- Submit --}}
                     <button type="submit"
                             class="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-primary text-white font-sans text-[0.9rem] font-semibold rounded-lg border-none cursor-pointer transition-all duration-200 shadow-md hover:bg-primary-700 hover:-translate-y-px hover:shadow-lg active:translate-y-0">
-                        <svg class="w-4 h-4 stroke-current fill-none shrink-0" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/>
-                        </svg>
                         Masuk ke Dashboard
                     </button>
                 </form>
@@ -214,9 +161,8 @@
         </div>
     </main>
 
-    {{-- FOOTER --}}
     <footer class="relative z-10 text-center px-4 py-5 text-[0.73rem] text-neutral-400 border-t border-primary-100 bg-white">
-        © {{ date('Y') }} SIPETUK · Perpustakaan Buku Gratis
+        © {{ date('Y') }} SIPETUK · Perpustakaan Kota Yogyakarta
     </footer>
 
     <script>
@@ -232,6 +178,70 @@
             iconOff.classList.toggle('hidden', !show);
         });
     </script>
+
+    @if ($errors->any() || session('error'))
+        {{-- Overlay --}}
+        <div id="toast-overlay" onclick="dismissToast()"
+             class="fixed inset-0 z-99 bg-black/20 backdrop-blur-[2px]"
+             style="animation: fadeUp 0.3s ease both;"></div>
+
+        {{-- Toast --}}
+        <div id="toast"
+             class="fixed z-100 left-1/2 top-1/2 w-full max-w-sm px-6 py-5 rounded-2xl bg-white border border-danger-100 shadow-2xl text-danger-700"
+             style="transform: translate(-50%, -50%); animation: fadeIn 0.35s ease both;">
+
+            <div class="flex items-start gap-3">
+                <div class="w-9 h-9 rounded-xl bg-danger-50 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 fill-current text-danger-500" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-.75-11.25a.75.75 0 011.5 0v4.5a.75.75 0 01-1.5 0v-4.5zm.75 7.5a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <p class="text-sm font-semibold text-danger-800 mb-0.5">Login Gagal</p>
+                    <div class="text-xs text-danger-600 space-y-0.5">
+                        @if (session('error'))
+                            <p>{{ session('error') }}</p>
+                        @endif
+                        @foreach ($errors->all() as $error)
+                            <p>{{ $error }}</p>
+                        @endforeach
+                    </div>
+                </div>
+                <button onclick="dismissToast()" class="text-neutral-300 hover:text-neutral-500 transition-colors shrink-0">
+                    <svg class="w-4 h-4 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+
+            {{-- Progress bar --}}
+            <div class="mt-4 h-0.5 rounded-full bg-danger-100 overflow-hidden">
+                <div id="toast-bar" class="h-full bg-danger-400 rounded-full"
+                     style="width: 100%; transition: width 4s linear;"></div>
+            </div>
+        </div>
+
+        <script>
+            function dismissToast() {
+                const toast   = document.getElementById('toast');
+                const overlay = document.getElementById('toast-overlay');
+                [toast, overlay].forEach(el => {
+                    if (!el) return;
+                    el.style.transition = 'opacity 0.3s, transform 0.3s';
+                    el.style.opacity    = '0';
+                    if (el === toast) el.style.transform = 'translate(-50%, -48%) scale(0.96)';
+                    setTimeout(() => el.remove(), 300);
+                });
+            }
+
+            // mulai progress bar
+            requestAnimationFrame(() => {
+                document.getElementById('toast-bar').style.width = '0%';
+            });
+
+            setTimeout(dismissToast, 4000);
+        </script>
+    @endif
 
 </body>
 </html>

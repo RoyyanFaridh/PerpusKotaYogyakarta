@@ -1,4 +1,4 @@
-<section class="relative z-50 min-h-screen flex flex-col items-center justify-center pt-24 sm:pt-25 pb-16 px-4 sm:px-6 text-center">
+<section class="relative z-50 min-h-screen flex flex-col items-center justify-center pb-16 px-4 sm:px-6 text-center">
 
     {{-- Glow orb --}}
     <div class="hero-glow absolute w-[clamp(300px,70vw,860px)] h-[clamp(300px,70vw,860px)] rounded-full pointer-events-none"
@@ -26,7 +26,7 @@
     </p>
 
     {{-- Search --}}
-    <div class="animate-fade-up-4 w-full max-w-130 relative z-100">
+    <div class="animate-fade-up-4 w-full max-w-3xl relative z-100">
         <div class="search-box relative flex items-center bg-white border border-primary-100 rounded-lg shadow-sm transition-all duration-200 overflow-hidden">
             <span class="shrink-0 px-3 sm:px-4 sm:pl-5 grid place-items-center text-neutral-400">
                 <x-icons.search/>
@@ -55,13 +55,9 @@
                 <button id="dropdown-kategori-btn"
                         class="flex items-center gap-1.5 px-3 sm:px-[0.95rem] py-[0.35rem] border border-primary-100 rounded-full text-[0.75rem] sm:text-[0.78rem] font-medium text-neutral-500 bg-white/70 cursor-pointer transition-all duration-200 hover:bg-primary hover:text-white hover:border-primary"
                         onclick="toggleDropdown('kategori')">
-                    <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-current fill-none shrink-0" viewBox="0 0 24 24" stroke-width="2">
-                        <path d="M4 6h16M4 12h8M4 18h4" stroke-linecap="round"/>
-                    </svg>
+                    <x-icons.filter/>
                     <span id="label-kategori">Kategori</span>
-                    <svg class="w-3 h-3 stroke-current fill-none shrink-0 transition-transform" id="chevron-kategori" viewBox="0 0 24 24" stroke-width="2.5">
-                        <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                    <x-icons.chevron-down class="w-3 h-3 stroke-current fill-none shrink-0 transition-transform pointer-events-none" id="chevron-kategori" />
                 </button>
                 <div id="dropdown-kategori"
                      class="hidden absolute left-0 top-[calc(100%+6px)] z-9999 bg-white border border-neutral-200 rounded-xl shadow-lg py-1.5 w-55 max-h-65 overflow-y-auto text-left custom-scroll">
@@ -80,14 +76,9 @@
                 <button id="dropdown-lokasi-btn"
                         class="flex items-center gap-1.5 px-3 sm:px-[0.95rem] py-[0.35rem] border border-primary-100 rounded-full text-[0.75rem] sm:text-[0.78rem] font-medium text-neutral-500 bg-white/70 cursor-pointer transition-all duration-200 hover:bg-primary hover:text-white hover:border-primary"
                         onclick="toggleDropdown('lokasi')">
-                    <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-current fill-none shrink-0" viewBox="0 0 24 24" stroke-width="2">
-                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-                        <circle cx="12" cy="9" r="2.5"/>
-                    </svg>
+                    <x-icons.location width="14" height="14"/>
                     <span id="label-lokasi">Lokasi</span>
-                    <svg class="w-3 h-3 stroke-current fill-none shrink-0 transition-transform" id="chevron-lokasi" viewBox="0 0 24 24" stroke-width="2.5">
-                        <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                    <x-icons.chevron-down class="w-3 h-3 stroke-current fill-none shrink-0 transition-transform pointer-events-none" id="chevron-lokasi" />
                 </button>
                 <div id="dropdown-lokasi"
                      class="hidden absolute left-0 top-[calc(100%+6px)] z-9999 bg-white border border-neutral-200 rounded-xl shadow-lg py-1.5 w-65 sm:min-w-70 max-h-65 overflow-y-auto text-left custom-scroll">

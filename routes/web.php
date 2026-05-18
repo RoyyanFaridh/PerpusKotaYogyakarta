@@ -22,7 +22,7 @@ Route::prefix('katalog')->name('katalog.')->group(function () {
 });
 
 Route::get('/admin/login',  [AdminAuthController::class, 'showLoginForm'])->name('auth.login');
-Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('auth.login.post');
+Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('auth.login.post')->middleware('throttle:5,1');
 Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('auth.logout');
 
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
