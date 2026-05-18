@@ -1,6 +1,5 @@
 <div class="step-content-{{ $prefix }} hidden" data-step="3">
 
-    {{-- Cari by ISBN atau Judul --}}
     <div class="mb-4">
         <label class="block text-xs font-medium text-neutral-600 mb-1.5">Cari Buku</label>
         <div class="flex gap-2">
@@ -13,14 +12,12 @@
         </div>
         <p class="text-[0.68rem] text-neutral-400 mt-1">Masukkan ISBN untuk pencarian tepat, atau ketik judul/pengarang</p>
 
-        {{-- Hasil pencarian --}}
         <div id="{{ $prefix }}_cariBukuDiterimaResults"
             class="hidden mt-1.5 rounded-lg border border-neutral-200 bg-white overflow-hidden shadow-sm max-h-40 overflow-y-auto">
         </div>
         <p id="{{ $prefix }}_cariBukuDiterimaInfo" class="text-[0.68rem] mt-1"></p>
     </div>
 
-    {{-- Hasil buku terpilih --}}
     <div id="{{ $prefix }}_bukuDiterimaResult" class="hidden">
         <div class="p-3.5 rounded-xl border border-success-200 bg-success-50 flex items-start gap-3">
             <div class="w-8 h-8 rounded-lg bg-success-100 text-success-700 flex items-center justify-center shrink-0">
@@ -42,8 +39,6 @@
         <input type="hidden" id="{{ $prefix }}_bukuDiterimaId"/>
     </div>
 
-
-    {{-- Daftar buku cabang --}}
     <div class="mt-3">
         <p class="text-xs font-medium text-neutral-600 mb-2">Buku Tersedia</p>
         <div id="{{ $prefix }}_listBukuLokasi"

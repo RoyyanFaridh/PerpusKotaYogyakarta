@@ -52,6 +52,19 @@
                 </select>
             </div>
         </div>
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label class="block text-xs font-medium text-neutral-600 mb-1">Tahun Terbit</label>
+                <input type="number" id="{{ $prefix }}_diserahkanTahunTerbit" placeholder="cth. 2021"
+                    min="1900" max="{{ date('Y') }}"
+                    class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition"/>
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-neutral-600 mb-1">Tempat Terbit</label>
+                <input type="text" id="{{ $prefix }}_diserahkanTempatTerbit" placeholder="cth. Jakarta"
+                    class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition"/>
+            </div>
+        </div>
         <div>
             <label class="block text-xs font-medium text-neutral-600 mb-1">Kondisi <span class="text-danger-500">*</span></label>
             <div class="flex gap-2">
@@ -81,8 +94,6 @@
                     {{ $lokasiUser?->nama_lokasi ?? 'Lokasi tidak ditemukan' }}
                 </span>
             </div>
-            {{-- hidden input tetap dikirim ke JS untuk fillKonfirmasi
-            <input type="hidden" id="{{ $prefix }}_lokasiId" value="{{ $lokasiUser?->id ?? '' }}"/> --}}
         </div>
     </div>
 </div>
