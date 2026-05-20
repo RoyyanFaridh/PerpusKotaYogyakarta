@@ -213,4 +213,39 @@ $categoryColorMap = [
 @include('admin.buku.edit')
 @include('admin.buku.destroy')
 
+@push('scripts')
+<script>
+(function () {
+    const searchInput   = document.getElementById('searchInput');
+    const selectKategori = document.getElementById('kategori');
+    const selectStok     = document.getElementById('stok');
+
+    function applyFilters() {
+        const params = new URLSearchParams();
+
+        const q = searchInput?.value.trim();
+        if (q) params.set('search', q);
+
+        if (selectKategori?.value) params.set('kategori', selectKategori.value);
+        if (selectStok?.value)     params.set('stok',     selectStok.value);
+
+        window.location.href = `${window.location.pathname}?${params.toString()}`;
+    }
+
+    let debounce;
+    searchInput?.addEventListener('input', function () {
+        clearTimeout(debounce);
+        debounce = setTimeout(applyFilters, 400);
+    });
+
+    selectKategori?.addEventListener('change', applyFilters);
+    selectStok?.addEventListener('change', applyFilters);
+
+    const params = new URLSearchParams(window.location.search);
+    if (searchInput && params.get('search'))   searchInput.value    = params.get('search');
+    if (selectKategori && params.get('kategori')) selectKategori.value = params.get('kategori');
+    if (selectStok && params.get('stok'))         selectStok.value     = params.get('stok');
+})();
+</script>
+@endpush
 @endsection

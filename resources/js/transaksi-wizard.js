@@ -55,8 +55,8 @@ function resetCreate() {
     const fields = [
         'memberId', 'memberNama', 'memberNoTelp', 'memberAlamat', 'memberEmail',
         'cariMemberInput', 'isbnDiserahkan', 'diserahkanJudul', 'diserahkanPengarang',
-        'diserahkanPenerbit', 'diserahkanKategori', 'diserahkanDeskripsi',
-        'catatanPetugas',
+        'diserahkanPenerbit', 'diserahkanKategori', 'diserahkanDeskripsi', 'diserahkanTahunTerbit', 
+        'diserahkanTempatTerbit', 'catatanPetugas',
     ];
     fields.forEach(id => {
         const e = pEl('create', id);
@@ -109,6 +109,8 @@ function openEditTransaksi(id) {
             pEl('edit', 'diserahkanKategori').value  = b.kategori  ?? '';
             pEl('edit', 'diserahkanDeskripsi').value = b.deskripsi ?? '';
             pEl('edit', 'isbnDiserahkan').value      = b.isbn      ?? '';
+            pEl('edit', 'diserahkanTahunTerbit').value  = b.tahun_terbit  ?? '';
+            pEl('edit', 'diserahkanTempatTerbit').value = b.tempat_terbit ?? '';
 
             const lokasiSel = pEl('edit', 'lokasiId');
             if (lokasiSel) lokasiSel.value = b.lokasi_id ?? '';
@@ -165,6 +167,8 @@ function buildPayload(prefix) {
             kategori:  pVal(prefix, 'diserahkanKategori'),
             kondisi:   document.querySelector(`input[name="${prefix}_diserahkanKondisi"]:checked`)?.value ?? null,
             deskripsi: pVal(prefix, 'diserahkanDeskripsi'),
+            tahun_terbit:  pVal(prefix, 'diserahkanTahunTerbit') || null,
+            tempat_terbit: pVal(prefix, 'diserahkanTempatTerbit') || null,
         },
         buku_diterima_id: pVal(prefix, 'bukuDiterimaId'),
         lokasi_id:        pVal(prefix, 'lokasiId'),
@@ -342,6 +346,8 @@ function cariIsbnDiserahkan(prefix) {
                 pEl(prefix, 'diserahkanPengarang').value = data.pengarang ?? '';
                 pEl(prefix, 'diserahkanPenerbit').value  = data.penerbit  ?? '';
                 pEl(prefix, 'diserahkanKategori').value  = data.kategori  ?? '';
+                pEl(prefix, 'diserahkanTahunTerbit').value  = data.tahun_terbit  ?? '';
+                pEl(prefix, 'diserahkanTempatTerbit').value = data.tempat_terbit ?? '';
                 setKondisi(prefix, data.kondisi ?? '');
                 if (info) {
                     info.textContent = '✓ Data buku ditemukan dan diisi otomatis.';

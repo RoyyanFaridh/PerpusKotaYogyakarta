@@ -22,7 +22,7 @@ Route::prefix('katalog')->name('katalog.')->group(function () {
 });
 
 Route::get('/admin/login',  [AdminAuthController::class, 'showLoginForm'])->name('auth.login');
-Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('auth.login.post');
+Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('auth.login.post')->middleware('throttle:5,1');
 Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('auth.logout');
 
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
@@ -62,11 +62,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::prefix('transaksi')->name('transaksi.')->group(function () {
         Route::get('/',                [TransaksiController::class, 'index'])->name('index');
         Route::post('/',               [TransaksiController::class, 'store'])->name('store')->middleware('has.permission:transaksi.create');
+        Route::get('/export',          [TransaksiController::class, 'export'])->name('export');
         Route::get('/cari-member',     [TransaksiController::class, 'cariMember'])->name('cari-member');
         Route::post('/simpan-member',  [TransaksiController::class, 'simpanMember'])->name('simpan-member');
         Route::get('/cari-buku-isbn',  [TransaksiController::class, 'cariBukuIsbn'])->name('cari-buku-isbn');
         Route::get('/cari-buku-judul', [TransaksiController::class, 'cariBukuJudul'])->name('cari-buku-judul');
-        Route::get('/cari-buku-lokasi', [TransaksiController::class, 'bukuByLokasi'])->name('cari-buku-lokasi');
+        Route::get('/cari-buku-lokasi',[TransaksiController::class, 'bukuByLokasi'])->name('cari-buku-lokasi');
         Route::get('/{id}',            [TransaksiController::class, 'show'])->name('show');
         Route::put('/{id}',            [TransaksiController::class, 'update'])->name('update')->middleware('has.permission:transaksi.edit');
         Route::delete('/{id}',         [TransaksiController::class, 'destroy'])->name('destroy')->middleware('has.permission:transaksi.delete');
