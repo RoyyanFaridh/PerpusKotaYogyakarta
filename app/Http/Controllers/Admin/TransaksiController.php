@@ -29,10 +29,10 @@ class TransaksiController extends Controller
             ->when($filters['search'] ?? null, function ($q, $search) {
                 $q->where(function ($q) use ($search) {
                     $q->whereHas('member', fn($m) =>
-                            $m->where('nama', 'like', "%{$search}%")
-                            ->orWhere('no_telp', 'like', "%{$search}%"))
-                    ->orWhereHas('bukuDiserahkan', fn($b) => $b->where('judul', 'like', "%{$search}%"))
-                    ->orWhereHas('bukuDiterima',   fn($b) => $b->where('judul', 'like', "%{$search}%"));
+                            $m->where('nama', 'ilike', "%{$search}%")
+                            ->orWhere('no_telp', 'ilike', "%{$search}%"))
+                    ->orWhereHas('bukuDiserahkan', fn($b) => $b->where('judul', 'ilike', "%{$search}%"))
+                    ->orWhereHas('bukuDiterima',   fn($b) => $b->where('judul', 'ilike', "%{$search}%"));
                 });
             })
             ->when($filters['tanggal'] ?? null, function ($q, $tanggal) {

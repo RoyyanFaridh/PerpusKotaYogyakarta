@@ -1,10 +1,10 @@
 @props([
     'label'   => 'Label',
     'value'   => '0',
-    'icon'    => 'document', 
-    'color'   => 'primary',   
-    'badge'   => null,        
-    'caption' => null,        
+    'icon'    => 'document',
+    'color'   => 'primary',
+    'badge'   => null,
+    'caption' => null,
 ])
 
 @php
@@ -43,16 +43,16 @@
 
 <div class="relative overflow-hidden rounded-xl bg-white border border-neutral-200 flex flex-col min-h-40 p-5 pb-0">
 
-    <button class="absolute top-4 right-4 p-1 rounded-md text-neutral-300 hover:text-neutral-500 hover:bg-neutral-100 transition-colors">
+    <button class="absolute top-4 right-4 p-1.5 rounded-md text-neutral-300 hover:text-neutral-500 hover:bg-neutral-100 transition-colors">
         <x-icons.ellipsis/>
     </button>
 
     <div class="flex items-center gap-3 mb-5 pr-7">
-        <div class="shrink-0 w-9 h-9 rounded-xl {{ $c['icon_bg'] }} {{ $c['icon_tx'] }} flex items-center justify-center">
+        <div class="shrink-0 w-10 h-10 rounded-xl {{ $c['icon_bg'] }} {{ $c['icon_tx'] }} flex items-center justify-center">
             @if ($icon === 'book')
                 <x-icons.book/>
             @elseif ($icon === 'clock')
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
                 </svg>
             @elseif ($icon === 'swap')
@@ -70,12 +70,12 @@
         <div class="flex flex-col gap-3">
             <span class="text-3xl font-bold {{ $c['value'] }} leading-none">{{ $value }}</span>
             @if ($caption)
-                <span class="text-xs text-neutral-400 leading-snug">{{ $caption }}</span>
+                <span class="text-sm text-neutral-400 leading-snug">{{ $caption }}</span>
             @endif
         </div>
 
         @if ($badge)
-            <span class="text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap {{ $c['badge'] }}">
+            <span class="text-sm font-medium px-2.5 py-1 rounded-full whitespace-nowrap {{ $c['badge'] }}">
                 {{ $badge }}
             </span>
         @endif

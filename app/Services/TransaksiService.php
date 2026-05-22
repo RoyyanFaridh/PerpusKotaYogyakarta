@@ -12,8 +12,8 @@ class TransaksiService
     public function cariMember(string $keyword): \Illuminate\Database\Eloquent\Collection
     {
         return Member::where(function ($q) use ($keyword) {
-                $q->where('nama', 'like', "%{$keyword}%")
-                  ->orWhere('no_telp', 'like', "%{$keyword}%");
+                $q->where('nama', 'ilike', "%{$keyword}%")
+                ->orWhere('no_telp', 'ilike', "%{$keyword}%");
             })
             ->limit(5)
             ->get(['id', 'nama', 'no_telp', 'alamat', 'email']);
@@ -51,8 +51,8 @@ class TransaksiService
     public function cariBukuByJudul(string $keyword, ?int $lokasiId = null): \Illuminate\Database\Eloquent\Collection
     {
         $query = Buku::where(function ($q) use ($keyword) {
-                $q->where('judul', 'like', "%{$keyword}%")
-                ->orWhere('pengarang', 'like', "%{$keyword}%");
+                $q->where('judul', 'ilike', "%{$keyword}%")
+                    ->orWhere('pengarang', 'ilike', "%{$keyword}%");
             })
             ->with('lokasi')
             ->limit(10)

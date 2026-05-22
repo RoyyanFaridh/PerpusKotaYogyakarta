@@ -1,12 +1,12 @@
-<div class="flex items-center px-6 py-3 gap-2 border-b border-neutral-100">
+<div class="flex items-center px-8 py-4 gap-2 border-b border-neutral-100">
     @foreach (['Member', 'Buku Diserahkan', 'Buku Diterima', 'Konfirmasi'] as $i => $label)
-        <div class="flex items-center gap-1.5 flex-1">
-            <div class="w-5 h-5 rounded-full flex items-center justify-center text-[0.6rem] font-bold shrink-0 transition-all
+        <div class="flex items-center gap-2 flex-1">
+            <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-all
                 {{ $i === 0 ? 'bg-primary text-white' : 'bg-neutral-100 text-neutral-400' }}"
                 id="{{ $prefix }}_dot_{{ $i + 1 }}">
                 {{ $i + 1 }}
             </div>
-            <span class="text-[0.65rem] font-medium hidden sm:block
+            <span class="text-xs font-medium hidden sm:block
                 {{ $i === 0 ? 'text-primary-700' : 'text-neutral-400' }}"
                 id="{{ $prefix }}_label_{{ $i + 1 }}">
                 {{ $label }}

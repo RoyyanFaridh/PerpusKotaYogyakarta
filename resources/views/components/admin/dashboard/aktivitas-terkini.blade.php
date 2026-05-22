@@ -17,17 +17,17 @@
 
     <div class="absolute top-0 left-0 right-0 h-0.5 bg-primary-400"></div>
 
-    <div class="flex items-center justify-between px-4 pt-4 pb-3 border-b border-neutral-100 shrink-0">
-        <div class="flex items-center gap-2.5">
-            <div class="shrink-0 w-8 h-8 rounded-lg bg-primary-50 text-primary-700 flex items-center justify-center">
+    <div class="flex items-center justify-between px-5 pt-5 pb-4 border-b border-neutral-100 shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="shrink-0 w-9 h-9 rounded-lg bg-primary-50 text-primary-700 flex items-center justify-center">
                 <x-icon name="bell" size="sm" class="text-primary-600" />
             </div>
             <div>
-                <h2 class="text-xs font-medium text-neutral-500 leading-tight">Aktivitas Terkini</h2>
-                <p class="text-[0.68rem] text-neutral-400 mt-0.5">Update real-time sistem</p>
+                <h2 class="text-sm font-medium text-neutral-500 leading-tight">Aktivitas Terkini</h2>
+                <p class="text-xs text-neutral-400 mt-0.5">Update real-time sistem</p>
             </div>
         </div>
-        <button class="p-1 rounded-md text-neutral-300 hover:text-neutral-500 hover:bg-neutral-100 transition-colors">
+        <button class="p-1.5 rounded-md text-neutral-300 hover:text-neutral-500 hover:bg-neutral-100 transition-colors">
             <x-icons.ellipsis/>
         </button>
     </div>
@@ -38,40 +38,40 @@
             @php
                 $cfg = $tipeConfig[$item['tipe'] ?? ''] ?? $defaultConfig;
             @endphp
-            <li class="flex items-start gap-2.5 px-4 py-2.5 hover:bg-neutral-50 transition-colors">
-                <div class="w-8 h-8 rounded-lg {{ $cfg['bg'] }} flex items-center justify-center shrink-0">
-                    <x-icon :name="$cfg['icon']" class="w-4 h-4 {{ $cfg['text'] }}" />
+            <li class="flex items-start gap-3 px-5 py-3 hover:bg-neutral-50 transition-colors">
+                <div class="w-9 h-9 rounded-lg {{ $cfg['bg'] }} flex items-center justify-center shrink-0">
+                    <x-icon :name="$cfg['icon']" class="w-4.5 h-4.5 {{ $cfg['text'] }}" />
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-xs text-neutral-700 leading-snug">
+                    <p class="text-sm text-neutral-700 leading-snug">
                         {{ $item['pesan'] ?? '-' }}
                     </p>
                     @if (!empty($item['sub']))
-                        <p class="text-[0.68rem] text-neutral-400 mt-0.5 truncate">
+                        <p class="text-xs text-neutral-400 mt-0.5 truncate">
                             {{ $item['sub'] }}
                         </p>
                     @endif
                 </div>
-                <span class="text-[0.65rem] text-neutral-400 shrink-0 mt-0.5 whitespace-nowrap">
+                <span class="text-xs text-neutral-400 shrink-0 mt-0.5 whitespace-nowrap">
                     {{ $item['waktu'] ?? '-' }}
                 </span>
             </li>
 
         @empty
-            <li class="flex flex-col items-center justify-center py-10 text-center px-4">
-                <div class="w-9 h-9 rounded-lg bg-neutral-100 flex items-center justify-center mb-2.5">
+            <li class="flex flex-col items-center justify-center py-12 text-center px-4">
+                <div class="w-10 h-10 rounded-lg bg-neutral-100 flex items-center justify-center mb-3">
                     <x-icon name="document" size="lg" class="text-neutral-400" />
                 </div>
-                <p class="text-xs font-medium text-neutral-500">Belum ada aktivitas</p>
-                <p class="text-[0.68rem] text-neutral-400 mt-1">Aktivitas terbaru akan muncul di sini</p>
+                <p class="text-sm font-medium text-neutral-500">Belum ada aktivitas</p>
+                <p class="text-xs text-neutral-400 mt-1">Aktivitas terbaru akan muncul di sini</p>
             </li>
         @endforelse
 
     </ul>
 
     @if (!empty($aktivitas))
-        <div class="px-4 py-2.5 bg-neutral-50 border-t border-neutral-100 shrink-0">
-            <p class="text-[0.65rem] text-neutral-400">
+        <div class="px-5 py-3 bg-neutral-50 border-t border-neutral-100 shrink-0">
+            <p class="text-xs text-neutral-400">
                 Menampilkan {{ count($aktivitas) }} aktivitas terbaru.
             </p>
         </div>

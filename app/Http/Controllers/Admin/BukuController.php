@@ -81,10 +81,10 @@ class BukuController extends Controller
     {
         $stats = Buku::selectRaw("
             COUNT(*) as total,
-            SUM(sumber = 'perpus') as perpus,
-            SUM(sumber = 'tukar') as tukar,
-            SUM(stok > 0) as tersedia,
-            SUM(stok = 0) as habis
+            SUM(CASE WHEN sumber = 'perpus' THEN 1 ELSE 0 END) as perpus,
+            SUM(CASE WHEN sumber = 'tukar'  THEN 1 ELSE 0 END) as tukar,
+            SUM(CASE WHEN stok > 0          THEN 1 ELSE 0 END) as tersedia,
+            SUM(CASE WHEN stok = 0          THEN 1 ELSE 0 END) as habis
         ")->first();
 
         return $stats->toArray();

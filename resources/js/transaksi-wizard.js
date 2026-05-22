@@ -73,18 +73,41 @@ function resetCreate() {
     state.create.step = 1;
 }
 
-function simpanTransaksi() {
-    const payload = buildPayload('create');
+let isSaving = false;
 
+function simpanTransaksi() {
+    if (isSaving) return;
+    isSaving = true;
+
+    const payload = buildPayload('create');
     setBtn('createBtnSimpan', true, 'Menyimpan...');
 
-    apiFetch(window.Routes.transaksiStore, { method: 'POST', body: JSON.stringify(payload) })
-        .then(data => {
+    fetch(window.Routes.transaksiStore, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept':       'application/json',
+            'X-CSRF-TOKEN': csrf,
+        },
+        body: JSON.stringify(payload),
+    })
+    .then(r => r.text().then(text => ({ status: r.status, text })))
+    .then(({ status, text }) => {
+        console.log('STATUS:', status);
+        console.log('RESPONSE:', text);
+        try {
+            const data = JSON.parse(text);
             if (data.success) { closeCreate(); location.reload(); }
             else alert(data.message ?? 'Terjadi kesalahan.');
-        })
-        .catch(() => alert('Gagal menyimpan transaksi.'))
-        .finally(() => setBtn('createBtnSimpan', false, 'Simpan Transaksi'));
+        } catch {
+            alert('Response bukan JSON. Cek console.');
+        }
+    })
+    .catch(err => console.error('FETCH ERROR:', err))
+    .finally(() => {
+        setBtn('createBtnSimpan', false, 'Simpan Transaksi');
+        isSaving = false;
+    });
 }
 
 // ─── Edit ──────────────────────────────────────────────────────────────────

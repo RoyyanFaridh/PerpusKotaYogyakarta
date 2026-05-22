@@ -27,8 +27,6 @@
     style="width: var(--sidebar-w, 16rem)"
     class="relative flex flex-col h-screen bg-primary shrink-0 shadow-lg"
 >
-
-    {{-- Toggle Button --}}
     <button
         @click="toggle()"
         class="absolute -right-3 top-6 z-50 flex items-center justify-center w-6 h-6 rounded-full bg-white border border-primary-200 shadow-md text-primary hover:bg-primary-50 transition-colors"
@@ -41,7 +39,6 @@
         </svg>
     </button>
 
-    {{-- Logo --}}
     <div class="flex items-center gap-3 px-4 py-5 border-b border-white/10 overflow-hidden">
         <div class="shrink-0 flex items-center justify-center w-9 h-9 rounded-xl bg-white/15 text-white">
             <x-icons.book/>
@@ -62,10 +59,9 @@
     <nav class="flex-1 overflow-y-auto overflow-x-hidden py-4 px-2 space-y-0.5">
 
         <div x-show="open" class="px-3 pt-1 pb-2">
-            <span class="text-[10px] font-semibold uppercase tracking-widest text-primary-400">Menu Utama</span>
+            <span class="text-xs font-semibold uppercase tracking-widest text-primary-400">Menu Utama</span>
         </div>
 
-        {{-- Dashboard --}}
         <a href="{{ route('admin.dashboard') }}"
             :class="[
                 activeMenu === 'dashboard' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
@@ -83,7 +79,6 @@
             <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Dashboard</span>
         </a>
 
-        {{-- Transaksi --}}
         <a href="{{ route('admin.transaksi.index') }}"
             :class="[
                 activeMenu === 'transaksi' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
@@ -102,11 +97,10 @@
         </a>
 
         <div x-show="open" class="px-3 pt-4 pb-2">
-            <span class="text-[10px] font-semibold uppercase tracking-widest text-primary-400">Kelola Data</span>
+            <span class="text-xs font-semibold uppercase tracking-widest text-primary-400">Kelola Data</span>
         </div>
         <div x-show="!open" class="my-2 mx-3 border-t border-white/10"></div>
 
-        {{-- Member --}}
         <a href="{{ route('admin.member.index') }}"
             :class="[
                 activeMenu === 'member' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
@@ -124,7 +118,6 @@
             <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Member</span>
         </a>
 
-        {{-- Buku --}}
         <a href="{{ route('admin.buku.index') }}"
             :class="[
                 activeMenu === 'buku' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
@@ -142,7 +135,6 @@
             <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Buku</span>
         </a>
 
-        {{-- Lokasi --}}
         <a href="{{ route('admin.lokasi.index') }}"
             :class="[
                 activeMenu === 'lokasi' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
@@ -160,7 +152,6 @@
             <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Lokasi</span>
         </a>
 
-        {{-- Rencana Kegiatan --}}
         <a href="{{ route('admin.kegiatan.index') }}"
             :class="[
                 activeMenu === 'kegiatan' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
@@ -179,11 +170,10 @@
         </a>
 
         <div x-show="open" class="px-3 pt-4 pb-2">
-            <span class="text-[10px] font-semibold uppercase tracking-widest text-primary-400">Akun</span>
+            <span class="text-xs font-semibold uppercase tracking-widest text-primary-400">Akun</span>
         </div>
         <div x-show="!open" class="my-2 mx-3 border-t border-white/10"></div>
 
-        {{-- Pengaturan --}}
         <a href="{{ auth()->user()->isSuperAdmin() ? route('admin.pengaturan.index') : route('admin.pengaturan.profil.page') }}"
             :class="[
                 activeMenu === 'pengaturan' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
@@ -203,7 +193,6 @@
 
     </nav>
 
-    {{-- User Profile & Logout --}}
     <div class="border-t border-white/10 p-3">
 
         <div x-show="open"
@@ -216,7 +205,7 @@
             </div>
             <div class="flex-1 min-w-0">
                 <p class="text-white text-xs font-semibold truncate">{{ auth()->user()->name ?? 'Admin' }}</p>
-                <p class="text-primary-300 text-[11px] truncate">{{ auth()->user()->email ?? '' }}</p>
+                <p class="text-primary-300 text-xs truncate">{{ auth()->user()->email ?? '' }}</p>
             </div>
             <form method="POST" action="{{ route('auth.logout') }}">
                 @csrf
@@ -236,14 +225,12 @@
             x-data="{ dropdownOpen: false }"
             class="relative flex justify-center">
 
-            {{-- Avatar Button --}}
             <button @click="dropdownOpen = !dropdownOpen"
                     @click.outside="dropdownOpen = false"
                     class="flex items-center justify-center w-8 h-8 rounded-full bg-white/20 text-white text-xs font-bold uppercase hover:bg-white/30 transition-colors">
                 {{ substr(auth()->user()->name ?? 'A', 0, 1) }}
             </button>
 
-            {{-- Dropdown --}}
             <div x-show="dropdownOpen"
                 x-transition:enter="transition ease-out duration-150"
                 x-transition:enter-start="opacity-0 -translate-x-2"
@@ -253,13 +240,11 @@
                 x-transition:leave-end="opacity-0 -translate-x-2"
                 class="absolute bottom-0 left-full ml-2 w-44 bg-white rounded-lg shadow-lg border border-neutral-200 overflow-hidden z-50">
 
-                {{-- Info User --}}
                 <div class="px-3 py-2.5 border-b border-neutral-100">
                     <p class="text-xs font-semibold text-neutral-800 truncate">{{ auth()->user()->name ?? 'Admin' }}</p>
-                    <p class="text-[0.68rem] text-neutral-400 truncate">{{ auth()->user()->email ?? '' }}</p>
+                    <p class="text-xs text-neutral-400 truncate">{{ auth()->user()->email ?? '' }}</p>
                 </div>
 
-                {{-- Logout --}}
                 <form method="POST" action="{{ route('auth.logout') }}">
                     @csrf
                     <button type="submit"

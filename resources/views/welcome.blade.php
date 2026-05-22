@@ -88,21 +88,18 @@
             transition: border-color 0.35s ease, transform 0.35s ease;
         }
 
-        /* Dropdown filter */
         #dropdown-kategori,
         #dropdown-lokasi {
             animation: fadeIn 0.18s ease both;
-            z-index: 9999 !important;  /* ← tambah ini */
+            z-index: 9999 !important; 
         }
 
-        /* Pastikan wrapper dropdown punya stacking context */
         #dropdown-kategori-wrapper,
         #dropdown-lokasi-wrapper {
             position: relative;
             z-index: 100;
         }
 
-        /* Filter row harus di atas katalog */
         .animate-fade-up-5 {
             position: relative;
             z-index: 9999;

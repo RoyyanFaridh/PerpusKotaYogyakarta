@@ -22,7 +22,7 @@
         </a>
     </div>
 
-    <div class="overflow-x-auto overflow-y-auto max-h-[160px] custom-scroll">
+    <div class="overflow-x-auto overflow-y-auto max-h-56 custom-scroll">
         <table class="w-full text-sm">
             <thead class="sticky top-0 z-10">
                 <tr class="border-b border-neutral-100 bg-neutral-50">
@@ -54,12 +54,12 @@
                             </div>
                         </td>
 
-                        <td class="px-5 py-3.5 max-w-[160px]">
+                        <td class="px-5 py-3.5 max-w-40">
                             <p class="text-xs font-medium text-neutral-700 truncate">{{ $t->bukuDiserahkan?->judul ?? '-' }}</p>
                             <p class="text-[0.68rem] text-neutral-400 mt-0.5">{{ $t->bukuDiserahkan?->pengarang ?? '' }}</p>
                         </td>
 
-                        <td class="px-5 py-3.5 max-w-[160px]">
+                        <td class="px-5 py-3.5 max-w-40">
                             <p class="text-xs font-medium text-neutral-700 truncate">{{ $t->bukuDiterima?->judul ?? '-' }}</p>
                             <p class="text-[0.68rem] text-neutral-400 mt-0.5">{{ $t->bukuDiterima?->pengarang ?? '' }}</p>
                         </td>
