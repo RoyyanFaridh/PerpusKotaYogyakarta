@@ -7,67 +7,67 @@
 <div class="flex flex-col gap-4">
 
     @if (session('success'))
-        <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-success-50 border border-success-200 text-success-700 text-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <div class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-success-50 border border-success-200 text-success-700 text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
             {{ session('success') }}
         </div>
     @endif
     @if (session('error'))
-        <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-danger-50 border border-danger-200 text-danger-700 text-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-danger-50 border border-danger-200 text-danger-700 text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             {{ session('error') }}
         </div>
     @endif
 
     {{-- Backup Database --}}
-    <div class="relative overflow-hidden rounded-xl bg-white border border-neutral-200">
+    <div class="relative overflow-hidden rounded-2xl bg-white shadow-sm">
         <div class="absolute top-0 left-0 right-0 h-0.5 bg-primary-400"></div>
-        <div class="px-6 py-4 border-b border-neutral-100">
-            <h2 class="text-sm font-semibold text-neutral-800">Backup Database</h2>
-            <p class="text-xs text-neutral-400 mt-0.5">Unduh salinan data perpustakaan</p>
+        <div class="px-6 sm:px-8 pt-6 pb-5 border-b border-neutral-100">
+            <h2 class="text-base font-semibold text-neutral-800">Backup Database</h2>
+            <p class="text-sm text-neutral-400 mt-0.5">Unduh salinan data perpustakaan</p>
         </div>
-        <div class="px-6 py-5 flex items-center justify-between">
+        <div class="px-6 sm:px-8 py-6 flex items-center justify-between gap-6">
             <div class="flex items-start gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-neutral-400 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                <p class="text-xs text-neutral-400">File backup diunduh dalam format <span class="font-mono">.sql</span>. Simpan di tempat yang aman.</p>
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-neutral-400 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <p class="text-sm text-neutral-400">File backup diunduh dalam format <span class="font-mono">.sql</span>. Simpan di tempat yang aman.</p>
             </div>
             <a href="{{ route('admin.pengaturan.backup') }}"
-               class="flex items-center gap-2 px-4 py-2 text-xs font-medium rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition shrink-0 ml-6">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+               class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 Unduh Backup
             </a>
         </div>
     </div>
 
     {{-- Daftar User --}}
-    <div class="relative overflow-hidden rounded-xl bg-white border border-neutral-200">
+    <div class="relative overflow-hidden rounded-2xl bg-white shadow-sm">
         <div class="absolute top-0 left-0 right-0 h-0.5 bg-primary-400"></div>
-        <div class="px-6 py-4 border-b border-neutral-100 flex items-center justify-between">
+        <div class="px-6 sm:px-8 pt-6 pb-5 border-b border-neutral-100 flex items-center justify-between">
             <div>
-                <h2 class="text-sm font-semibold text-neutral-800">Daftar User</h2>
-                <p class="text-xs text-neutral-400 mt-0.5">Semua akun yang terdaftar di sistem</p>
+                <h2 class="text-base font-semibold text-neutral-800">Daftar User</h2>
+                <p class="text-sm text-neutral-400 mt-0.5">Semua akun yang terdaftar di sistem</p>
             </div>
             <button type="button" onclick="bukaModalUser()"
-                    class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 Tambah User
             </button>
         </div>
 
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto custom-scroll">
             <table class="w-full text-sm">
                 <thead>
                     <tr class="border-b border-neutral-100 bg-neutral-50">
-                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Nama</th>
-                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Email</th>
+                        <th class="text-left   text-xs font-medium text-neutral-400 px-5 py-3">Nama</th>
+                        <th class="text-left   text-xs font-medium text-neutral-400 px-5 py-3">Email</th>
                         <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Role</th>
                         <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Dibuat</th>
                         <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-neutral-100">
                     @forelse ($users as $user)
-                        <tr class="border-t border-neutral-50 hover:bg-neutral-50 transition-colors">
+                        <tr class="hover:bg-neutral-50 transition-colors">
                             <td class="px-5 py-3.5">
                                 <div class="flex items-center gap-2.5">
                                     <div class="w-7 h-7 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xs font-bold uppercase shrink-0">
@@ -76,12 +76,12 @@
                                     <p class="text-xs font-semibold text-neutral-800">{{ $user->nama ?? '-' }}</p>
                                 </div>
                             </td>
-                            <td class="px-5 py-3.5 text-xs text-neutral-600 text-center">{{ $user->email ?? '-' }}</td>
+                            <td class="px-5 py-3.5 text-xs text-neutral-600">{{ $user->email ?? '-' }}</td>
                             <td class="px-5 py-3.5 text-center">
                                 @if ($user->isSuperAdmin())
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[0.68rem] font-medium bg-primary-50 text-primary-700 border border-primary-100">Superadmin</span>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-primary-50 text-primary-700 border border-primary-100">Superadmin</span>
                                 @else
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[0.68rem] font-medium bg-neutral-100 text-neutral-600">Admin</span>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-neutral-100 text-neutral-600">Admin</span>
                                 @endif
                             </td>
                             <td class="px-5 py-3.5 text-xs text-neutral-400 text-center">{{ $user->created_at?->format('d M Y') ?? '-' }}</td>
@@ -113,7 +113,7 @@
                                             <x-icons.edit/>
                                             <span>Edit</span>
                                         </button>
-                                        <span class="text-[0.68rem] text-neutral-300 px-1">Anda</span>
+                                        <span class="text-xs text-neutral-300 px-1">Anda</span>
                                     @endif
                                 </div>
                             </td>
@@ -123,23 +123,25 @@
                         @if (!$user->isSuperAdmin())
                             <tr id="permission-row-{{ $user->id }}" class="hidden">
                                 <td colspan="5" class="px-5 pb-4 pt-1">
-                                    <div class="rounded-xl border border-neutral-200 bg-neutral-50 overflow-hidden">
-                                        <div class="px-4 py-3 border-b border-neutral-200 flex items-center justify-between bg-white">
+                                    <div class="rounded-2xl border border-neutral-100 bg-neutral-50 overflow-hidden">
+                                        <div class="px-5 py-3.5 border-b border-neutral-100 flex items-center justify-between bg-white">
                                             <div class="flex items-center gap-2">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-primary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                                                <p class="text-xs font-semibold text-neutral-700">Hak Akses — {{ $user->nama }}</p>
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-primary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                                <p class="text-sm font-semibold text-neutral-700">Hak Akses — {{ $user->nama }}</p>
                                             </div>
                                             <button type="button" onclick="togglePermission({{ $user->id }})"
-                                                    class="text-neutral-300 hover:text-neutral-500 transition">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                                    aria-label="Tutup hak akses"
+                                                    class="p-1 rounded-lg text-neutral-300 hover:text-neutral-500 hover:bg-neutral-100 transition-colors">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                                             </button>
                                         </div>
-                                        <form method="POST" action="{{ route('admin.pengaturan.user.permissions', $user) }}" class="px-4 py-4">
+                                        <form method="POST" action="{{ route('admin.pengaturan.user.permissions', $user) }}"
+                                              class="px-5 py-5">
                                             @csrf
                                             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                                                 @foreach ($allPermissions as $modul => $permissions)
                                                     <div class="flex flex-col gap-2">
-                                                        <p class="text-[0.68rem] font-semibold text-neutral-400 uppercase tracking-wide">{{ $modul }}</p>
+                                                        <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wide">{{ $modul }}</p>
                                                         <div class="flex flex-col gap-1">
                                                             @foreach ($permissions as $permission)
                                                                 @php
@@ -164,9 +166,9 @@
                                                     </div>
                                                 @endforeach
                                             </div>
-                                            <div class="flex justify-end mt-4 pt-3 border-t border-neutral-200">
+                                            <div class="flex justify-end mt-4 pt-3 border-t border-neutral-100">
                                                 <button type="submit"
-                                                        class="px-4 py-2 text-xs font-medium rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition">
+                                                        class="px-4 py-2 text-sm font-medium rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors">
                                                     Simpan Hak Akses
                                                 </button>
                                             </div>
@@ -177,7 +179,7 @@
                         @endif
                     @empty
                         <tr>
-                            <td colspan="5" class="px-5 py-10 text-center text-xs text-neutral-400">Belum ada user terdaftar.</td>
+                            <td colspan="5" class="px-5 py-12 text-center text-sm text-neutral-400">Belum ada user terdaftar.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -185,7 +187,6 @@
         </div>
     </div>
 
-    {{-- Semua Modal --}}
     @include('admin.pengaturan.create')
     @foreach ($users as $user)
         @include('admin.pengaturan.edit', ['user' => $user])

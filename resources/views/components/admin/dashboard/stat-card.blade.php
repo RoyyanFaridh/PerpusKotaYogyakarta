@@ -1,7 +1,7 @@
 @props([
     'label'   => 'Label',
     'value'   => '0',
-    'icon'    => 'document',
+    'icon'    => 'book-up',
     'color'   => 'primary',
     'badge'   => null,
     'caption' => null,
@@ -41,46 +41,38 @@
     $c = $colorMap[$color] ?? $colorMap['primary'];
 @endphp
 
-<div class="relative overflow-hidden rounded-xl bg-white border border-neutral-200 flex flex-col min-h-40 p-5 pb-0">
+<div class="relative overflow-hidden rounded-xl bg-white border border-neutral-200 flex flex-col p-5 w-full">
 
-    <button class="absolute top-4 right-4 p-1.5 rounded-md text-neutral-300 hover:text-neutral-500 hover:bg-neutral-100 transition-colors">
-        <x-icons.ellipsis/>
-    </button>
+    <div class="absolute top-0 left-0 right-0 h-0.5 {{ $c['accent'] }}"></div>
 
-    <div class="flex items-center gap-3 mb-5 pr-7">
+    <div class="flex items-center gap-3 mb-5 pr-8">
         <div class="shrink-0 w-10 h-10 rounded-xl {{ $c['icon_bg'] }} {{ $c['icon_tx'] }} flex items-center justify-center">
-            @if ($icon === 'book')
-                <x-icons.book/>
-            @elseif ($icon === 'clock')
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                </svg>
-            @elseif ($icon === 'swap')
-                <x-icons.transaksi/>
-            @elseif ($icon === 'check')
-                <x-icons.clock/>
-            @else
-                <x-icons.book-up/>
-            @endif
+            <x-dynamic-component :component="'icons.' . $icon" class="w-5 h-5"/>
         </div>
         <span class="text-sm text-neutral-500 font-medium leading-tight">{{ $label }}</span>
     </div>
 
-    <div class="flex items-center justify-between gap-3 flex-1 pb-5">
-        <div class="flex flex-col gap-3">
-            <span class="text-3xl font-bold {{ $c['value'] }} leading-none">{{ $value }}</span>
+    <div class="flex items-end justify-between gap-3">
+        <div class="flex flex-col gap-1.5">
+            <span class="text-3xl font-semibold {{ $c['value'] }} leading-none tabular-nums">
+                {{ $value }}
+            </span>
             @if ($caption)
-                <span class="text-sm text-neutral-400 leading-snug">{{ $caption }}</span>
+                <span class="text-xs text-neutral-500 leading-snug">{{ $caption }}</span>
             @endif
         </div>
 
         @if ($badge)
-            <span class="text-sm font-medium px-2.5 py-1 rounded-full whitespace-nowrap {{ $c['badge'] }}">
+            <span class="shrink-0 text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap {{ $c['badge'] }}">
                 {{ $badge }}
             </span>
         @endif
     </div>
 
-    <div class="absolute top-0 left-0 right-0 h-0.5 {{ $c['accent'] }}"></div>
+    <button
+        aria-label="Opsi lainnya"
+        class="absolute top-4 right-4 p-1.5 rounded-md text-neutral-300 hover:text-neutral-500 hover:bg-neutral-100 transition-colors">
+        <x-icons.ellipsis aria-hidden="true"/>
+    </button>
 
 </div>

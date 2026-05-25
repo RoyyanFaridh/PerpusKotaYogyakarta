@@ -1,14 +1,14 @@
-<div class="relative z-0 flex flex-wrap justify-center border-t border-b border-primary-100 bg-primary-100/50">
-    <div class="flex-1 min-w-32 sm:min-w-40 bg-white px-4 sm:px-8 py-5 sm:py-7 text-center transition-colors duration-200 border-r border-primary-100 hover:bg-primary-50">
-        <div class="font-extrabold text-[1.6rem] sm:text-[2.1rem] text-primary">{{ number_format($totalBuku ?? 0) }}</div>
-        <div class="text-[0.7rem] sm:text-[0.78rem] font-medium tracking-[0.08em] uppercase text-neutral-500 mt-1">Koleksi Buku</div>
+<div class="relative z-0 flex flex-wrap justify-center border-t border-b border-primary-100 bg-white">
+    <div class="flex-1 min-w-32 sm:min-w-40 px-4 sm:px-8 py-5 sm:py-7 text-center border-r border-primary-100 hover:bg-primary-50 transition-colors">
+        <div class="font-extrabold text-3xl sm:text-4xl text-primary-600 tabular-nums">{{ number_format($totalBuku ?? 0) }}</div>
+        <div class="text-xs font-medium tracking-widest uppercase text-neutral-400 mt-1.5">Koleksi Buku</div>
     </div>
-    <div class="flex-1 min-w-32 sm:min-w-40 bg-white px-4 sm:px-8 py-5 sm:py-7 text-center transition-colors duration-200 border-r border-primary-100 hover:bg-primary-50">
-        <div class="font-extrabold text-[1.6rem] sm:text-[2.1rem] text-primary">{{ number_format($totalAnggota ?? 0) }}</div>
-        <div class="text-[0.7rem] sm:text-[0.78rem] font-medium tracking-[0.08em] uppercase text-neutral-500 mt-1">Anggota Aktif</div>
+    <div class="flex-1 min-w-32 sm:min-w-40 px-4 sm:px-8 py-5 sm:py-7 text-center border-r border-primary-100 hover:bg-primary-50 transition-colors">
+        <div class="font-extrabold text-3xl sm:text-4xl text-primary-600 tabular-nums">{{ number_format($totalAnggota ?? 0) }}</div>
+        <div class="text-xs font-medium tracking-widest uppercase text-neutral-400 mt-1.5">Anggota Aktif</div>
     </div>
-    <div class="flex-1 min-w-32 sm:min-w-40 bg-white px-4 sm:px-8 py-5 sm:py-7 text-center transition-colors duration-200 hover:bg-primary-50">
-        <div class="font-extrabold text-[1.6rem] sm:text-[2.1rem] text-primary">{{ number_format($totalTukar ?? 0) }}</div>
-        <div class="text-[0.7rem] sm:text-[0.78rem] font-medium tracking-[0.08em] uppercase text-neutral-500 mt-1">Penukaran Berhasil</div>
+    <div class="flex-1 min-w-32 sm:min-w-40 px-4 sm:px-8 py-5 sm:py-7 text-center hover:bg-primary-50 transition-colors">
+        <div class="font-extrabold text-3xl sm:text-4xl text-primary-600 tabular-nums">{{ number_format($totalTukar ?? 0) }}</div>
+        <div class="text-xs font-medium tracking-widest uppercase text-neutral-400 mt-1.5">Penukaran Berhasil</div>
     </div>
 </div>

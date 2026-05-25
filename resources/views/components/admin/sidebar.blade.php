@@ -9,6 +9,16 @@
         request()->routeIs('admin.pengaturan*')  => 'pengaturan',
         default                                  => '',
     };
+
+    $navItems = [
+        ['key' => 'dashboard',   'label' => 'Dashboard',         'route' => route('admin.dashboard'),           'icon' => 'dashboard',  'group' => 'utama'],
+        ['key' => 'transaksi',   'label' => 'Tukar Buku',        'route' => route('admin.transaksi.index'),     'icon' => 'book-up',    'group' => 'utama'],
+        ['key' => 'member',      'label' => 'Member',            'route' => route('admin.member.index'),        'icon' => 'users',      'group' => 'data'],
+        ['key' => 'buku',        'label' => 'Buku',              'route' => route('admin.buku.index'),          'icon' => 'book-open',  'group' => 'data'],
+        ['key' => 'lokasi',      'label' => 'Lokasi',            'route' => route('admin.lokasi.index'),        'icon' => 'location',   'group' => 'data'],
+        ['key' => 'kegiatan',    'label' => 'Rencana Kegiatan',  'route' => route('admin.kegiatan.index'),      'icon' => 'calendar',   'group' => 'data'],
+        ['key' => 'pengaturan',  'label' => 'Pengaturan',        'route' => auth()->user()->isSuperAdmin() ? route('admin.pengaturan.index') : route('admin.pengaturan.profil.page'), 'icon' => 'settings', 'group' => 'akun'],
+    ];
 @endphp
 
 <aside
@@ -27,18 +37,38 @@
     style="width: var(--sidebar-w, 16rem)"
     class="relative flex flex-col h-screen bg-primary shrink-0 shadow-lg"
 >
+    {{-- Toggle button --}}
     <button
         @click="toggle()"
+        aria-label="Toggle sidebar"
         class="absolute -right-3 top-6 z-50 flex items-center justify-center w-6 h-6 rounded-full bg-white border border-primary-200 shadow-md text-primary hover:bg-primary-50 transition-colors"
     >
-        <svg x-show="open" xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M15 18l-6-6 6-6"/>
-        </svg>
-        <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 18l6-6-6-6"/>
-        </svg>
+        {{-- PERBAIKAN 8: tambah transisi opacity pada icon toggle --}}
+        <span x-show="open"
+              x-transition:enter="transition-opacity duration-150"
+              x-transition:enter-start="opacity-0"
+              x-transition:enter-end="opacity-100"
+              x-transition:leave="transition-opacity duration-100"
+              x-transition:leave-start="opacity-100"
+              x-transition:leave-end="opacity-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M15 18l-6-6 6-6"/>
+            </svg>
+        </span>
+        <span x-show="!open"
+              x-transition:enter="transition-opacity duration-150"
+              x-transition:enter-start="opacity-0"
+              x-transition:enter-end="opacity-100"
+              x-transition:leave="transition-opacity duration-100"
+              x-transition:leave-start="opacity-100"
+              x-transition:leave-end="opacity-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9 18l6-6-6-6"/>
+            </svg>
+        </span>
     </button>
 
+    {{-- Logo / Brand --}}
     <div class="flex items-center gap-3 px-4 py-5 border-b border-white/10 overflow-hidden">
         <div class="shrink-0 flex items-center justify-center w-9 h-9 rounded-xl bg-white/15 text-white">
             <x-icons.book/>
@@ -56,163 +86,114 @@
         </div>
     </div>
 
-    <nav class="flex-1 overflow-y-auto overflow-x-hidden py-4 px-2 space-y-0.5">
+    {{-- Navigation --}}
+    {{-- PERBAIKAN 1: overflow-visible pada nav agar tooltip tidak terpotong --}}
+    <nav class="flex-1 overflow-y-auto overflow-x-visible py-4 px-2 space-y-0.5">
 
+        {{-- Group: Menu Utama --}}
+        {{-- PERBAIKAN 5: tracking-wider (0.05em) lebih natural dari tracking-widest (0.1em) --}}
         <div x-show="open" class="px-3 pt-1 pb-2">
-            <span class="text-xs font-semibold uppercase tracking-widest text-primary-400">Menu Utama</span>
+            <span class="text-xs font-semibold uppercase tracking-wider text-primary-400">Menu Utama</span>
         </div>
 
-        <a href="{{ route('admin.dashboard') }}"
-            :class="[
-                activeMenu === 'dashboard' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
-                open ? 'px-3 gap-3' : 'px-0 gap-0 justify-center'
-            ]"
-            class="group flex items-center rounded-xl py-2.5 transition-colors duration-150 relative overflow-hidden w-full"
-        >
-            <span x-show="activeMenu === 'dashboard'"
-                  class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-white shrink-0"></span>
-            <span class="shrink-0"><x-icons.dashboard/></span>
-            <span x-show="open" class="text-sm font-medium whitespace-nowrap"
-                  x-transition:enter="transition-opacity duration-150"
-                  x-transition:enter-start="opacity-0"
-                  x-transition:enter-end="opacity-100">Dashboard</span>
-            <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Dashboard</span>
-        </a>
+        @foreach($navItems as $item)
+            @if($item['group'] === 'data' && $loop->first)
+                {{-- tidak ada, separator akan dirender di bawah --}}
+            @endif
 
-        <a href="{{ route('admin.transaksi.index') }}"
-            :class="[
-                activeMenu === 'transaksi' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
-                open ? 'px-3 gap-3' : 'px-0 gap-0 justify-center'
-            ]"
-            class="group flex items-center rounded-xl py-2.5 transition-colors duration-150 relative overflow-hidden w-full"
-        >
-            <span x-show="activeMenu === 'transaksi'"
-                  class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-white shrink-0"></span>
-            <span class="shrink-0"><x-icons.book-up/></span>
-            <span x-show="open" class="text-sm font-medium whitespace-nowrap"
-                  x-transition:enter="transition-opacity duration-150"
-                  x-transition:enter-start="opacity-0"
-                  x-transition:enter-end="opacity-100">Tukar Buku</span>
-            <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Transaksi Tukar</span>
-        </a>
+            {{-- Separator sebelum group "data" --}}
+            @if($item['key'] === 'member')
+                <div x-show="open" class="px-3 pt-4 pb-2">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-primary-400">Kelola Data</span>
+                </div>
+                <div x-show="!open" class="my-2 mx-3 border-t border-white/10"></div>
+            @endif
 
-        <div x-show="open" class="px-3 pt-4 pb-2">
-            <span class="text-xs font-semibold uppercase tracking-widest text-primary-400">Kelola Data</span>
-        </div>
-        <div x-show="!open" class="my-2 mx-3 border-t border-white/10"></div>
+            @if($item['key'] === 'pengaturan')
+                <div x-show="open" class="px-3 pt-4 pb-2">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-primary-400">Akun</span>
+                </div>
+                <div x-show="!open" class="my-2 mx-3 border-t border-white/10"></div>
+            @endif
 
-        <a href="{{ route('admin.member.index') }}"
-            :class="[
-                activeMenu === 'member' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
-                open ? 'px-3 gap-3' : 'px-0 gap-0 justify-center'
-            ]"
-            class="group flex items-center rounded-xl py-2.5 transition-colors duration-150 relative overflow-hidden w-full"
-        >
-            <span x-show="activeMenu === 'member'"
-                  class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-white shrink-0"></span>
-            <span class="shrink-0"><x-icons.users/></span>
-            <span x-show="open" class="text-sm font-medium whitespace-nowrap"
-                  x-transition:enter="transition-opacity duration-150"
-                  x-transition:enter-start="opacity-0"
-                  x-transition:enter-end="opacity-100">Member</span>
-            <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Member</span>
-        </a>
+            {{--
+                PERBAIKAN 1 (utama): tooltip dipindahkan ke luar <a> dan dirender via Alpine x-teleport ke body.
+                Ini memastikan tooltip tidak terpotong oleh overflow-hidden pada <a> maupun overflow-y-auto pada <nav>.
 
-        <a href="{{ route('admin.buku.index') }}"
-            :class="[
-                activeMenu === 'buku' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
-                open ? 'px-3 gap-3' : 'px-0 gap-0 justify-center'
-            ]"
-            class="group flex items-center rounded-xl py-2.5 transition-colors duration-150 relative overflow-hidden w-full"
-        >
-            <span x-show="activeMenu === 'buku'"
-                  class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-white shrink-0"></span>
-            <span class="shrink-0"><x-icons.book-open/></span>
-            <span x-show="open" class="text-sm font-medium whitespace-nowrap"
-                  x-transition:enter="transition-opacity duration-150"
-                  x-transition:enter-start="opacity-0"
-                  x-transition:enter-end="opacity-100">Buku</span>
-            <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Buku</span>
-        </a>
+                Namun karena x-teleport membutuhkan Alpine 3.x dan koordinat yang dinamis,
+                solusi yang lebih reliable tanpa JavaScript kompleks adalah:
+                - Hapus overflow-hidden dari <a>
+                - Biarkan tooltip absolute di dalam <a>
+                - Kontrol overflow hanya di level nav (overflow-x: clip, bukan hidden)
+            --}}
+            <div class="relative group/nav">
+                <a href="{{ $item['route'] }}"
+                    :class="[
+                        activeMenu === '{{ $item['key'] }}' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
+                        open ? 'px-3 gap-3' : 'px-0 gap-0 justify-center'
+                    ]"
+                    {{-- PERBAIKAN 1: hapus overflow-hidden agar tooltip tidak terpotong --}}
+                    class="flex items-center rounded-xl py-2.5 transition-colors duration-150 relative w-full"
+                >
+                    <span x-show="activeMenu === '{{ $item['key'] }}'"
+                          class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-white shrink-0"></span>
 
-        <a href="{{ route('admin.lokasi.index') }}"
-            :class="[
-                activeMenu === 'lokasi' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
-                open ? 'px-3 gap-3' : 'px-0 gap-0 justify-center'
-            ]"
-            class="group flex items-center rounded-xl py-2.5 transition-colors duration-150 relative overflow-hidden w-full"
-        >
-            <span x-show="activeMenu === 'lokasi'"
-                  class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-white shrink-0"></span>
-            <span class="shrink-0"><x-icons.location/></span>
-            <span x-show="open" class="text-sm font-medium whitespace-nowrap"
-                  x-transition:enter="transition-opacity duration-150"
-                  x-transition:enter-start="opacity-0"
-                  x-transition:enter-end="opacity-100">Lokasi</span>
-            <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Lokasi</span>
-        </a>
+                    {{-- PERBAIKAN 2: wrapper icon dengan ukuran fixed agar selalu konsisten --}}
+                    <span class="shrink-0 flex items-center justify-center w-5 h-5">
+                        <x-dynamic-component :component="'icons.' . $item['icon']" class="w-5 h-5"/>
+                    </span>
 
-        <a href="{{ route('admin.kegiatan.index') }}"
-            :class="[
-                activeMenu === 'kegiatan' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
-                open ? 'px-3 gap-3' : 'px-0 gap-0 justify-center'
-            ]"
-            class="group flex items-center rounded-xl py-2.5 transition-colors duration-150 relative overflow-hidden w-full"
-        >
-            <span x-show="activeMenu === 'kegiatan'"
-                  class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-white shrink-0"></span>
-            <span class="shrink-0"><x-icons.calendar/></span>
-            <span x-show="open" class="text-sm font-medium whitespace-nowrap"
-                  x-transition:enter="transition-opacity duration-150"
-                  x-transition:enter-start="opacity-0"
-                  x-transition:enter-end="opacity-100">Kegiatan</span>
-            <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Rencana Kegiatan</span>
-        </a>
+                    <span x-show="open" class="text-sm font-medium whitespace-nowrap"
+                          x-transition:enter="transition-opacity duration-150"
+                          x-transition:enter-start="opacity-0"
+                          x-transition:enter-end="opacity-100">{{ $item['label'] }}</span>
+                </a>
 
-        <div x-show="open" class="px-3 pt-4 pb-2">
-            <span class="text-xs font-semibold uppercase tracking-widest text-primary-400">Akun</span>
-        </div>
-        <div x-show="!open" class="my-2 mx-3 border-t border-white/10"></div>
-
-        <a href="{{ auth()->user()->isSuperAdmin() ? route('admin.pengaturan.index') : route('admin.pengaturan.profil.page') }}"
-            :class="[
-                activeMenu === 'pengaturan' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
-                open ? 'px-3 gap-3' : 'px-0 gap-0 justify-center'
-            ]"
-            class="group flex items-center rounded-xl py-2.5 transition-colors duration-150 relative overflow-hidden w-full"
-        >
-            <span x-show="activeMenu === 'pengaturan'"
-                  class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-white shrink-0"></span>
-            <span class="shrink-0"><x-icons.settings/></span>
-            <span x-show="open" class="text-sm font-medium whitespace-nowrap"
-                  x-transition:enter="transition-opacity duration-150"
-                  x-transition:enter-start="opacity-0"
-                  x-transition:enter-end="opacity-100">Pengaturan</span>
-            <span x-show="!open" class="absolute left-14 bg-primary-600 text-white text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">Pengaturan</span>
-        </a>
+                {{--
+                    PERBAIKAN 1 & 7: tooltip dikeluarkan dari <a>, dirender di dalam .relative.group/nav
+                    sehingga tidak terpotong overflow-hidden.
+                    Ditambahkan arrow kecil untuk memperjelas relasi visual.
+                --}}
+                <div x-show="!open"
+                     class="pointer-events-none absolute left-[calc(100%+0.75rem)] top-1/2 -translate-y-1/2 z-50
+                            opacity-0 group-hover/nav:opacity-100 transition-opacity duration-150
+                            flex items-center gap-1">
+                    {{-- Arrow --}}
+                    <div class="w-0 h-0 border-y-4 border-y-transparent border-r-4 border-r-primary-600"></div>
+                    <div class="bg-primary-600 text-white text-xs font-medium px-2.5 py-1.5 rounded-md shadow-lg whitespace-nowrap">
+                        {{ $item['label'] }}
+                    </div>
+                </div>
+            </div>
+        @endforeach
 
     </nav>
 
+    {{-- User profile & logout --}}
     <div class="border-t border-white/10 p-3">
 
+        {{-- Expanded state --}}
         <div x-show="open"
             x-transition:enter="transition-opacity duration-150"
             x-transition:enter-start="opacity-0"
             x-transition:enter-end="opacity-100"
             class="flex items-center gap-3 rounded-xl px-2 py-2">
-            <div class="shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-white/20 text-white text-xs font-bold uppercase">
+            {{-- PERBAIKAN 6: text-sm lebih proporsional untuk satu huruf inisial --}}
+            <div class="shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-white/20 text-white text-sm font-bold uppercase select-none">
                 {{ substr(auth()->user()->name ?? 'A', 0, 1) }}
             </div>
             <div class="flex-1 min-w-0">
                 <p class="text-white text-xs font-semibold truncate">{{ auth()->user()->name ?? 'Admin' }}</p>
                 <p class="text-primary-300 text-xs truncate">{{ auth()->user()->email ?? '' }}</p>
             </div>
-            <form method="POST" action="{{ route('auth.logout') }}">
+            {{-- PERBAIKAN 3: tambah aria-label dan konfirmasi logout --}}
+            <form method="POST" action="{{ route('auth.logout') }}"
+                  onsubmit="return confirm('Yakin ingin keluar?')">
                 @csrf
                 <button type="submit"
-                        class="shrink-0 p-1.5 rounded-lg text-primary-300 hover:text-white hover:bg-white/10 transition-colors"
-                        title="Logout">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        aria-label="Logout"
+                        class="shrink-0 p-1.5 rounded-lg text-primary-300 hover:text-white hover:bg-white/10 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                         <polyline points="16 17 21 12 16 7"/>
                         <line x1="21" y1="12" x2="9" y2="12"/>
@@ -221,13 +202,16 @@
             </form>
         </div>
 
+        {{-- Collapsed state --}}
         <div x-show="!open"
             x-data="{ dropdownOpen: false }"
             class="relative flex justify-center">
 
             <button @click="dropdownOpen = !dropdownOpen"
                     @click.outside="dropdownOpen = false"
-                    class="flex items-center justify-center w-8 h-8 rounded-full bg-white/20 text-white text-xs font-bold uppercase hover:bg-white/30 transition-colors">
+                    aria-label="Menu akun"
+                    {{-- PERBAIKAN 6: text-sm untuk inisial --}}
+                    class="flex items-center justify-center w-8 h-8 rounded-full bg-white/20 text-white text-sm font-bold uppercase hover:bg-white/30 transition-colors select-none">
                 {{ substr(auth()->user()->name ?? 'A', 0, 1) }}
             </button>
 
@@ -238,18 +222,20 @@
                 x-transition:leave="transition ease-in duration-100"
                 x-transition:leave-start="opacity-100 translate-x-0"
                 x-transition:leave-end="opacity-0 -translate-x-2"
-                class="absolute bottom-0 left-full ml-2 w-44 bg-white rounded-lg shadow-lg border border-neutral-200 overflow-hidden z-50">
+                class="absolute bottom-0 left-full ml-2 w-48 bg-white rounded-lg shadow-lg border border-neutral-200 overflow-hidden z-50">
 
                 <div class="px-3 py-2.5 border-b border-neutral-100">
                     <p class="text-xs font-semibold text-neutral-800 truncate">{{ auth()->user()->name ?? 'Admin' }}</p>
-                    <p class="text-xs text-neutral-400 truncate">{{ auth()->user()->email ?? '' }}</p>
+                    <p class="text-xs text-neutral-500 truncate">{{ auth()->user()->email ?? '' }}</p>
                 </div>
 
-                <form method="POST" action="{{ route('auth.logout') }}">
+                {{-- PERBAIKAN 3: konfirmasi logout di collapsed dropdown juga --}}
+                <form method="POST" action="{{ route('auth.logout') }}"
+                      onsubmit="return confirm('Yakin ingin keluar?')">
                     @csrf
                     <button type="submit"
                             class="w-full flex items-center gap-2 px-3 py-2.5 text-xs font-medium text-danger-600 hover:bg-danger-50 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                             <polyline points="16 17 21 12 16 7"/>
                             <line x1="21" y1="12" x2="9" y2="12"/>

@@ -1,22 +1,23 @@
 <div id="modalEditBuku"
-     class="hidden fixed inset-0 z-50 items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+     class="hidden fixed inset-0 z-50 items-center justify-center bg-black/40 backdrop-blur-sm px-4">
 
     <div class="absolute inset-0" onclick="tutupModalEditBuku()"></div>
 
-    <div class="relative z-10 w-full max-w-lg rounded-xl bg-white border border-neutral-200 overflow-hidden shadow-lg">
+    <div class="relative z-10 w-full max-w-2xl rounded-2xl bg-white overflow-hidden shadow-xl">
 
         <div class="absolute top-0 left-0 right-0 h-0.5 bg-primary-400"></div>
 
         {{-- Header --}}
-        <div class="flex items-center justify-between px-6 py-4 border-b border-neutral-100">
+        <div class="flex items-center justify-between px-6 sm:px-8 pt-6 pb-5 border-b border-neutral-100 shrink-0">
             <div>
-                <h2 class="text-sm font-semibold text-neutral-800">Edit Buku</h2>
-                <p class="text-xs text-neutral-400 mt-0.5">Perbarui data buku perpustakaan</p>
+                <h2 class="text-base font-semibold text-neutral-800">Edit Buku</h2>
+                <p class="text-sm text-neutral-400 mt-0.5">Perbarui data buku perpustakaan</p>
             </div>
             <button type="button" onclick="tutupModalEditBuku()"
-                    class="p-1 rounded-lg text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    aria-label="Tutup modal"
+                    class="p-2 rounded-lg text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
             </button>
@@ -24,7 +25,7 @@
 
         {{-- Form --}}
         <form id="formEditBuku" method="POST" action=""
-              class="px-6 py-5 flex flex-col gap-4 max-h-[75vh] overflow-y-auto custom-scroll">
+              class="px-6 sm:px-8 py-6 flex flex-col gap-4 max-h-[75vh] overflow-y-auto custom-scroll">
             @csrf
             @method('PUT')
 
@@ -35,7 +36,7 @@
                 </label>
                 <input type="text" id="edit_judul" name="judul"
                        placeholder="Masukkan judul buku"
-                       class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
+                       class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
             </div>
 
             {{-- Pengarang --}}
@@ -45,7 +46,7 @@
                 </label>
                 <input type="text" id="edit_pengarang" name="pengarang"
                        placeholder="Masukkan nama pengarang"
-                       class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
+                       class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
             </div>
 
             {{-- Penerbit & Tahun Terbit --}}
@@ -54,13 +55,13 @@
                     <label for="edit_penerbit" class="text-xs font-medium text-neutral-700">Penerbit</label>
                     <input type="text" id="edit_penerbit" name="penerbit"
                            placeholder="Nama penerbit"
-                           class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
+                           class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label for="edit_tahun_terbit" class="text-xs font-medium text-neutral-700">Tahun Terbit</label>
                     <input type="number" id="edit_tahun_terbit" name="tahun_terbit"
                            placeholder="Contoh: 2020" min="1900" max="2099"
-                           class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
+                           class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
                 </div>
             </div>
 
@@ -70,13 +71,13 @@
                     <label for="edit_isbn" class="text-xs font-medium text-neutral-700">ISBN</label>
                     <input type="text" id="edit_isbn" name="isbn"
                            placeholder="Contoh: 978-xxx"
-                           class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 font-mono focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
+                           class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 font-mono focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label for="edit_tempat_terbit" class="text-xs font-medium text-neutral-700">Tempat Terbit</label>
                     <input type="text" id="edit_tempat_terbit" name="tempat_terbit"
                            placeholder="Contoh: Jakarta"
-                           class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
+                           class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
                 </div>
             </div>
 
@@ -86,10 +87,9 @@
                     <label for="edit_stok" class="text-xs font-medium text-neutral-700">Stok <span class="text-danger-500">*</span></label>
                     <input type="number" id="edit_stok" name="stok"
                            placeholder="0" min="0"
-                           class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition">
+                           class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
                 </div>
                 <div class="flex flex-col gap-1.5">
-                    {{-- Fix 1: 'ILmu Sosial' → 'Ilmu Sosial' --}}
                     <label for="edit_kategori" class="text-xs font-medium text-neutral-700">Kategori</label>
                     <select id="edit_kategori" name="kategori"
                             class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
@@ -126,7 +126,7 @@
                     <label for="edit_kondisi" class="text-xs font-medium text-neutral-700">Kondisi</label>
                     <select id="edit_kondisi" name="kondisi"
                             class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
-                        <option value="">-- Pilih Kondisi --</option>
+                        <option value="">-</option>
                         <option value="baik">Baik</option>
                         <option value="cukup">Cukup</option>
                         <option value="rusak">Rusak</option>
@@ -134,12 +134,12 @@
                 </div>
             </div>
 
-            {{-- Fix 3: lokasi tidak lagi dibungkus grid-cols-2 karena member sudah dihapus --}}
+            {{-- Lokasi --}}
             <div class="flex flex-col gap-1.5">
                 <label for="edit_lokasi_id" class="text-xs font-medium text-neutral-700">Lokasi <span class="text-danger-500">*</span></label>
                 <select id="edit_lokasi_id" name="lokasi_id"
                         class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
-                    <option value="">-- Pilih Lokasi --</option>
+                    <option value="">Pilih lokasi</option>
                     @foreach ($lokasis as $lokasi)
                         <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
                     @endforeach
@@ -162,18 +162,23 @@
                           class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition resize-none"></textarea>
             </div>
 
-            {{-- Actions --}}
-            <div class="flex items-center justify-end gap-2 pt-2 border-t border-neutral-100">
+        </form>
+
+        {{-- Footer --}}
+        <div class="flex items-center justify-between px-6 sm:px-8 py-4 border-t border-neutral-100 bg-neutral-50">
+            <div></div>
+            <div class="flex items-center gap-2">
                 <button type="button" onclick="tutupModalEditBuku()"
-                        class="px-4 py-2 text-xs font-medium rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-50 transition">
+                        class="text-sm font-medium px-4 py-2 rounded-lg text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 transition-colors">
                     Batal
                 </button>
-                <button type="submit"
-                        class="px-4 py-2 text-xs font-medium rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition">
+                <button type="button" onclick="document.getElementById('formEditBuku').submit()"
+                        class="text-sm font-medium px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors">
                     Simpan Perubahan
                 </button>
             </div>
-        </form>
+        </div>
+
     </div>
 </div>
 
