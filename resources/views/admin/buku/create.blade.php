@@ -1,22 +1,23 @@
 <div id="modalTambahBuku"
-     class="hidden fixed inset-0 z-50 items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+     class="hidden fixed inset-0 z-50 items-center justify-center bg-black/40 backdrop-blur-sm px-4">
 
     <div class="absolute inset-0" onclick="tutupModalBuku()"></div>
 
-    <div class="relative z-10 w-full max-w-2xl rounded-xl bg-white border border-neutral-200 overflow-hidden shadow-lg">
+    <div class="relative z-10 w-full max-w-2xl rounded-2xl bg-white border border-neutral-200 overflow-hidden shadow-xl">
 
         <div class="absolute top-0 left-0 right-0 h-0.5 bg-primary-400"></div>
 
         {{-- Header --}}
-        <div class="flex items-center justify-between px-6 py-4 border-b border-neutral-100 shrink-0">
+        <div class="flex items-center justify-between px-6 sm:px-8 pt-6 pb-5 border-b border-neutral-100 shrink-0">
             <div>
-                <h2 class="text-sm font-semibold text-neutral-800">Tambah Buku</h2>
-                <p class="text-xs text-neutral-400 mt-0.5">Isi data buku baru</p>
+                <h2 class="text-base font-semibold text-neutral-800">Tambah Buku</h2>
+                <p class="text-sm text-neutral-400 mt-0.5">Isi data buku baru</p>
             </div>
             <button type="button" onclick="tutupModalBuku()"
-                    class="p-1 rounded-lg text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    aria-label="Tutup modal"
+                    class="p-2 rounded-lg text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
             </button>
@@ -24,7 +25,7 @@
 
         {{-- Form --}}
         <form id="formTambahBuku" method="POST" action="{{ route('admin.buku.store') }}"
-              class="px-6 py-5 flex flex-col gap-4 max-h-[75vh] overflow-y-auto custom-scroll">
+              class="px-6 sm:px-8 py-6 flex flex-col gap-4 max-h-[75vh] overflow-y-auto custom-scroll">
             @csrf
 
             {{-- Judul & Pengarang --}}
@@ -127,7 +128,6 @@
             </div>
 
             {{-- Lokasi --}}
-            {{-- Fix: hapus input member — member_id hanya diisi via transaksi tukar, bukan form manual --}}
             <div class="flex flex-col gap-1.5">
                 <label class="text-xs font-medium text-neutral-700">Lokasi <span class="text-danger-500">*</span></label>
                 <select name="lokasi_id" id="tambah_lokasi_id"
@@ -154,18 +154,23 @@
                           class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition resize-none"></textarea>
             </div>
 
-            {{-- Actions --}}
-            <div class="flex items-center justify-end gap-2 pt-2 border-t border-neutral-100">
+        </form>
+
+        {{-- Footer --}}
+        <div class="flex items-center justify-between px-6 sm:px-8 py-4 border-t border-neutral-100 bg-neutral-50">
+            <div></div>
+            <div class="flex items-center gap-2">
                 <button type="button" onclick="tutupModalBuku()"
-                        class="px-4 py-2 text-xs font-medium rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-50 transition">
+                        class="text-sm font-medium px-4 py-2 rounded-lg text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 transition-colors">
                     Batal
                 </button>
                 <button type="button" onclick="submitTambahBuku()"
-                        class="px-4 py-2 text-xs font-medium rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition">
+                        class="text-sm font-medium px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-success-700 transition-colors">
                     Simpan Buku
                 </button>
             </div>
-        </form>
+        </div>
+
     </div>
 </div>
 
@@ -216,12 +221,11 @@
         const sumber    = document.getElementById('tambah_sumber').value;
         const lokasiId  = document.getElementById('tambah_lokasi_id').value;
 
-        // Fix: validasi stok cukup tidak boleh kosong, boleh 0
-        const errJudul    = !judul;
+        const errJudul     = !judul;
         const errPengarang = !pengarang;
-        const errStok     = stok === '';
-        const errSumber   = !sumber;
-        const errLokasi   = !lokasiId;
+        const errStok      = stok === '';
+        const errSumber    = !sumber;
+        const errLokasi    = !lokasiId;
 
         setError('tambah_judul',     'err_judul',     errJudul);
         setError('tambah_pengarang', 'err_pengarang', errPengarang);
