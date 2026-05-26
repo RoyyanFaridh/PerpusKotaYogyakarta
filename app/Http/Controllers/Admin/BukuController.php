@@ -21,12 +21,11 @@ class BukuController extends Controller
 
     public function index(Request $request)
     {
-        $filters = $request->only(['search', 'kategori', 'kondisi', 'stok']);
+        $filters = $request->only(['search', 'kategori', 'kondisi', 'lokasi']);
         $bukus   = $this->service->getAll($filters);
         $lokasis = Lokasi::all();
         $stats   = $this->getStats();
 
-        // Bug 4 fix: hapus Member::all() yang tidak dipakai di view buku
         return view('admin.buku.index', compact('bukus', 'lokasis', 'filters', 'stats'));
     }
 
@@ -36,7 +35,6 @@ class BukuController extends Controller
         return view('admin.buku.create', compact('lokasis'));
     }
 
-    // Bug 1 fix: store sekarang pakai SimpanBukuRequest seperti update
     public function store(SimpanBukuRequest $request)
     {
         $validated            = $request->validated();
@@ -48,7 +46,6 @@ class BukuController extends Controller
                          ->with('success', 'Buku berhasil ditambahkan.');
     }
 
-    // Bug 3 fix: edit hanya return view, tidak campur dengan response JSON
     public function edit(int $id)
     {
         $buku    = Buku::findOrFail($id);
@@ -56,7 +53,6 @@ class BukuController extends Controller
         return view('admin.buku.edit', compact('buku', 'lokasis'));
     }
 
-    // Bug 3 fix: show khusus untuk AJAX — terpisah dari edit
     public function show(int $id)
     {
         return response()->json(Buku::with('lokasi')->findOrFail($id));
@@ -76,7 +72,6 @@ class BukuController extends Controller
         return redirect()->back()->with('success', 'Buku berhasil dihapus.');
     }
 
-    // Bug 5 fix: 5 query terpisah digabung jadi 1 query
     private function getStats(): array
     {
         $stats = Buku::selectRaw("

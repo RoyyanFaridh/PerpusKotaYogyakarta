@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\Admin\BukuController;
+use App\Http\Controllers\Admin\BukuRelokasiController;
 use App\Http\Controllers\Admin\TransaksiController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\LokasiController;
@@ -53,6 +54,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::get('/',              [BukuController::class, 'index'])->name('index');
         Route::get('/create',        [BukuController::class, 'create'])->name('create')->middleware('has.permission:buku.create');
         Route::post('/',             [BukuController::class, 'store'])->name('store')->middleware('has.permission:buku.create');
+        Route::get('/relokasi',      [BukuRelokasiController::class, 'index'])->name('relokasi.index')->middleware('has.permission:buku.edit');
+        Route::post('/relokasi',     [BukuRelokasiController::class, 'store'])->name('relokasi.store')->middleware('has.permission:buku.edit');
         Route::get('/{buku}',        [BukuController::class, 'show'])->name('show');
         Route::get('/{buku}/edit',   [BukuController::class, 'edit'])->name('edit')->middleware('has.permission:buku.edit');
         Route::put('/{buku}',        [BukuController::class, 'update'])->name('update')->middleware('has.permission:buku.edit');

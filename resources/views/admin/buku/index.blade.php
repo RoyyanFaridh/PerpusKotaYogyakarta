@@ -42,6 +42,10 @@ $categoryColorMap = [
                         class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold text-white bg-primary-600 hover:bg-primary-700 transition-colors">
                     Tambah Buku
                 </button>
+                <button type="button" onclick="bukaModalRelokasi()"
+                        class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold text-neutral-600 border border-neutral-200 hover:bg-neutral-50 transition-colors">
+                    Relokasi Buku
+                </button>
             </div>
         </div>
 
@@ -82,12 +86,13 @@ $categoryColorMap = [
                     <option value="{{ $kat }}">{{ $kat }}</option>
                 @endforeach
             </select>
-            <select id="stok"
-                    class="px-3 py-2 text-sm text-neutral-600 bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition shrink-0">
-                <option value="">Semua Stok</option>
-                <option value="tersedia">Tersedia</option>
-                <option value="habis">Habis</option>
-            </select>
+            <select id="lokasi"
+                class="px-3 py-2 text-sm text-neutral-600 bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition shrink-0">
+            <option value="">Semua Lokasi</option>
+            @foreach ($lokasis as $lokasi)
+                <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
+            @endforeach
+        </select>
         </div>
     </div>
 
@@ -98,7 +103,7 @@ $categoryColorMap = [
         @if (session('success'))
             <div class="flex items-center gap-2.5 px-5 py-3 bg-success-50 border-b border-success-100 text-success-700 text-sm font-medium">
                 <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
                 </svg>
                 {{ session('success') }}
@@ -109,13 +114,11 @@ $categoryColorMap = [
             <table class="w-full text-sm">
                 <thead>
                     <tr class="border-b border-neutral-100 bg-neutral-50">
-                        <th class="text-left   text-xs font-semibold text-neutral-500 px-5 py-3">Judul</th>
-                        <th class="text-left   text-xs font-semibold text-neutral-500 px-4 py-3">Pengarang</th>
+                        <th class="text-center   text-xs font-semibold text-neutral-500 px-5 py-3 w-[20%]">Judul</th>
                         <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">ISBN</th>
                         <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Kategori</th>
-                        <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Sumber</th>
                         <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Stok</th>
-                        <th class="text-left   text-xs font-semibold text-neutral-500 px-4 py-3">Lokasi</th>
+                        <th class="text-center   text-xs font-semibold text-neutral-500 px-4 py-3">Lokasi</th>
                         <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Aksi</th>
                     </tr>
                 </thead>
@@ -123,19 +126,24 @@ $categoryColorMap = [
                     @forelse ($bukus as $buku)
                         <tr class="hover:bg-neutral-50 transition-colors">
 
+                            {{-- Judul + Pengarang + Tahun --}}
                             <td class="px-5 py-3.5">
-                                <p class="text-xs font-semibold text-neutral-800 max-w-50 truncate">{{ $buku->judul }}</p>
-                                <p class="text-xs text-neutral-400 mt-0.5">{{ $buku->tahun_terbit ?? '-' }}</p>
+                                <p class="text-xs font-semibold text-neutral-800 leading-snug line-clamp-2">{{ $buku->judul }}</p>
+                                <p class="text-xs text-neutral-400 mt-1 flex items-center gap-1 flex-wrap">
+                                    <span>{{ $buku->pengarang }}</span>
+                                    @if ($buku->tahun_terbit)
+                                        <span class="inline-block w-1 h-1 rounded-full bg-neutral-300 shrink-0"></span>
+                                        <span>{{ $buku->tahun_terbit }}</span>
+                                    @endif
+                                </p>
                             </td>
 
-                            <td class="px-4 py-3.5">
-                                <p class="text-xs text-neutral-600 max-w-35 truncate">{{ $buku->pengarang }}</p>
-                            </td>
-
+                            {{-- ISBN --}}
                             <td class="px-4 py-3.5 text-center">
                                 <span class="text-xs font-mono text-neutral-500">{{ $buku->isbn ?? '-' }}</span>
                             </td>
 
+                            {{-- Kategori --}}
                             <td class="px-4 py-3.5 text-center">
                                 @if ($buku->kategori)
                                     @php $catClass = $categoryColorMap[$buku->kategori] ?? 'bg-neutral-100 text-neutral-500'; @endphp
@@ -147,14 +155,7 @@ $categoryColorMap = [
                                 @endif
                             </td>
 
-                            <td class="px-4 py-3.5 text-center">
-                                @if ($buku->sumber === 'perpus')
-                                    <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-50 text-primary-700">Perpus</span>
-                                @else
-                                    <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-warning-50 text-warning-700">Tukar</span>
-                                @endif
-                            </td>
-
+                            {{-- Stok --}}
                             <td class="px-4 py-3.5 text-center">
                                 @if ($buku->stok > 0)
                                     <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-success-50 text-success-700">{{ $buku->stok }} tersedia</span>
@@ -163,10 +164,12 @@ $categoryColorMap = [
                                 @endif
                             </td>
 
-                            <td class="px-4 py-3.5">
-                                <p class="text-xs text-neutral-500 max-w-30 truncate">{{ $buku->lokasi?->nama_lokasi ?? '—' }}</p>
+                            {{-- Lokasi — full text, wrap kalau panjang --}}
+                            <td class="px-4 py-3.5 min-w-35 text-center">
+                                <p class="text-xs text-neutral-500 leading-snug">{{ $buku->lokasi?->nama_lokasi ?? '—' }}</p>
                             </td>
 
+                            {{-- Aksi --}}
                             <td class="px-4 py-3.5">
                                 <div class="flex items-center justify-center gap-1.5">
                                     <button type="button"
@@ -205,7 +208,7 @@ $categoryColorMap = [
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="px-5 py-12 text-center">
+                            <td colspan="6" class="px-5 py-12 text-center">
                                 <div class="flex flex-col items-center gap-2">
                                     <div class="w-10 h-10 rounded-xl bg-neutral-100 flex items-center justify-center">
                                         <x-icons.book class="w-5 h-5 text-neutral-400"/>
@@ -257,20 +260,21 @@ $categoryColorMap = [
 @include('admin.buku.create')
 @include('admin.buku.edit')
 @include('admin.buku.destroy')
+@include('admin.buku.relokasi')
 
 @push('scripts')
 <script>
 (function () {
     const searchInput    = document.getElementById('searchInput');
     const selectKategori = document.getElementById('kategori');
-    const selectStok     = document.getElementById('stok');
+    const selectLokasi   = document.getElementById('lokasi');
 
     function applyFilters() {
         const params = new URLSearchParams();
         const q = searchInput?.value.trim();
         if (q) params.set('search', q);
         if (selectKategori?.value) params.set('kategori', selectKategori.value);
-        if (selectStok?.value)     params.set('stok',     selectStok.value);
+        if (selectLokasi?.value)   params.set('lokasi',   selectLokasi.value);
         window.location.href = `${window.location.pathname}?${params.toString()}`;
     }
 
@@ -280,12 +284,12 @@ $categoryColorMap = [
         debounce = setTimeout(applyFilters, 400);
     });
     selectKategori?.addEventListener('change', applyFilters);
-    selectStok?.addEventListener('change', applyFilters);
+    selectLokasi?.addEventListener('change', applyFilters);
 
     const params = new URLSearchParams(window.location.search);
-    if (searchInput && params.get('search'))       searchInput.value    = params.get('search');
-    if (selectKategori && params.get('kategori'))  selectKategori.value = params.get('kategori');
-    if (selectStok && params.get('stok'))          selectStok.value     = params.get('stok');
+    if (searchInput && params.get('search'))      searchInput.value    = params.get('search');
+    if (selectKategori && params.get('kategori')) selectKategori.value = params.get('kategori');
+    if (selectLokasi && params.get('lokasi'))     selectLokasi.value   = params.get('lokasi');
 })();
 </script>
 @endpush

@@ -53,24 +53,20 @@ class BukuService
     {
         $query = Buku::with(['lokasi', 'member'])->latest();
 
-        if (!empty($filters['search'])) {
+        if (! empty($filters['search'])) {
             $query->cari($filters['search']);
         }
 
-        if (!empty($filters['kategori'])) {
+        if (! empty($filters['kategori'])) {
             $query->where('kategori', $filters['kategori']);
         }
 
-        if (!empty($filters['kondisi'])) {
+        if (! empty($filters['kondisi'])) {
             $query->where('kondisi', $filters['kondisi']);
         }
 
-        if (isset($filters['stok'])) {
-            if ($filters['stok'] === 'tersedia') {
-                $query->where('stok', '>', 0);
-            } elseif ($filters['stok'] === 'habis') {
-                $query->where('stok', 0);
-            }
+        if (! empty($filters['lokasi'])) {
+            $query->where('lokasi_id', $filters['lokasi']);
         }
 
         return $query;
