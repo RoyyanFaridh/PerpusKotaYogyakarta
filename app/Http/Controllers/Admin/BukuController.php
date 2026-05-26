@@ -79,14 +79,12 @@ class BukuController extends Controller
     // Bug 5 fix: 5 query terpisah digabung jadi 1 query
     private function getStats(): array
     {
-        $stats = Buku::selectRaw("
-            COUNT(*) as total,
-            SUM(sumber = 'perpus') as perpus,
-            SUM(sumber = 'tukar') as tukar,
-            SUM(stok > 0) as tersedia,
-            SUM(stok = 0) as habis
-        ")->first();
-
-        return $stats->toArray();
+        return [
+            'total'     => Buku::count(),
+            'perpus'    => Buku::where('sumber', 'perpus')->count(),
+            'tukar'     => Buku::where('sumber', 'tukar')->count(),
+            'tersedia'  => Buku::where('stok', '>', 0)->count(),
+            'habis'     => Buku::where('stok', 0)->count(),
+        ];
     }
 }
