@@ -22,7 +22,7 @@ class BukuController extends Controller
 
     public function index(Request $request)
     {
-        $filters = $request->only(['search', 'kategori', 'kondisi', 'stok']);
+        $filters = $request->only(['search', 'kategori', 'kondisi', 'lokasi']);
         $bukus   = $this->service->getAll($filters);
         $lokasis = Lokasi::all();
         $stats   = $this->getStats();
