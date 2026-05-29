@@ -116,6 +116,7 @@
 
     @include('components.home.navbar')
     @include('components.home.hero-search')
+    @include('components.home.buku-terbaru')
     @include('components.home.stats-strip')
     @include('components.home.kegiatan')
     @include('components.home.footer')

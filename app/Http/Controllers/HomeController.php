@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Buku;
 use App\Models\Kegiatan;
+use App\Models\Member;
+use App\Models\Transaksi;
+use App\Models\Lokasi;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -12,14 +15,12 @@ class HomeController extends Controller
     {
         $kegiatan = Kegiatan::orderBy('tanggal_mulai')->get();
 
-        // Sorting: selesai di atas, aktif/akan datang di bawah, masing-masing urut tanggal ASC
         $sorted = $kegiatan->sortBy(function ($item) {
             $s   = $item->status_otomatis;
             $tgl = \Carbon\Carbon::parse($item->tanggal_mulai)->timestamp;
             return [$s === 'selesai' ? 0 : 1, $tgl];
         })->values();
 
-        // Cari index kegiatan terdekat yang aktif/akan datang
         $closestIndex = 0;
         foreach ($sorted as $i => $item) {
             $s = $item->status_otomatis;
@@ -31,11 +32,12 @@ class HomeController extends Controller
 
         return view('welcome', [
             'totalBuku'    => Buku::count(),
-            'totalAnggota' => \App\Models\Member::count(),
-            'totalTukar'   => \App\Models\Transaksi::count(),
+            'totalAnggota' => Member::count(),
+            'totalTukar'   => Transaksi::count(),
             'kegiatan'     => $kegiatan,
             'closestIndex' => $closestIndex,
-            'lokasis'      => \App\Models\Lokasi::orderBy('nama_lokasi')->get(),
+            'lokasis'      => Lokasi::orderBy('nama_lokasi')->get(),
+            'bukuTerbaru'  => Buku::with('lokasi')->latest()->take(5)->get(),
         ]);
     }
 

@@ -1,4 +1,4 @@
-<section class="relative z-50 min-h-screen flex flex-col items-center justify-center pb-16 px-4 sm:px-6 text-center">
+<section class="relative z-50 flex flex-col items-center justify-center py-16 px-4 sm:px-6 text-center">
 
     <div class="hero-glow absolute w-[clamp(300px,70vw,860px)] h-[clamp(300px,70vw,860px)] rounded-full pointer-events-none"
          style="background: radial-gradient(circle, rgba(4,68,141,0.10) 0%, transparent 68%);">

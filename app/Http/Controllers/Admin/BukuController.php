@@ -9,6 +9,7 @@ use App\Models\Lokasi;
 use App\Services\BukuService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class BukuController extends Controller
 {
@@ -26,7 +27,6 @@ class BukuController extends Controller
         $lokasis = Lokasi::all();
         $stats   = $this->getStats();
 
-        // Bug 4 fix: hapus Member::all() yang tidak dipakai di view buku
         return view('admin.buku.index', compact('bukus', 'lokasis', 'filters', 'stats'));
     }
 
@@ -36,7 +36,6 @@ class BukuController extends Controller
         return view('admin.buku.create', compact('lokasis'));
     }
 
-    // Bug 1 fix: store sekarang pakai SimpanBukuRequest seperti update
     public function store(SimpanBukuRequest $request)
     {
         $validated            = $request->validated();
@@ -48,15 +47,14 @@ class BukuController extends Controller
                          ->with('success', 'Buku berhasil ditambahkan.');
     }
 
-    // Bug 3 fix: edit hanya return view, tidak campur dengan response JSON
     public function edit(int $id)
     {
         $buku    = Buku::findOrFail($id);
         $lokasis = Lokasi::all();
+
         return view('admin.buku.edit', compact('buku', 'lokasis'));
     }
 
-    // Bug 3 fix: show khusus untuk AJAX — terpisah dari edit
     public function show(int $id)
     {
         return response()->json(Buku::with('lokasi')->findOrFail($id));
@@ -66,27 +64,30 @@ class BukuController extends Controller
     {
         $this->service->update($id, $request->validated());
 
-        return redirect()->back()->with('success', 'Buku berhasil diperbarui.');
+        return redirect()->back()
+                         ->with('success', 'Buku berhasil diperbarui.');
     }
 
     public function destroy(int $id)
     {
         $this->service->delete($id);
 
-        return redirect()->back()->with('success', 'Buku berhasil dihapus.');
+        return redirect()->back()
+                         ->with('success', 'Buku berhasil dihapus.');
     }
 
-    // Bug 5 fix: 5 query terpisah digabung jadi 1 query
     private function getStats(): array
     {
-        $stats = Buku::selectRaw("
-            COUNT(*) as total,
-            SUM(sumber = 'perpus') as perpus,
-            SUM(sumber = 'tukar') as tukar,
-            SUM(stok > 0) as tersedia,
-            SUM(stok = 0) as habis
-        ")->first();
+        $stats = DB::table('bukus')
+            ->selectRaw("
+                COUNT(*) as total,
+                SUM(CASE WHEN sumber = 'perpus' THEN 1 ELSE 0 END) as perpus,
+                SUM(CASE WHEN sumber = 'tukar' THEN 1 ELSE 0 END) as tukar,
+                SUM(CASE WHEN stok > 0 THEN 1 ELSE 0 END) as tersedia,
+                SUM(CASE WHEN stok = 0 THEN 1 ELSE 0 END) as habis
+            ")
+            ->first();
 
-        return $stats->toArray();
+        return (array) $stats;
     }
 }
