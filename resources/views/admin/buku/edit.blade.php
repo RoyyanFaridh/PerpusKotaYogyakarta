@@ -135,7 +135,7 @@
             </div>
 
             {{-- Info kalau dalam paket --}}
-            <div id="edit_paket_info" class="hidden flex items-center gap-2 px-3 py-2.5 rounded-lg bg-primary-50 border border-primary-100">
+            <div id="edit_paket_info" class="hidden items-center gap-2 px-3 py-2.5 rounded-lg bg-primary-50 border border-primary-100">
                 <svg class="w-4 h-4 text-primary-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
                 </svg>

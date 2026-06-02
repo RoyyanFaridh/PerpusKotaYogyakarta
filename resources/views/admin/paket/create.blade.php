@@ -1,5 +1,5 @@
 <div id="modalTambahPaket"
-     class="hidden fixed inset-0 z-[60] items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+     class="hidden fixed inset-0 z-60 items-center justify-center bg-black/40 backdrop-blur-sm px-4">
 
     <div class="absolute inset-0" onclick="tutupModalTambahPaket()"></div>
 

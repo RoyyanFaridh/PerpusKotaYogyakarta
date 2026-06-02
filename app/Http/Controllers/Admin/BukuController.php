@@ -10,7 +10,6 @@ use App\Models\Paket;
 use App\Services\BukuService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class BukuController extends Controller
 {
