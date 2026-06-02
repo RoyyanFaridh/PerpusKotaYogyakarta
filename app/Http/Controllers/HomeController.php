@@ -38,7 +38,7 @@ class HomeController extends Controller
             'kegiatan'     => $sorted,
             'closestIndex' => $closestIndex,
             'lokasis'      => Lokasi::aktif()->tampilDiSearch()->orderBy('nama_lokasi')->get(),
-            'bukuTerbaru'  => Buku::with('lokasi')->orderBy('created_at', 'desc')->take(5)->get(),
+            'bukuTerbaru'  => Buku::with('lokasi')->orderBy('created_at', 'desc')->take(10)->get(),
         ]);
     }
 
