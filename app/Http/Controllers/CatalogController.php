@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Buku;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class CatalogController extends Controller
 {
@@ -47,12 +48,10 @@ class CatalogController extends Controller
             });
         }
 
-        // Ganti 'genre' → 'kategori'
         if ($request->filled('kategori')) {
             $query->where('kategori', $request->kategori);
         }
 
-        // Tambah filter lokasi
         if ($request->filled('lokasi_id')) {
             $query->where('lokasi_id', $request->lokasi_id);
         }
@@ -61,7 +60,7 @@ class CatalogController extends Controller
 
         return response()->json([
             'total' => $buku->count(),
-            'data'  => $buku->map(fn ($b) => [
+            'data'  => $buku->map(fn($b) => [
                 'id'           => $b->id,
                 'judul'        => $b->judul,
                 'pengarang'    => $b->pengarang,
@@ -71,6 +70,7 @@ class CatalogController extends Controller
                 'stok'         => $b->stok,
                 'lokasi_id'    => $b->lokasi_id,
                 'lokasi'       => $b->lokasi?->nama_lokasi ?? null,
+                'cover_url'    => $b->cover ? Storage::url($b->cover) : null,
             ]),
         ]);
     }

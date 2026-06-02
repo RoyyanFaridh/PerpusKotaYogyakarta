@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Buku;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class BukuService
 {
@@ -29,19 +31,42 @@ class BukuService
 
     public function store(array $data): Buku
     {
+        if (isset($data['cover']) && $data['cover'] instanceof UploadedFile) {
+            $data['cover'] = $data['cover']->store('covers', 'public');
+        }
+
         return Buku::create($data);
     }
 
     public function update(int $id, array $data): Buku
     {
         $buku = $this->find($id);
+
+        if (isset($data['cover']) && $data['cover'] instanceof UploadedFile) {
+            // Hapus cover lama jika ada
+            if ($buku->cover) {
+                Storage::disk('public')->delete($buku->cover);
+            }
+            $data['cover'] = $data['cover']->store('covers', 'public');
+        } else {
+            // Jika tidak ada file baru, jangan overwrite cover lama
+            unset($data['cover']);
+        }
+
         $buku->update($data);
         return $buku->fresh();
     }
 
     public function delete(int $id): bool
     {
-        return $this->find($id)->delete();
+        $buku = $this->find($id);
+
+        // Hapus cover saat buku dihapus
+        if ($buku->cover) {
+            Storage::disk('public')->delete($buku->cover);
+        }
+
+        return $buku->delete();
     }
 
     public function cariByIsbn(string $isbn): ?Buku

@@ -25,6 +25,7 @@
 
         {{-- Form --}}
         <form id="formTambahBuku" method="POST" action="{{ route('admin.buku.store') }}"
+              enctype="multipart/form-data"
               class="px-6 sm:px-8 py-6 flex flex-col gap-4 max-h-[75vh] overflow-y-auto custom-scroll">
             @csrf
 
@@ -154,6 +155,24 @@
                           class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition resize-none"></textarea>
             </div>
 
+            {{-- Cover --}}
+            <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-medium text-neutral-700">Cover Buku</label>
+                <div class="flex items-start gap-4">
+                    <div id="preview-cover-tambah"
+                         class="w-16 h-24 rounded-lg border border-neutral-200 bg-neutral-50 flex items-center justify-center overflow-hidden shrink-0">
+                        <svg class="w-5 h-5 text-neutral-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+                        </svg>
+                    </div>
+                    <div class="flex flex-col gap-1.5 flex-1 justify-center">
+                        <input type="file" name="cover" id="cover-input-tambah" accept="image/*"
+                               class="text-xs text-neutral-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 cursor-pointer transition">
+                        <p class="text-[0.7rem] text-neutral-400">JPG, PNG, WEBP. Maks 2MB.</p>
+                    </div>
+                </div>
+            </div>
+
         </form>
 
         {{-- Footer --}}
@@ -240,5 +259,16 @@
 
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') tutupModalBuku();
+    });
+
+    document.getElementById('cover-input-tambah')?.addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+            document.getElementById('preview-cover-tambah').innerHTML =
+                `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+        };
+        reader.readAsDataURL(file);
     });
 </script>

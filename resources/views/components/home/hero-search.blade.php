@@ -1,19 +1,20 @@
-<section class="relative z-50 flex flex-col items-center justify-center py-16 px-4 sm:px-6 text-center">
+<section class="relative z-50 flex flex-col items-center justify-center pt-50 pb-16 px-4 sm:px-6 text-center">
 
     <div class="hero-glow absolute w-[clamp(300px,70vw,860px)] h-[clamp(300px,70vw,860px)] rounded-full pointer-events-none"
          style="background: radial-gradient(circle, rgba(4,68,141,0.10) 0%, transparent 68%);">
     </div>
 
-    <p class="animate-fade-up-1 text-xs font-semibold tracking-[0.18em] uppercase text-primary-400 mb-4 sm:mb-5 flex items-center gap-2 sm:gap-3">
-        <span class="block w-6 sm:w-9 h-px bg-primary-400 rounded"></span>
-        Perpustakaan Kota Yogyakarta
-        <span class="block w-6 sm:w-9 h-px bg-primary-400 rounded"></span>
-    </p>
+    <div class="animate-fade-up-1 flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5">
+        <img src="{{ asset('images/RYB.png') }}"
+             alt="Rotate Your Book"
+             class="h-60 sm:h-70 w-auto object-contain opacity-70">
+
+    </div>
 
     <h1 class="animate-fade-up-2 font-extrabold leading-tight text-primary-900 mb-4 sm:mb-5"
         style="font-size: clamp(1.8rem, 7vw, 5rem);">
-        Tukarkan Buku,<br>
-        <span class="text-primary-600">Perluas Wawasan</span>
+        Tukar Bacaan,<br>
+        <span class="text-primary-600">Luaskan Wawasan</span>
     </h1>
 
     <p class="animate-fade-up-3 max-w-xs sm:max-w-xl text-sm sm:text-base leading-relaxed text-neutral-500 mb-8 sm:mb-12">

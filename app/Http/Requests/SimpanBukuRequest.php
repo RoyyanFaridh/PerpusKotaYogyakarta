@@ -21,6 +21,7 @@ class SimpanBukuRequest extends FormRequest
             'tahun_terbit'  => 'nullable|integer|min:1900|max:' . date('Y'),
             'tempat_terbit' => 'nullable|string|max:255',
             'resume'        => 'nullable|string',
+            'cover'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'stok'          => 'required|integer|min:0',
             'kategori'      => 'nullable|string|max:255',
             'sumber'        => 'required|in:perpus,tukar',
@@ -45,6 +46,9 @@ class SimpanBukuRequest extends FormRequest
             'sumber.in'             => 'Sumber harus perpus atau tukar',
             'kondisi.in'            => 'Kondisi harus baik, cukup, atau rusak',
             'lokasi_id.exists'      => 'Lokasi tidak ditemukan',
+            'cover.image'   => 'Cover harus berupa gambar',
+            'cover.mimes'   => 'Format cover harus jpg, jpeg, png, atau webp',
+            'cover.max'     => 'Ukuran cover maksimal 2MB',
         ];
     }
 

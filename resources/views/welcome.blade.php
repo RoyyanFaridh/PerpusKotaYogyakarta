@@ -91,7 +91,7 @@
         #dropdown-kategori,
         #dropdown-lokasi {
             animation: fadeIn 0.18s ease both;
-            z-index: 9999 !important; 
+            z-index: 9999 !important;
         }
 
         #dropdown-kategori-wrapper,
@@ -108,6 +108,30 @@
         #katalog-grid > div {
             transform: none;
             will-change: auto;
+        }
+
+        /* Cover buku: wrapper dengan tinggi tetap, gambar contain di dalamnya */
+        .book-cover-wrap {
+            width: 100%;
+            height: 260px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(var(--color-primary-50), 0.6);
+        }
+        .book-cover-wrap img {
+            height: 100%;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+        }
+        .book-cover-placeholder {
+            width: 100%;
+            height: 260px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f5fb;
         }
     </style>
 </head>
@@ -284,7 +308,6 @@
             const q = searchInput.value.trim();
             if (!q && !activeKategori && !activeLokasi) { hideKatalog(); return; }
 
-            // Tutup semua dropdown sebelum search
             ['kategori', 'lokasi'].forEach(t => {
                 document.getElementById(`dropdown-${t}`)?.classList.add('hidden');
                 document.getElementById(`chevron-${t}`)?.classList.remove('rotate-180');
@@ -319,40 +342,55 @@
             if (q)        parts.push(`"${q}"`);
             if (kategori) parts.push(kategori);
             if (lokasi)   parts.push(activeLokasiLabel);
+            const total = json.total ?? json.meta?.total ?? json.data?.length ?? 0;
             katalogTitle.textContent = (parts.length ? parts.join(' · ') : 'Semua Buku')
-                + `  —  ${json.total} buku ditemukan`;
+                + `  —  ${total} buku ditemukan`;
 
             if (!json.data || json.data.length === 0) { showEmpty(); return; }
             katalogEmpty.classList.add('hidden');
             katalogEmpty.classList.remove('flex');
 
             katalogGrid.innerHTML = json.data.map((buku, i) => `
-                <div class="book-card-stagger-${Math.min(i + 1, 12)} flex flex-col bg-white border border-primary-100 rounded-xl p-7 cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:border-primary-200"
+                <div class="book-card-stagger-${Math.min(i + 1, 12)} flex flex-col bg-white border border-primary-100 rounded-xl overflow-hidden cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:border-primary-200"
                      style="animation: fadeIn 0.4s ease both;">
-                    <div class="flex items-start justify-between gap-2 mb-4">
-                        <span class="inline-block text-[0.65rem] font-semibold tracking-[0.07em] uppercase px-2.5 py-0.5 rounded-full bg-primary-50 text-primary">
-                            ${escHtml(buku.kategori ?? 'Umum')}
-                        </span>
-                        <span class="text-[0.75rem] font-medium text-neutral-400 shrink-0">${escHtml(String(buku.tahun_terbit ?? ''))}</span>
-                    </div>
-                    <h3 class="font-bold text-[1.05rem] leading-snug text-primary-900 mb-2 line-clamp-2">${escHtml(buku.judul)}</h3>
-                    <p class="text-[0.83rem] font-medium text-neutral-500 mb-4">${escHtml(buku.pengarang)}</p>
-                    <p class="text-[0.82rem] leading-relaxed text-neutral-400 line-clamp-4 flex-1">${escHtml(buku.resume ?? '')}</p>
-                    <div class="flex items-center justify-between mt-4 pt-4 border-t border-primary-50">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2.5 h-2.5 rounded-full ${buku.stok > 0 ? 'bg-emerald-400' : 'bg-red-400'}"></span>
-                            <span class="text-[0.78rem] font-medium ${buku.stok > 0 ? 'text-emerald-600' : 'text-red-500'}">
-                                ${buku.stok > 0 ? `Tersedia (${buku.stok})` : 'Habis'}
+
+                    ${buku.cover_url
+                        ? `<div class="book-cover-wrap">
+                               <img src="${escHtml(buku.cover_url)}" alt="Cover ${escHtml(buku.judul)}">
+                           </div>`
+                        : `<div class="book-cover-placeholder">
+                               <svg class="w-10 h-10 stroke-current fill-none" style="color:#c7d9ef;" viewBox="0 0 24 24" stroke-width="1.3">
+                                   <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+                               </svg>
+                           </div>`
+                    }
+
+                    <div class="flex flex-col p-7 flex-1">
+                        <div class="flex items-start justify-between gap-2 mb-4">
+                            <span class="inline-block text-[0.65rem] font-semibold tracking-[0.07em] uppercase px-2.5 py-0.5 rounded-full bg-primary-50 text-primary">
+                                ${escHtml(buku.kategori ?? 'Umum')}
                             </span>
+                            <span class="text-[0.75rem] font-medium text-neutral-400 shrink-0">${escHtml(String(buku.tahun_terbit ?? ''))}</span>
                         </div>
-                        ${buku.lokasi ? `
-                        <div class="flex items-center gap-1.5 text-[0.75rem] text-neutral-400">
-                            <svg class="w-3.5 h-3.5 stroke-current fill-none shrink-0" viewBox="0 0 24 24" stroke-width="2">
-                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-                                <circle cx="12" cy="9" r="2.5"/>
-                            </svg>
-                            <span>${escHtml(buku.lokasi)}</span>
-                        </div>` : ''}
+                        <h3 class="font-bold text-[1.05rem] leading-snug text-primary-900 mb-2 line-clamp-2">${escHtml(buku.judul)}</h3>
+                        <p class="text-[0.83rem] font-medium text-neutral-500 mb-4">${escHtml(buku.pengarang)}</p>
+                        <p class="text-[0.82rem] leading-relaxed text-neutral-400 line-clamp-4 flex-1">${escHtml(buku.resume ?? '')}</p>
+                        <div class="flex items-center justify-between mt-4 pt-4 border-t border-primary-50">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full ${buku.stok > 0 ? 'bg-emerald-400' : 'bg-red-400'}"></span>
+                                <span class="text-[0.78rem] font-medium ${buku.stok > 0 ? 'text-emerald-600' : 'text-red-500'}">
+                                    ${buku.stok > 0 ? `Tersedia (${buku.stok})` : 'Habis'}
+                                </span>
+                            </div>
+                            ${buku.lokasi ? `
+                            <div class="flex items-center gap-1.5 text-[0.75rem] text-neutral-400">
+                                <svg class="w-3.5 h-3.5 stroke-current fill-none shrink-0" viewBox="0 0 24 24" stroke-width="2">
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                                    <circle cx="12" cy="9" r="2.5"/>
+                                </svg>
+                                <span>${escHtml(buku.lokasi)}</span>
+                            </div>` : ''}
+                        </div>
                     </div>
                 </div>
             `).join('');
@@ -378,10 +416,14 @@
             katalogEmpty.classList.add('flex');
             katalogGrid.innerHTML = '';
         }
-        function showKatalog() { katalogSection.classList.add('visible'); }
+        function showKatalog() {
+            katalogSection.classList.add('visible');
+            document.getElementById('buku-terbaru-section')?.classList.add('hidden');
+        }
         function hideKatalog() {
             katalogSection.classList.remove('visible');
             katalogGrid.innerHTML = '';
+            document.getElementById('buku-terbaru-section')?.classList.remove('hidden');
         }
         function escHtml(str) {
             return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
