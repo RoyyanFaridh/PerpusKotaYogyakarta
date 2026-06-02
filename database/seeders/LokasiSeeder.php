@@ -11,24 +11,28 @@ class LokasiSeeder extends Seeder
     {
         $lokasis = [
             [
-                'nama_lokasi' => 'Perpustakaan Kota Yogyakarta Pusat',
-                'alamat'      => 'Jl. Suroto No.9, Kotabaru, Gondokusuman, Kota Yogyakarta',
-                'no_telp'     => '(0274) 562150',
+                'nama_lokasi'      => 'Perpustakaan Kotabaru',
+                'alamat'           => 'Jl. Suroto No.9, Kotabaru, Kec. Gondokusuman, Kota Yogyakarta, DIY 55224',
+                'no_telp'          => '(0274) 511314',
+                'tipe'             => 'kotabaru',
+                'tampil_di_search' => true,
+                'aktif'            => true,
             ],
             [
-                'nama_lokasi' => 'Perpustakaan Cabang Utara',
-                'alamat'      => 'Jl. Kaliurang KM 5, Sleman, Yogyakarta',
-                'no_telp'     => '(0274) 123456',
+                'nama_lokasi'      => 'PEVITA',
+                'alamat'           => 'Jl. Mayjend Sutoyo No.32, Mantrijeron, Kota Yogyakarta, DIY 55143',
+                'no_telp'          => '081226839100',
+                'tipe'             => 'pevita',
+                'tampil_di_search' => true,
+                'aktif'            => true,
             ],
             [
-                'nama_lokasi' => 'Perpustakaan Cabang Selatan',
-                'alamat'      => 'Jl. Parangtritis KM 3, Bantul, Yogyakarta',
-                'no_telp'     => '(0274) 654321',
-            ],
-            [
-                'nama_lokasi' => 'Perpustakaan Cabang Timur',
-                'alamat'      => 'Jl. Solo KM 8, Kalasan, Sleman, Yogyakarta',
-                'no_telp'     => '(0274) 789012',
+                'nama_lokasi'      => 'Bank Buku',
+                'alamat'           => '',
+                'no_telp'          => '',
+                'tipe'             => 'bank_buku',
+                'tampil_di_search' => false,
+                'aktif'            => false,
             ],
         ];
 

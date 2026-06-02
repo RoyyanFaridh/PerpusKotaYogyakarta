@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Buku;
 use App\Models\Kegiatan;
+use App\Models\Lokasi;
+use App\Models\Member;
+use App\Models\Transaksi;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -12,14 +15,12 @@ class HomeController extends Controller
     {
         $kegiatan = Kegiatan::orderBy('tanggal_mulai')->get();
 
-        // Sorting: selesai di atas, aktif/akan datang di bawah, masing-masing urut tanggal ASC
         $sorted = $kegiatan->sortBy(function ($item) {
             $s   = $item->status_otomatis;
             $tgl = \Carbon\Carbon::parse($item->tanggal_mulai)->timestamp;
             return [$s === 'selesai' ? 0 : 1, $tgl];
         })->values();
 
-        // Cari index kegiatan terdekat yang aktif/akan datang
         $closestIndex = 0;
         foreach ($sorted as $i => $item) {
             $s = $item->status_otomatis;
@@ -30,22 +31,22 @@ class HomeController extends Controller
         }
 
         return view('welcome', [
-            'totalBuku'    => Buku::count(),
-            'totalAnggota' => \App\Models\Member::count(),
-            'totalTukar'   => \App\Models\Transaksi::count(),
-            'kegiatan'     => $kegiatan,
+            'totalBuku'    => Buku::visible()->tersedia()->count(),
+            'totalAnggota' => Member::count(),
+            'totalTukar'   => Transaksi::count(),
+            'kegiatan'     => $sorted,
             'closestIndex' => $closestIndex,
-            'lokasis'      => \App\Models\Lokasi::orderBy('nama_lokasi')->get(),
+            'lokasis'      => Lokasi::aktif()->tampilDiSearch()->orderBy('nama_lokasi')->get(),
         ]);
     }
 
     public function searchBuku(Request $request)
     {
-        $query = Buku::query()->with('lokasi');
+        $query = Buku::with('lokasi')->visible()->tersedia();
 
         if ($request->q)
             $query->where(fn($q) => $q->where('judul', 'like', "%{$request->q}%")
-                                    ->orWhere('pengarang', 'like', "%{$request->q}%"));
+                                      ->orWhere('pengarang', 'like', "%{$request->q}%"));
 
         if ($request->kategori)
             $query->where('kategori', $request->kategori);

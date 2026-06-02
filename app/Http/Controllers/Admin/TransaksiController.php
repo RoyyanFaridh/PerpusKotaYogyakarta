@@ -30,9 +30,9 @@ class TransaksiController extends Controller
                 $q->where(function ($q) use ($search) {
                     $q->whereHas('member', fn($m) =>
                             $m->where('nama', 'ilike', "%{$search}%")
-                            ->orWhere('no_telp', 'ilike', "%{$search}%"))
-                    ->orWhereHas('bukuDiserahkan', fn($b) => $b->where('judul', 'ilike', "%{$search}%"))
-                    ->orWhereHas('bukuDiterima',   fn($b) => $b->where('judul', 'ilike', "%{$search}%"));
+                              ->orWhere('no_telp', 'ilike', "%{$search}%"))
+                      ->orWhereHas('bukuDiserahkan', fn($b) => $b->where('judul', 'ilike', "%{$search}%"))
+                      ->orWhereHas('bukuDiterima',   fn($b) => $b->where('judul', 'ilike', "%{$search}%"));
                 });
             })
             ->when($filters['tanggal'] ?? null, function ($q, $tanggal) {
@@ -40,7 +40,7 @@ class TransaksiController extends Controller
                     'hari_ini'   => $q->whereDate('tanggal_tukar', today()),
                     'minggu_ini' => $q->whereBetween('tanggal_tukar', [now()->startOfWeek(), now()->endOfWeek()]),
                     'bulan_ini'  => $q->whereMonth('tanggal_tukar', now()->month)
-                                    ->whereYear('tanggal_tukar', now()->year),
+                                      ->whereYear('tanggal_tukar', now()->year),
                     default      => null,
                 };
             })
@@ -52,7 +52,7 @@ class TransaksiController extends Controller
         $transaksiMingguIni = Transaksi::whereBetween('created_at', [now()->startOfWeek(), now()])->count();
         $transaksiBulanIni  = Transaksi::whereMonth('created_at', now()->month)->count();
 
-        $lokasis    = Lokasi::all();
+        $lokasis    = Lokasi::aktif()->get();
         $lokasiUser = Auth::user()->lokasi;
 
         return view('admin.transaksi.index', compact(
@@ -72,17 +72,25 @@ class TransaksiController extends Controller
             'member.no_telp'            => 'required|string|max:15',
             'buku_diserahkan.judul'     => 'required|string|max:255',
             'buku_diserahkan.pengarang' => 'required|string|max:255',
-            'buku_diserahkan.kondisi'   => 'required|in:baik,cukup,rusak',
             'buku_diterima_id'          => 'required|exists:bukus,id',
-            // lokasi_id tidak dari request — diambil dari user yang login
         ]);
+
+        // Pastikan buku yang dipilih memang visible dan tersedia
+        $bukuDiterima = Buku::visible()->tersedia()->find($request->buku_diterima_id);
+
+        if (! $bukuDiterima) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Buku tidak tersedia atau tidak dapat ditukar saat ini.',
+            ], 422);
+        }
 
         try {
             $this->service->simpan(array_merge(
                 $request->all(),
                 [
                     'user_id'   => Auth::id(),
-                    'lokasi_id' => Auth::user()->lokasi_id, // otomatis dari cabang petugas
+                    'lokasi_id' => Auth::user()->lokasi_id,
                 ]
             ));
 
@@ -157,7 +165,7 @@ class TransaksiController extends Controller
     public function cariBukuIsbn(Request $request)
     {
         $buku = $this->service->cariBukuByIsbn(
-            $request->isbn    ?? '',
+            $request->isbn ?? '',
             $request->integer('lokasi_id') ?: null,
         );
         return response()->json($buku);
@@ -177,11 +185,11 @@ class TransaksiController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        $buku = Buku::where('lokasi_id', $user->lokasi_id)
-                    ->where('stok', '>', 0)
-                    ->where('sumber', 'perpus')
+        $buku = Buku::visible()
+                    ->tersedia()
+                    ->where('lokasi_id', $user->lokasi_id)
                     ->orderBy('judul')
-                    ->get(['id', 'judul', 'pengarang', 'stok', 'lokasi_id']);
+                    ->get(['id', 'judul', 'pengarang', 'stok', 'lokasi_id', 'paket_id']);
 
         return response()->json($buku);
     }

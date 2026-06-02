@@ -23,10 +23,10 @@ class SimpanBukuRequest extends FormRequest
             'resume'        => 'nullable|string',
             'stok'          => 'required|integer|min:0',
             'kategori'      => 'nullable|string|max:255',
-            'sumber'        => 'required|in:perpus,tukar',
-            'kondisi'       => 'nullable|in:baik,cukup,rusak',
             'deskripsi'     => 'nullable|string',
             'lokasi_id'     => 'nullable|exists:lokasis,id',
+            'paket_id'      => 'nullable|exists:pakets,id',
+            'is_visible'    => 'boolean',
         ];
     }
 
@@ -41,10 +41,8 @@ class SimpanBukuRequest extends FormRequest
             'tahun_terbit.max'      => 'Tahun terbit tidak boleh melebihi tahun sekarang',
             'stok.required'         => 'Stok wajib diisi',
             'stok.min'              => 'Stok tidak boleh negatif',
-            'sumber.required'       => 'Sumber buku wajib diisi',
-            'sumber.in'             => 'Sumber harus perpus atau tukar',
-            'kondisi.in'            => 'Kondisi harus baik, cukup, atau rusak',
             'lokasi_id.exists'      => 'Lokasi tidak ditemukan',
+            'paket_id.exists'       => 'Paket tidak ditemukan',
         ];
     }
 
@@ -59,9 +57,21 @@ class SimpanBukuRequest extends FormRequest
             'tempat_terbit' => 'Tempat Terbit',
             'stok'          => 'Stok',
             'kategori'      => 'Kategori',
-            'sumber'        => 'Sumber',
-            'kondisi'       => 'Kondisi',
             'lokasi_id'     => 'Lokasi',
+            'paket_id'      => 'Paket',
+            'is_visible'    => 'Visibilitas',
         ];
+    }
+
+    /**
+     * Pastikan is_visible selalu ada sebagai boolean.
+     * Checkbox HTML tidak mengirim nilai saat tidak dicentang,
+     * sehingga perlu di-default ke false jika absen.
+     */
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'is_visible' => $this->boolean('is_visible'),
+        ]);
     }
 }

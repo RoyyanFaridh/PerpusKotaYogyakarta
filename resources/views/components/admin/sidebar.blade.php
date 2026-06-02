@@ -1,13 +1,13 @@
 @php
     $activeMenu = match(true) {
-        request()->routeIs('admin.dashboard*')   => 'dashboard',
-        request()->routeIs('admin.transaksi*')   => 'transaksi',
-        request()->routeIs('admin.member*')      => 'member',
-        request()->routeIs('admin.buku*')        => 'buku',
-        request()->routeIs('admin.lokasi*')      => 'lokasi',
-        request()->routeIs('admin.kegiatan*')    => 'kegiatan',
-        request()->routeIs('admin.pengaturan*')  => 'pengaturan',
-        default                                  => '',
+        request()->routeIs('admin.dashboard*')            => 'dashboard',
+        request()->routeIs('admin.transaksi*')            => 'transaksi',
+        request()->routeIs('admin.member*')               => 'member',
+        request()->routeIs('admin.buku*', 'admin.paket*') => 'buku',
+        request()->routeIs('admin.lokasi*')               => 'lokasi',
+        request()->routeIs('admin.kegiatan*')             => 'kegiatan',
+        request()->routeIs('admin.pengaturan*')           => 'pengaturan',
+        default                                           => '',
     };
 
     $navItems = [
@@ -43,7 +43,6 @@
         aria-label="Toggle sidebar"
         class="absolute -right-3 top-6 z-50 flex items-center justify-center w-6 h-6 rounded-full bg-white border border-primary-200 shadow-md text-primary hover:bg-primary-50 transition-colors"
     >
-        {{-- PERBAIKAN 8: tambah transisi opacity pada icon toggle --}}
         <span x-show="open"
               x-transition:enter="transition-opacity duration-150"
               x-transition:enter-start="opacity-0"
@@ -87,21 +86,14 @@
     </div>
 
     {{-- Navigation --}}
-    {{-- PERBAIKAN 1: overflow-visible pada nav agar tooltip tidak terpotong --}}
     <nav class="flex-1 overflow-y-auto overflow-x-visible py-4 px-2 space-y-0.5">
 
-        {{-- Group: Menu Utama --}}
-        {{-- PERBAIKAN 5: tracking-wider (0.05em) lebih natural dari tracking-widest (0.1em) --}}
         <div x-show="open" class="px-3 pt-1 pb-2">
             <span class="text-xs font-semibold uppercase tracking-wider text-primary-400">Menu Utama</span>
         </div>
 
         @foreach($navItems as $item)
-            @if($item['group'] === 'data' && $loop->first)
-                {{-- tidak ada, separator akan dirender di bawah --}}
-            @endif
 
-            {{-- Separator sebelum group "data" --}}
             @if($item['key'] === 'member')
                 <div x-show="open" class="px-3 pt-4 pb-2">
                     <span class="text-xs font-semibold uppercase tracking-wider text-primary-400">Kelola Data</span>
@@ -116,29 +108,17 @@
                 <div x-show="!open" class="my-2 mx-3 border-t border-white/10"></div>
             @endif
 
-            {{--
-                PERBAIKAN 1 (utama): tooltip dipindahkan ke luar <a> dan dirender via Alpine x-teleport ke body.
-                Ini memastikan tooltip tidak terpotong oleh overflow-hidden pada <a> maupun overflow-y-auto pada <nav>.
-
-                Namun karena x-teleport membutuhkan Alpine 3.x dan koordinat yang dinamis,
-                solusi yang lebih reliable tanpa JavaScript kompleks adalah:
-                - Hapus overflow-hidden dari <a>
-                - Biarkan tooltip absolute di dalam <a>
-                - Kontrol overflow hanya di level nav (overflow-x: clip, bukan hidden)
-            --}}
             <div class="relative group/nav">
                 <a href="{{ $item['route'] }}"
                     :class="[
                         activeMenu === '{{ $item['key'] }}' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
                         open ? 'px-3 gap-3' : 'px-0 gap-0 justify-center'
                     ]"
-                    {{-- PERBAIKAN 1: hapus overflow-hidden agar tooltip tidak terpotong --}}
                     class="flex items-center rounded-xl py-2.5 transition-colors duration-150 relative w-full"
                 >
                     <span x-show="activeMenu === '{{ $item['key'] }}'"
                           class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-white shrink-0"></span>
 
-                    {{-- PERBAIKAN 2: wrapper icon dengan ukuran fixed agar selalu konsisten --}}
                     <span class="shrink-0 flex items-center justify-center w-5 h-5">
                         <x-dynamic-component :component="'icons.' . $item['icon']" class="w-5 h-5"/>
                     </span>
@@ -149,16 +129,10 @@
                           x-transition:enter-end="opacity-100">{{ $item['label'] }}</span>
                 </a>
 
-                {{--
-                    PERBAIKAN 1 & 7: tooltip dikeluarkan dari <a>, dirender di dalam .relative.group/nav
-                    sehingga tidak terpotong overflow-hidden.
-                    Ditambahkan arrow kecil untuk memperjelas relasi visual.
-                --}}
                 <div x-show="!open"
                      class="pointer-events-none absolute left-[calc(100%+0.75rem)] top-1/2 -translate-y-1/2 z-50
                             opacity-0 group-hover/nav:opacity-100 transition-opacity duration-150
                             flex items-center gap-1">
-                    {{-- Arrow --}}
                     <div class="w-0 h-0 border-y-4 border-y-transparent border-r-4 border-r-primary-600"></div>
                     <div class="bg-primary-600 text-white text-xs font-medium px-2.5 py-1.5 rounded-md shadow-lg whitespace-nowrap">
                         {{ $item['label'] }}
@@ -178,7 +152,6 @@
             x-transition:enter-start="opacity-0"
             x-transition:enter-end="opacity-100"
             class="flex items-center gap-3 rounded-xl px-2 py-2">
-            {{-- PERBAIKAN 6: text-sm lebih proporsional untuk satu huruf inisial --}}
             <div class="shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-white/20 text-white text-sm font-bold uppercase select-none">
                 {{ substr(auth()->user()->name ?? 'A', 0, 1) }}
             </div>
@@ -186,7 +159,6 @@
                 <p class="text-white text-xs font-semibold truncate">{{ auth()->user()->name ?? 'Admin' }}</p>
                 <p class="text-primary-300 text-xs truncate">{{ auth()->user()->email ?? '' }}</p>
             </div>
-            {{-- PERBAIKAN 3: tambah aria-label dan konfirmasi logout --}}
             <form method="POST" action="{{ route('auth.logout') }}"
                   onsubmit="return confirm('Yakin ingin keluar?')">
                 @csrf
@@ -210,7 +182,6 @@
             <button @click="dropdownOpen = !dropdownOpen"
                     @click.outside="dropdownOpen = false"
                     aria-label="Menu akun"
-                    {{-- PERBAIKAN 6: text-sm untuk inisial --}}
                     class="flex items-center justify-center w-8 h-8 rounded-full bg-white/20 text-white text-sm font-bold uppercase hover:bg-white/30 transition-colors select-none">
                 {{ substr(auth()->user()->name ?? 'A', 0, 1) }}
             </button>
@@ -229,7 +200,6 @@
                     <p class="text-xs text-neutral-500 truncate">{{ auth()->user()->email ?? '' }}</p>
                 </div>
 
-                {{-- PERBAIKAN 3: konfirmasi logout di collapsed dropdown juga --}}
                 <form method="POST" action="{{ route('auth.logout') }}"
                       onsubmit="return confirm('Yakin ingin keluar?')">
                     @csrf

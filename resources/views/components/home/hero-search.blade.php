@@ -12,8 +12,8 @@
 
     <h1 class="animate-fade-up-2 font-extrabold leading-tight text-primary-900 mb-4 sm:mb-5"
         style="font-size: clamp(1.8rem, 7vw, 5rem);">
-        Tukarkan Buku,<br>
-        <span class="text-primary-600">Perluas Wawasan</span>
+        Tukar Bacaan,<br>
+        <span class="text-primary-600">Luaskan Wawasan</span>
     </h1>
 
     <p class="animate-fade-up-3 max-w-xs sm:max-w-xl text-sm sm:text-base leading-relaxed text-neutral-500 mb-8 sm:mb-12">

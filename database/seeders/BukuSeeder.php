@@ -9,6 +9,11 @@ class BukuSeeder extends Seeder
 {
     public function run(): void
     {
+        // lokasi_id: 1=Kotabaru, 2=PEVITA, 3=Bank Buku
+        // is_visible: false untuk menyembunyikan buku dari katalog publik
+        // paket_id: null = buku tanpa paket (visibility dikontrol is_visible)
+        // cover_url belum ada di skema, ditambahkan setelah migration siap
+
         $buku = [
             [
                 'judul'         => 'Sapiens: Riwayat Singkat Umat Manusia',
@@ -22,6 +27,8 @@ class BukuSeeder extends Seeder
                 'kategori'      => 'Geografi & Sejarah',
                 'lokasi_id'     => 1,
                 'user_id'       => 1,
+                'paket_id'      => null,
+                'is_visible'    => true,
             ],
             [
                 'judul'         => 'Atomic Habits',
@@ -35,6 +42,8 @@ class BukuSeeder extends Seeder
                 'kategori'      => 'Filsafat & Psikologi',
                 'lokasi_id'     => 1,
                 'user_id'       => 1,
+                'paket_id'      => null,
+                'is_visible'    => true,
             ],
             [
                 'judul'         => 'Homo Deus: Masa Depan Umat Manusia',
@@ -48,6 +57,8 @@ class BukuSeeder extends Seeder
                 'kategori'      => 'Sains & Matematika',
                 'lokasi_id'     => 2,
                 'user_id'       => 1,
+                'paket_id'      => null,
+                'is_visible'    => true,
             ],
             [
                 'judul'         => 'Laskar Pelangi',
@@ -61,6 +72,8 @@ class BukuSeeder extends Seeder
                 'kategori'      => 'Literatur & Sastra',
                 'lokasi_id'     => 1,
                 'user_id'       => 2,
+                'paket_id'      => null,
+                'is_visible'    => true,
             ],
             [
                 'judul'         => 'Bumi Manusia',
@@ -74,6 +87,8 @@ class BukuSeeder extends Seeder
                 'kategori'      => 'Literatur & Sastra',
                 'lokasi_id'     => 2,
                 'user_id'       => 2,
+                'paket_id'      => null,
+                'is_visible'    => true,
             ],
             [
                 'judul'         => 'Rich Dad Poor Dad',
@@ -85,8 +100,10 @@ class BukuSeeder extends Seeder
                 'resume'        => 'Pelajaran tentang keuangan dan investasi dari dua sudut pandang ayah yang berbeda.',
                 'stok'          => 3,
                 'kategori'      => 'Ilmu Sosial',
-                'lokasi_id'     => 3,
+                'lokasi_id'     => 1,
                 'user_id'       => 1,
+                'paket_id'      => null,
+                'is_visible'    => true,
             ],
             [
                 'judul'         => 'Sejarah Peradaban Islam',
@@ -98,8 +115,10 @@ class BukuSeeder extends Seeder
                 'resume'        => 'Telaah komprehensif tentang sejarah dan perkembangan peradaban Islam dari masa ke masa.',
                 'stok'          => 2,
                 'kategori'      => 'Agama',
-                'lokasi_id'     => 3,
+                'lokasi_id'     => 2,
                 'user_id'       => 3,
+                'paket_id'      => null,
+                'is_visible'    => true,
             ],
             [
                 'judul'         => 'Filosofi Teras',
@@ -111,8 +130,10 @@ class BukuSeeder extends Seeder
                 'resume'        => 'Penerapan filsafat Stoa dalam kehidupan modern untuk menghadapi tekanan dan kecemasan.',
                 'stok'          => 4,
                 'kategori'      => 'Filsafat & Psikologi',
-                'lokasi_id'     => 4,
+                'lokasi_id'     => 1,
                 'user_id'       => 2,
+                'paket_id'      => null,
+                'is_visible'    => true,
             ],
             [
                 'judul'         => 'Pengantar Ilmu Komputer',
@@ -124,8 +145,10 @@ class BukuSeeder extends Seeder
                 'resume'        => 'Pengenalan konsep dasar ilmu komputer untuk mahasiswa tingkat awal.',
                 'stok'          => 6,
                 'kategori'      => 'Umum/Komputer',
-                'lokasi_id'     => 4,
+                'lokasi_id'     => 2,
                 'user_id'       => 3,
+                'paket_id'      => null,
+                'is_visible'    => true,
             ],
             [
                 'judul'         => 'Negeri 5 Menara',
@@ -139,6 +162,8 @@ class BukuSeeder extends Seeder
                 'kategori'      => 'Literatur & Sastra',
                 'lokasi_id'     => 1,
                 'user_id'       => 1,
+                'paket_id'      => null,
+                'is_visible'    => true,
             ],
         ];
 

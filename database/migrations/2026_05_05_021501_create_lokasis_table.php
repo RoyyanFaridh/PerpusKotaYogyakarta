@@ -11,8 +11,11 @@ return new class extends Migration
         Schema::create('lokasis', function (Blueprint $table) {
             $table->id();
             $table->string('nama_lokasi');
-            $table->string('alamat');
-            $table->string('no_telp')->nullable();
+            $table->text('alamat')->nullable();
+            $table->string('no_telp', 20)->nullable();
+            $table->enum('tipe', ['kotabaru', 'pevita', 'bank_buku']);
+            $table->boolean('tampil_di_search')->default(true);
+            $table->boolean('aktif')->default(true);
             $table->timestamps();
         });
     }

@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 @section('title', 'Semua Buku')
 @section('page-title', 'Semua Buku')
-@section('page-subtitle', 'Koleksi buku perpustakaan dan buku tukar')
+@section('page-subtitle', 'Koleksi buku perpustakaan kota')
 
 @section('content')
 
@@ -46,16 +46,20 @@ $categoryColorMap = [
                         class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold text-neutral-600 border border-neutral-200 hover:bg-neutral-50 transition-colors">
                     Relokasi Buku
                 </button>
+                <a href="{{ route('admin.paket.index') }}"
+                   class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold text-neutral-600 border border-neutral-200 hover:bg-neutral-50 transition-colors">
+                    Kelola Paket
+                </a>
             </div>
         </div>
 
         {{-- Stats row --}}
         <div class="grid grid-cols-2 sm:grid-cols-4 divide-x divide-neutral-100 border-b border-neutral-100">
             @foreach ([
-                ['label' => 'Total',    'value' => $stats['total'],    'color' => 'text-neutral-800'],
-                ['label' => 'Perpus',   'value' => $stats['perpus'],   'color' => 'text-primary-700'],
-                ['label' => 'Tukar',    'value' => $stats['tukar'],    'color' => 'text-warning-700'],
-                ['label' => 'Tersedia', 'value' => $stats['tersedia'], 'color' => 'text-success-700'],
+                ['label' => 'Total',       'value' => $stats['total'],       'color' => 'text-neutral-800'],
+                ['label' => 'Donasi',      'value' => $stats['donasi'],      'color' => 'text-primary-700'],
+                ['label' => 'Dalam Paket', 'value' => $stats['dalam_paket'], 'color' => 'text-warning-700'],
+                ['label' => 'Tersedia',    'value' => $stats['tersedia'],    'color' => 'text-success-700'],
             ] as $stat)
             <div class="px-5 py-3.5 flex flex-col gap-0.5">
                 <span class="text-xs text-neutral-400 font-medium">{{ $stat['label'] }}</span>
@@ -65,8 +69,8 @@ $categoryColorMap = [
         </div>
 
         {{-- Search & Filter row --}}
-        <div class="flex items-center gap-3 px-5 py-3.5">
-            <div class="relative flex-1">
+        <div class="flex flex-wrap items-center gap-3 px-5 py-3.5">
+            <div class="relative flex-1 min-w-48">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none"
                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -87,12 +91,26 @@ $categoryColorMap = [
                 @endforeach
             </select>
             <select id="lokasi"
-                class="px-3 py-2 text-sm text-neutral-600 bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition shrink-0">
-            <option value="">Semua Lokasi</option>
-            @foreach ($lokasis as $lokasi)
-                <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
-            @endforeach
-        </select>
+                    class="px-3 py-2 text-sm text-neutral-600 bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition shrink-0">
+                <option value="">Semua Lokasi</option>
+                @foreach ($lokasis as $lokasi)
+                    <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
+                @endforeach
+            </select>
+            <select id="paket"
+                    class="px-3 py-2 text-sm text-neutral-600 bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition shrink-0">
+                <option value="">Semua Paket</option>
+                <option value="tanpa_paket">Tanpa Paket</option>
+                @foreach ($pakets as $paket)
+                    <option value="{{ $paket->id }}">{{ $paket->nama }}</option>
+                @endforeach
+            </select>
+            <select id="visibility"
+                    class="px-3 py-2 text-sm text-neutral-600 bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition shrink-0">
+                <option value="">Semua Visibilitas</option>
+                <option value="visible">Tampil</option>
+                <option value="hidden">Disembunyikan</option>
+            </select>
         </div>
     </div>
 
@@ -114,11 +132,13 @@ $categoryColorMap = [
             <table class="w-full text-sm">
                 <thead>
                     <tr class="border-b border-neutral-100 bg-neutral-50">
-                        <th class="text-center   text-xs font-semibold text-neutral-500 px-5 py-3 w-[20%]">Judul</th>
+                        <th class="text-center text-xs font-semibold text-neutral-500 px-5 py-3 w-[22%]">Judul</th>
                         <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">ISBN</th>
                         <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Kategori</th>
                         <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Stok</th>
-                        <th class="text-center   text-xs font-semibold text-neutral-500 px-4 py-3">Lokasi</th>
+                        <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Lokasi</th>
+                        <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Paket</th>
+                        <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Tampil</th>
                         <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Aksi</th>
                     </tr>
                 </thead>
@@ -164,9 +184,41 @@ $categoryColorMap = [
                                 @endif
                             </td>
 
-                            {{-- Lokasi — full text, wrap kalau panjang --}}
+                            {{-- Lokasi --}}
                             <td class="px-4 py-3.5 min-w-35 text-center">
                                 <p class="text-xs text-neutral-500 leading-snug">{{ $buku->lokasi?->nama_lokasi ?? '—' }}</p>
+                            </td>
+
+                            {{-- Paket --}}
+                            <td class="px-4 py-3.5 text-center">
+                                @if ($buku->paket)
+                                    <span class="text-xs font-medium px-2 py-0.5 rounded-full
+                                        {{ $buku->paket->is_aktif ? 'bg-warning-50 text-warning-700' : 'bg-neutral-100 text-neutral-500' }}">
+                                        {{ $buku->paket->nama }}
+                                    </span>
+                                @else
+                                    <span class="text-xs text-neutral-400">—</span>
+                                @endif
+                            </td>
+
+                            {{-- Tampil / Toggle Visibility --}}
+                            <td class="px-4 py-3.5 text-center">
+                                @if ($buku->paket_id)
+                                    {{-- Dikontrol paket, toggle dinonaktifkan --}}
+                                    <span class="text-xs text-neutral-400" title="Dikontrol oleh paket">
+                                        via paket
+                                    </span>
+                                @else
+                                    <button type="button"
+                                        onclick="toggleVisibilityBuku({{ $buku->id }}, {{ $buku->is_visible ? 'true' : 'false' }}, this)"
+                                        title="{{ $buku->is_visible ? 'Klik untuk sembunyikan' : 'Klik untuk tampilkan' }}"
+                                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium transition-colors
+                                            {{ $buku->is_visible
+                                                ? 'bg-success-50 text-success-700 hover:bg-success-100'
+                                                : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200' }}">
+                                        {{ $buku->is_visible ? 'Tampil' : 'Tersembunyi' }}
+                                    </button>
+                                @endif
                             </td>
 
                             {{-- Aksi --}}
@@ -184,10 +236,10 @@ $categoryColorMap = [
                                             'resume'        => $buku->resume,
                                             'stok'          => $buku->stok,
                                             'kategori'      => $buku->kategori,
-                                            'sumber'        => $buku->sumber,
-                                            'kondisi'       => $buku->kondisi,
                                             'deskripsi'     => $buku->deskripsi,
                                             'lokasi_id'     => $buku->lokasi_id,
+                                            'paket_id'      => $buku->paket_id,
+                                            'is_visible'    => $buku->is_visible,
                                         ]) }})"
                                         class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-warning-300 hover:text-warning-600 hover:bg-warning-50 transition-colors">
                                         <x-icons.edit/>
@@ -208,7 +260,7 @@ $categoryColorMap = [
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-5 py-12 text-center">
+                            <td colspan="8" class="px-5 py-12 text-center">
                                 <div class="flex flex-col items-center gap-2">
                                     <div class="w-10 h-10 rounded-xl bg-neutral-100 flex items-center justify-center">
                                         <x-icons.book class="w-5 h-5 text-neutral-400"/>
@@ -261,6 +313,7 @@ $categoryColorMap = [
 @include('admin.buku.edit')
 @include('admin.buku.destroy')
 @include('admin.buku.relokasi')
+@include('admin.paket.create')
 
 @push('scripts')
 <script>
@@ -268,13 +321,17 @@ $categoryColorMap = [
     const searchInput    = document.getElementById('searchInput');
     const selectKategori = document.getElementById('kategori');
     const selectLokasi   = document.getElementById('lokasi');
+    const selectPaket    = document.getElementById('paket');
+    const selectVis      = document.getElementById('visibility');
 
     function applyFilters() {
         const params = new URLSearchParams();
         const q = searchInput?.value.trim();
-        if (q) params.set('search', q);
-        if (selectKategori?.value) params.set('kategori', selectKategori.value);
-        if (selectLokasi?.value)   params.set('lokasi',   selectLokasi.value);
+        if (q)                     params.set('search',     q);
+        if (selectKategori?.value) params.set('kategori',   selectKategori.value);
+        if (selectLokasi?.value)   params.set('lokasi',     selectLokasi.value);
+        if (selectPaket?.value)    params.set('paket',      selectPaket.value);
+        if (selectVis?.value)      params.set('visibility', selectVis.value);
         window.location.href = `${window.location.pathname}?${params.toString()}`;
     }
 
@@ -284,13 +341,57 @@ $categoryColorMap = [
         debounce = setTimeout(applyFilters, 400);
     });
     selectKategori?.addEventListener('change', applyFilters);
-    selectLokasi?.addEventListener('change', applyFilters);
+    selectLokasi?.addEventListener('change',   applyFilters);
+    selectPaket?.addEventListener('change',    applyFilters);
+    selectVis?.addEventListener('change',      applyFilters);
 
+    // Restore filter state dari URL
     const params = new URLSearchParams(window.location.search);
-    if (searchInput && params.get('search'))      searchInput.value    = params.get('search');
-    if (selectKategori && params.get('kategori')) selectKategori.value = params.get('kategori');
-    if (selectLokasi && params.get('lokasi'))     selectLokasi.value   = params.get('lokasi');
+    if (searchInput    && params.get('search'))     searchInput.value    = params.get('search');
+    if (selectKategori && params.get('kategori'))   selectKategori.value = params.get('kategori');
+    if (selectLokasi   && params.get('lokasi'))     selectLokasi.value   = params.get('lokasi');
+    if (selectPaket    && params.get('paket'))      selectPaket.value    = params.get('paket');
+    if (selectVis      && params.get('visibility')) selectVis.value      = params.get('visibility');
 })();
+
+// Toggle visibility inline (tanpa reload penuh)
+function toggleVisibilityBuku(id, currentlyVisible, btn) {
+    btn.disabled = true;
+    btn.classList.add('opacity-50', 'cursor-wait');
+
+    fetch(`/admin/buku/${id}/toggle-visibility`, {
+        method: 'PATCH',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+        },
+    })
+    .then(r => r.json())
+    .then(data => {
+        const nowVisible = data.is_visible;
+        btn.textContent = nowVisible ? 'Tampil' : 'Tersembunyi';
+        btn.title       = nowVisible ? 'Klik untuk sembunyikan' : 'Klik untuk tampilkan';
+        btn.onclick     = () => toggleVisibilityBuku(id, nowVisible, btn);
+
+        // Swap badge colour
+        btn.classList.remove(
+            'bg-success-50', 'text-success-700', 'hover:bg-success-100',
+            'bg-neutral-100', 'text-neutral-500', 'hover:bg-neutral-200'
+        );
+        if (nowVisible) {
+            btn.classList.add('bg-success-50', 'text-success-700', 'hover:bg-success-100');
+        } else {
+            btn.classList.add('bg-neutral-100', 'text-neutral-500', 'hover:bg-neutral-200');
+        }
+    })
+    .catch(() => {
+        alert('Gagal mengubah visibilitas. Coba lagi.');
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.classList.remove('opacity-50', 'cursor-wait');
+    });
+}
 </script>
 @endpush
 @endsection

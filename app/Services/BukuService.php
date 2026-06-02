@@ -12,16 +12,6 @@ class BukuService
         return $this->buildQuery($filters)->paginate(15);
     }
 
-    public function getPerpus(array $filters = []): LengthAwarePaginator
-    {
-        return $this->buildQuery($filters)->perpus()->paginate(15);
-    }
-
-    public function getTukar(array $filters = []): LengthAwarePaginator
-    {
-        return $this->buildQuery($filters)->tukar()->paginate(15);
-    }
-
     public function find(int $id): Buku
     {
         return Buku::findOrFail($id);
@@ -51,7 +41,7 @@ class BukuService
 
     private function buildQuery(array $filters = [])
     {
-        $query = Buku::with(['lokasi', 'member'])->latest();
+        $query = Buku::with(['lokasi', 'member', 'paket'])->latest();
 
         if (! empty($filters['search'])) {
             $query->cari($filters['search']);
@@ -61,12 +51,23 @@ class BukuService
             $query->where('kategori', $filters['kategori']);
         }
 
-        if (! empty($filters['kondisi'])) {
-            $query->where('kondisi', $filters['kondisi']);
-        }
-
         if (! empty($filters['lokasi'])) {
             $query->where('lokasi_id', $filters['lokasi']);
+        }
+
+        if (! empty($filters['paket'])) {
+            $query->where('paket_id', $filters['paket']);
+        }
+
+        if (isset($filters['visibility'])) {
+            match ($filters['visibility']) {
+                'visible' => $query->visible(),
+                'hidden'  => $query->where(function ($q) {
+                    $q->whereNull('paket_id')->where('is_visible', false)
+                      ->orWhereHas('paket', fn($p) => $p->where('is_aktif', false));
+                }),
+                default   => null,
+            };
         }
 
         return $query;

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
@@ -17,8 +18,30 @@ class Lokasi extends Model implements Auditable
         'nama_lokasi',
         'alamat',
         'no_telp',
-        'user_id',
+        'tipe',
+        'tampil_di_search',
+        'aktif',
     ];
+
+    protected $casts = [
+        'tampil_di_search' => 'boolean',
+        'aktif'            => 'boolean',
+    ];
+
+    public function isBankBuku(): bool
+    {
+        return $this->tipe === 'bank_buku';
+    }
+
+    public function scopeAktif(Builder $query): Builder
+    {
+        return $query->where('aktif', true);
+    }
+
+    public function scopeTampilDiSearch(Builder $query): Builder
+    {
+        return $query->where('tampil_di_search', true);
+    }
 
     public function user()
     {

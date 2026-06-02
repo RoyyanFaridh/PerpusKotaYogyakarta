@@ -19,9 +19,9 @@ return new class extends Migration
             $table->text('resume')->nullable();
             $table->unsignedInteger('stok')->default(0);
             $table->string('kategori')->nullable();
-            $table->enum('sumber', ['perpus', 'tukar'])->default('perpus');
-            $table->enum('kondisi', ['baik', 'cukup', 'rusak'])->nullable();
             $table->text('deskripsi')->nullable();
+            $table->boolean('is_visible')->default(true);
+            $table->foreignId('paket_id')->nullable()->constrained('pakets')->nullOnDelete();
             $table->foreignId('lokasi_id')->nullable()->constrained('lokasis')->nullOnDelete();
             $table->foreignId('member_id')->nullable()->constrained('members')->nullOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();

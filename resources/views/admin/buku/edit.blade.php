@@ -31,21 +31,15 @@
 
             {{-- Judul --}}
             <div class="flex flex-col gap-1.5">
-                <label for="edit_judul" class="text-xs font-medium text-neutral-700">
-                    Judul <span class="text-danger-500">*</span>
-                </label>
-                <input type="text" id="edit_judul" name="judul"
-                       placeholder="Masukkan judul buku"
+                <label for="edit_judul" class="text-xs font-medium text-neutral-700">Judul <span class="text-danger-500">*</span></label>
+                <input type="text" id="edit_judul" name="judul" placeholder="Masukkan judul buku"
                        class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
             </div>
 
             {{-- Pengarang --}}
             <div class="flex flex-col gap-1.5">
-                <label for="edit_pengarang" class="text-xs font-medium text-neutral-700">
-                    Pengarang <span class="text-danger-500">*</span>
-                </label>
-                <input type="text" id="edit_pengarang" name="pengarang"
-                       placeholder="Masukkan nama pengarang"
+                <label for="edit_pengarang" class="text-xs font-medium text-neutral-700">Pengarang <span class="text-danger-500">*</span></label>
+                <input type="text" id="edit_pengarang" name="pengarang" placeholder="Masukkan nama pengarang"
                        class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
             </div>
 
@@ -53,14 +47,12 @@
             <div class="grid grid-cols-2 gap-3">
                 <div class="flex flex-col gap-1.5">
                     <label for="edit_penerbit" class="text-xs font-medium text-neutral-700">Penerbit</label>
-                    <input type="text" id="edit_penerbit" name="penerbit"
-                           placeholder="Nama penerbit"
+                    <input type="text" id="edit_penerbit" name="penerbit" placeholder="Nama penerbit"
                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label for="edit_tahun_terbit" class="text-xs font-medium text-neutral-700">Tahun Terbit</label>
-                    <input type="number" id="edit_tahun_terbit" name="tahun_terbit"
-                           placeholder="Contoh: 2020" min="1900" max="2099"
+                    <input type="number" id="edit_tahun_terbit" name="tahun_terbit" placeholder="Contoh: 2020" min="1900" max="2099"
                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
                 </div>
             </div>
@@ -69,14 +61,12 @@
             <div class="grid grid-cols-2 gap-3">
                 <div class="flex flex-col gap-1.5">
                     <label for="edit_isbn" class="text-xs font-medium text-neutral-700">ISBN</label>
-                    <input type="text" id="edit_isbn" name="isbn"
-                           placeholder="Contoh: 978-xxx"
+                    <input type="text" id="edit_isbn" name="isbn" placeholder="Contoh: 978-xxx"
                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 font-mono focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label for="edit_tempat_terbit" class="text-xs font-medium text-neutral-700">Tempat Terbit</label>
-                    <input type="text" id="edit_tempat_terbit" name="tempat_terbit"
-                           placeholder="Contoh: Jakarta"
+                    <input type="text" id="edit_tempat_terbit" name="tempat_terbit" placeholder="Contoh: Jakarta"
                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
                 </div>
             </div>
@@ -85,8 +75,7 @@
             <div class="grid grid-cols-2 gap-3">
                 <div class="flex flex-col gap-1.5">
                     <label for="edit_stok" class="text-xs font-medium text-neutral-700">Stok <span class="text-danger-500">*</span></label>
-                    <input type="number" id="edit_stok" name="stok"
-                           placeholder="0" min="0"
+                    <input type="number" id="edit_stok" name="stok" placeholder="0" min="0"
                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
                 </div>
                 <div class="flex flex-col gap-1.5">
@@ -95,16 +84,8 @@
                             class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
                         <option value="">Pilih kategori</option>
                         @foreach ([
-                            'Umum/Komputer',
-                            'Filsafat & Psikologi',
-                            'Agama',
-                            'Ilmu Sosial',
-                            'Bahasa',
-                            'Sains & Matematika',
-                            'Teknologi',
-                            'Seni & Rekreasi',
-                            'Literatur & Sastra',
-                            'Geografi & Sejarah',
+                            'Umum/Komputer','Filsafat & Psikologi','Agama','Ilmu Sosial','Bahasa',
+                            'Sains & Matematika','Teknologi','Seni & Rekreasi','Literatur & Sastra','Geografi & Sejarah',
                         ] as $kat)
                             <option value="{{ $kat }}">{{ $kat }}</option>
                         @endforeach
@@ -112,53 +93,65 @@
                 </div>
             </div>
 
-            {{-- Sumber & Kondisi --}}
+            {{-- Paket & Lokasi --}}
             <div class="grid grid-cols-2 gap-3">
                 <div class="flex flex-col gap-1.5">
-                    <label for="edit_sumber" class="text-xs font-medium text-neutral-700">Sumber</label>
-                    <select id="edit_sumber" name="sumber"
+                    <div class="flex items-center justify-between">
+                        <label for="edit_paket_id" class="text-xs font-medium text-neutral-700">Paket</label>
+                        <button type="button" onclick="bukaPaketDariEditBuku()"
+                                class="text-[0.68rem] font-medium text-primary-600 hover:text-primary-700 transition-colors">
+                            + Buat Paket Baru
+                        </button>
+                    </div>
+                    <select id="edit_paket_id" name="paket_id"
                             class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
-                        <option value="perpus">Perpustakaan</option>
-                        <option value="tukar">Tukar</option>
+                        <option value="">Tanpa paket (donasi)</option>
+                        @foreach ($pakets as $paket)
+                            <option value="{{ $paket->id }}">{{ $paket->nama }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="flex flex-col gap-1.5">
-                    <label for="edit_kondisi" class="text-xs font-medium text-neutral-700">Kondisi</label>
-                    <select id="edit_kondisi" name="kondisi"
+                    <label for="edit_lokasi_id" class="text-xs font-medium text-neutral-700">Lokasi <span class="text-danger-500">*</span></label>
+                    <select id="edit_lokasi_id" name="lokasi_id"
                             class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
-                        <option value="">-</option>
-                        <option value="baik">Baik</option>
-                        <option value="cukup">Cukup</option>
-                        <option value="rusak">Rusak</option>
+                        <option value="">Pilih lokasi</option>
+                        @foreach ($lokasis as $lokasi)
+                            <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
+                        @endforeach
                     </select>
                 </div>
             </div>
 
-            {{-- Lokasi --}}
-            <div class="flex flex-col gap-1.5">
-                <label for="edit_lokasi_id" class="text-xs font-medium text-neutral-700">Lokasi <span class="text-danger-500">*</span></label>
-                <select id="edit_lokasi_id" name="lokasi_id"
-                        class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
-                    <option value="">Pilih lokasi</option>
-                    @foreach ($lokasis as $lokasi)
-                        <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
-                    @endforeach
-                </select>
+            {{-- Visibility — hanya muncul kalau buku tidak dalam paket --}}
+            <div id="edit_visibility_wrapper" class="flex items-center gap-2.5">
+                <input type="hidden" name="is_visible" value="0"/>
+                <input type="checkbox" name="is_visible" id="edit_is_visible" value="1"
+                       class="w-4 h-4 rounded border-neutral-300 text-primary-600 focus:ring-primary-300"/>
+                <label for="edit_is_visible" class="text-xs font-medium text-neutral-700">
+                    Tampilkan buku ini ke publik
+                </label>
+            </div>
+
+            {{-- Info kalau dalam paket --}}
+            <div id="edit_paket_info" class="hidden flex items-center gap-2 px-3 py-2.5 rounded-lg bg-primary-50 border border-primary-100">
+                <svg class="w-4 h-4 text-primary-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <p class="text-xs text-primary-700">Visibility dikontrol oleh status paket.</p>
             </div>
 
             {{-- Resume --}}
             <div class="flex flex-col gap-1.5">
                 <label for="edit_resume" class="text-xs font-medium text-neutral-700">Resume</label>
-                <textarea id="edit_resume" name="resume" rows="3"
-                          placeholder="Ringkasan singkat buku"
+                <textarea id="edit_resume" name="resume" rows="3" placeholder="Ringkasan singkat buku"
                           class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition resize-none"></textarea>
             </div>
 
             {{-- Deskripsi --}}
             <div class="flex flex-col gap-1.5">
                 <label for="edit_deskripsi" class="text-xs font-medium text-neutral-700">Deskripsi</label>
-                <textarea id="edit_deskripsi" name="deskripsi" rows="3"
-                          placeholder="Deskripsi lengkap buku"
+                <textarea id="edit_deskripsi" name="deskripsi" rows="3" placeholder="Deskripsi lengkap buku"
                           class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition resize-none"></textarea>
             </div>
 
@@ -195,15 +188,38 @@
         document.getElementById('edit_resume').value        = data.resume        ?? '';
         document.getElementById('edit_stok').value          = data.stok          ?? 0;
         document.getElementById('edit_kategori').value      = data.kategori      ?? '';
-        document.getElementById('edit_sumber').value        = data.sumber        ?? 'perpus';
-        document.getElementById('edit_kondisi').value       = data.kondisi       ?? '';
         document.getElementById('edit_deskripsi').value     = data.deskripsi     ?? '';
         document.getElementById('edit_lokasi_id').value     = data.lokasi_id     ?? '';
+        document.getElementById('edit_paket_id').value      = data.paket_id      ?? '';
+        document.getElementById('edit_is_visible').checked  = !!data.is_visible;
+
+        toggleEditVisibilityUI(data.paket_id);
 
         const el = document.getElementById('modalEditBuku');
         el.classList.remove('hidden');
         el.classList.add('flex');
         document.body.style.overflow = 'hidden';
+    }
+
+    function toggleEditVisibilityUI(paketId) {
+        const wrapper = document.getElementById('edit_visibility_wrapper');
+        const info    = document.getElementById('edit_paket_info');
+        if (paketId) {
+            wrapper.classList.add('hidden');
+            info.classList.remove('hidden');
+        } else {
+            wrapper.classList.remove('hidden');
+            info.classList.add('hidden');
+        }
+    }
+
+    document.getElementById('edit_paket_id')?.addEventListener('change', function () {
+        toggleEditVisibilityUI(this.value);
+    });
+
+    function bukaPaketDariEditBuku() {
+        tutupModalEditBuku();
+        bukaModalTambahPaket('edit_buku');
     }
 
     function tutupModalEditBuku() {

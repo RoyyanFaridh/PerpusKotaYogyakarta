@@ -80,16 +80,8 @@
                             class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
                         <option value="">Pilih kategori</option>
                         @foreach ([
-                            'Umum/Komputer',
-                            'Filsafat & Psikologi',
-                            'Agama',
-                            'Ilmu Sosial',
-                            'Bahasa',
-                            'Sains & Matematika',
-                            'Teknologi',
-                            'Seni & Rekreasi',
-                            'Literatur & Sastra',
-                            'Geografi & Sejarah',
+                            'Umum/Komputer','Filsafat & Psikologi','Agama','Ilmu Sosial','Bahasa',
+                            'Sains & Matematika','Teknologi','Seni & Rekreasi','Literatur & Sastra','Geografi & Sejarah',
                         ] as $kat)
                             <option value="{{ $kat }}">{{ $kat }}</option>
                         @endforeach
@@ -103,41 +95,45 @@
                 </div>
             </div>
 
-            {{-- Sumber & Kondisi --}}
+            {{-- Paket & Lokasi --}}
             <div class="grid grid-cols-2 gap-3">
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs font-medium text-neutral-700">Sumber <span class="text-danger-500">*</span></label>
-                    <select name="sumber" id="tambah_sumber"
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs font-medium text-neutral-700">Paket</label>
+                        <button type="button" onclick="bukaPaketDariTambahBuku()"
+                                class="text-[0.68rem] font-medium text-primary-600 hover:text-primary-700 transition-colors">
+                            + Buat Paket Baru
+                        </button>
+                    </div>
+                    <select name="paket_id" id="tambah_paket_id"
                             class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
-                        <option value="">Pilih sumber</option>
-                        <option value="perpus">Perpustakaan</option>
-                        <option value="tukar">Tukar</option>
+                        <option value="">Tanpa paket (donasi)</option>
+                        @foreach ($pakets as $paket)
+                            <option value="{{ $paket->id }}">{{ $paket->nama }}</option>
+                        @endforeach
                     </select>
-                    <p id="err_sumber" class="hidden text-[0.68rem] text-danger-500">Sumber wajib dipilih.</p>
                 </div>
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs font-medium text-neutral-700">Kondisi</label>
-                    <select name="kondisi"
+                    <label class="text-xs font-medium text-neutral-700">Lokasi <span class="text-danger-500">*</span></label>
+                    <select name="lokasi_id" id="tambah_lokasi_id"
                             class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
-                        <option value="">-</option>
-                        <option value="baik">Baik</option>
-                        <option value="cukup">Cukup</option>
-                        <option value="rusak">Rusak</option>
+                        <option value="">Pilih lokasi</option>
+                        @foreach ($lokasis as $lokasi)
+                            <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
+                        @endforeach
                     </select>
+                    <p id="err_lokasi_id" class="hidden text-[0.68rem] text-danger-500">Lokasi wajib dipilih.</p>
                 </div>
             </div>
 
-            {{-- Lokasi --}}
-            <div class="flex flex-col gap-1.5">
-                <label class="text-xs font-medium text-neutral-700">Lokasi <span class="text-danger-500">*</span></label>
-                <select name="lokasi_id" id="tambah_lokasi_id"
-                        class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
-                    <option value="">Pilih lokasi</option>
-                    @foreach ($lokasis as $lokasi)
-                        <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
-                    @endforeach
-                </select>
-                <p id="err_lokasi_id" class="hidden text-[0.68rem] text-danger-500">Lokasi wajib dipilih.</p>
+            {{-- Visibility — hanya relevan kalau tidak dalam paket --}}
+            <div id="tambah_visibility_wrapper" class="flex items-center gap-2.5">
+                <input type="hidden" name="is_visible" value="0"/>
+                <input type="checkbox" name="is_visible" id="tambah_is_visible" value="1"
+                       class="w-4 h-4 rounded border-neutral-300 text-primary-600 focus:ring-primary-300"/>
+                <label for="tambah_is_visible" class="text-xs font-medium text-neutral-700">
+                    Tampilkan buku ini ke publik
+                </label>
             </div>
 
             {{-- Resume --}}
@@ -165,7 +161,7 @@
                     Batal
                 </button>
                 <button type="button" onclick="submitTambahBuku()"
-                        class="text-sm font-medium px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-success-700 transition-colors">
+                        class="text-sm font-medium px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors">
                     Simpan Buku
                 </button>
             </div>
@@ -190,8 +186,23 @@
         resetErrorTambahBuku();
     }
 
+    function bukaPaketDariTambahBuku() {
+        tutupModalBuku();
+        bukaModalTambahPaket('tambah_buku');
+    }
+
+    // Sembunyikan checkbox visibility kalau buku dalam paket
+    document.getElementById('tambah_paket_id')?.addEventListener('change', function () {
+        const wrapper = document.getElementById('tambah_visibility_wrapper');
+        if (this.value) {
+            wrapper.classList.add('hidden');
+        } else {
+            wrapper.classList.remove('hidden');
+        }
+    });
+
     function resetErrorTambahBuku() {
-        ['judul', 'pengarang', 'stok', 'sumber', 'lokasi_id'].forEach(field => {
+        ['judul', 'pengarang', 'stok', 'lokasi_id'].forEach(field => {
             const err   = document.getElementById('err_' + field);
             const input = document.getElementById('tambah_' + field);
             if (err)   err.classList.add('hidden');
@@ -218,22 +229,14 @@
         const judul     = document.getElementById('tambah_judul').value.trim();
         const pengarang = document.getElementById('tambah_pengarang').value.trim();
         const stok      = document.getElementById('tambah_stok').value;
-        const sumber    = document.getElementById('tambah_sumber').value;
         const lokasiId  = document.getElementById('tambah_lokasi_id').value;
 
-        const errJudul     = !judul;
-        const errPengarang = !pengarang;
-        const errStok      = stok === '';
-        const errSumber    = !sumber;
-        const errLokasi    = !lokasiId;
+        setError('tambah_judul',     'err_judul',     !judul);
+        setError('tambah_pengarang', 'err_pengarang', !pengarang);
+        setError('tambah_stok',      'err_stok',      stok === '');
+        setError('tambah_lokasi_id', 'err_lokasi_id', !lokasiId);
 
-        setError('tambah_judul',     'err_judul',     errJudul);
-        setError('tambah_pengarang', 'err_pengarang', errPengarang);
-        setError('tambah_stok',      'err_stok',      errStok);
-        setError('tambah_sumber',    'err_sumber',    errSumber);
-        setError('tambah_lokasi_id', 'err_lokasi_id', errLokasi);
-
-        if (errJudul || errPengarang || errStok || errSumber || errLokasi) return;
+        if (!judul || !pengarang || stok === '' || !lokasiId) return;
 
         document.getElementById('formTambahBuku').submit();
     }

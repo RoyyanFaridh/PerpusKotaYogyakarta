@@ -3,19 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Buku;
+use App\Models\Lokasi;
 use Illuminate\Http\Request;
 
 class CatalogController extends Controller
 {
     public function index()
     {
-        $buku = Buku::all();
-        return view('katalog.index', compact('buku'));
+        $buku    = Buku::with('lokasi')->visible()->tersedia()->latest()->get();
+        $lokasis = Lokasi::aktif()->tampilDiSearch()->get(['id', 'nama_lokasi']);
+
+        return view('katalog.index', compact('buku', 'lokasis'));
     }
 
     public function search(Request $request)
     {
-        $query = Buku::query();
+        $query = Buku::with('lokasi')->visible()->tersedia();
 
         if ($request->filled('q')) {
             $q = $request->q;
@@ -36,7 +39,7 @@ class CatalogController extends Controller
 
     public function searchAjax(Request $request)
     {
-        $query = Buku::with('lokasi');
+        $query = Buku::with('lokasi')->visible()->tersedia();
 
         if ($request->filled('q')) {
             $q = $request->q;
@@ -47,12 +50,10 @@ class CatalogController extends Controller
             });
         }
 
-        // Ganti 'genre' → 'kategori'
         if ($request->filled('kategori')) {
             $query->where('kategori', $request->kategori);
         }
 
-        // Tambah filter lokasi
         if ($request->filled('lokasi_id')) {
             $query->where('lokasi_id', $request->lokasi_id);
         }
@@ -77,7 +78,7 @@ class CatalogController extends Controller
 
     public function show(int $book)
     {
-        $buku = Buku::findOrFail($book);
+        $buku = Buku::with('lokasi')->visible()->findOrFail($book);
         return view('katalog.show', compact('buku'));
     }
 }

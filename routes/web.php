@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PengaturanController;
 use App\Http\Controllers\Admin\KegiatanController;
+use App\Http\Controllers\Admin\PaketController;
 
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/search-buku', [CatalogController::class, 'searchAjax'])->name('search.buku');
@@ -74,6 +75,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::get('/{id}',            [TransaksiController::class, 'show'])->name('show');
         Route::put('/{id}',            [TransaksiController::class, 'update'])->name('update')->middleware('has.permission:transaksi.edit');
         Route::delete('/{id}',         [TransaksiController::class, 'destroy'])->name('destroy')->middleware('has.permission:transaksi.delete');
+    });
+
+    Route::prefix('paket')->name('paket.')->group(function () {
+        Route::get('/',                          [PaketController::class, 'index'])->name('index');
+        Route::post('/',                         [PaketController::class, 'store'])->name('store')->middleware('has.permission:buku.create');
+        Route::put('/{paket}',                   [PaketController::class, 'update'])->name('update')->middleware('has.permission:buku.edit');
+        Route::delete('/{paket}',               [PaketController::class, 'destroy'])->name('destroy')->middleware('has.permission:buku.delete');
+        Route::post('/{paket}/aktifkan',         [PaketController::class, 'aktifkan'])->name('aktifkan')->middleware('has.permission:buku.edit');
+        Route::post('/{paket}/nonaktifkan',      [PaketController::class, 'nonaktifkan'])->name('nonaktifkan')->middleware('has.permission:buku.edit');
     });
 
     Route::prefix('pengaturan')->name('pengaturan.')->group(function () {
