@@ -3,19 +3,17 @@
     <div class="hero-glow absolute w-[clamp(300px,70vw,860px)] h-[clamp(300px,70vw,860px)] rounded-full pointer-events-none"
          style="background: radial-gradient(circle, rgba(4,68,141,0.10) 0%, transparent 68%);">
     </div>
-
+{{-- 
     <div class="animate-fade-up-1 flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5">
         <img src="{{ asset('images/RYB.png') }}"
-             alt="Rotate Your Book"
-             class="h-60 sm:h-70 w-auto object-contain opacity-70">
+            alt="Rotate Your Book"
+            class="h-60 sm:h-70 w-auto object-contain opacity-70">
+    </div> --}}
 
-    </div>
-
-    <h1 class="animate-fade-up-2 font-extrabold leading-tight text-primary-900 mb-4 sm:mb-5"
-        style="font-size: clamp(1.8rem, 7vw, 5rem);">
-        Tukar Bacaan,<br>
-        <span class="text-primary-600">Luaskan Wawasan</span>
-    </h1>
+    <img src="{{ asset('images/judul-hero.png') }}"
+        alt="Tukar Bacaan, Luaskan Wawasan"
+        class="animate-fade-up-2 w-auto max-w-full object-contain mb-4 sm:mb-5"
+        style="max-width: clamp(320px, 90vw, 1000px);">
 
     <p class="animate-fade-up-3 max-w-xs sm:max-w-xl text-sm sm:text-base leading-relaxed text-neutral-500 mb-8 sm:mb-12">
         Temukan buku yang kamu inginkan, ajukan penukaran, dan nikmati
@@ -133,6 +131,6 @@
             <p class="text-xs sm:text-sm text-neutral-400">Coba kata kunci lain atau ubah filter</p>
         </div>
 
-        <div id="katalog-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5"></div>
+        <div id="katalog-grid" class="flex gap-4 overflow-x-auto pb-3 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide"></div>
     </div>
 </section>
