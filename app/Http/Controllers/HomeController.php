@@ -8,6 +8,7 @@ use App\Models\Lokasi;
 use App\Models\Member;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class HomeController extends Controller
 {
@@ -37,6 +38,7 @@ class HomeController extends Controller
             'kegiatan'     => $sorted,
             'closestIndex' => $closestIndex,
             'lokasis'      => Lokasi::aktif()->tampilDiSearch()->orderBy('nama_lokasi')->get(),
+            'bukuTerbaru'  => Buku::with('lokasi')->orderBy('created_at', 'desc')->take(5)->get(),
         ]);
     }
 
@@ -66,6 +68,7 @@ class HomeController extends Controller
             'stok'         => $buku->stok,
             'lokasi_id'    => $buku->lokasi_id,
             'lokasi'       => $buku->lokasi?->nama_lokasi,
+            'cover_url'    => $buku->cover ? Storage::url($buku->cover) : null,
         ]);
 
         return response()->json($paginated);

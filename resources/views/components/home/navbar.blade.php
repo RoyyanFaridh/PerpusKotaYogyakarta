@@ -2,14 +2,12 @@
     <div class="w-full max-w-7xl mx-auto flex items-center justify-between gap-4">
 
         <a href="{{ url('/') }}" class="flex items-center gap-2 sm:gap-2.5 no-underline shrink-0">
-            <div class="w-8 h-8 sm:w-9 sm:h-9 bg-primary-600 rounded-lg grid place-items-center">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 fill-white" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M4 4h4v16H4zM10 4h10v3H10zM10 10h7v3H10zM10 17h10v3H10z"/>
-                </svg>
-            </div>
+                <img src="{{ asset('images/dinas_jogja.png') }}"
+                    class="w-8 h-8 sm:w-10 sm:h-10 object-contain">
+
             <div>
                 <span class="font-extrabold text-lg sm:text-xl text-primary-700 tracking-wider leading-none block">SIPETUK</span>
-                <span class="text-[0.6rem] font-medium tracking-widest text-neutral-400 uppercase block mt-0.5">Sistem Penukaran Buku</span>
+                <span class="text-[0.6rem] font-medium tracking-widest text-neutral-400 uppercase block mt-0.5">Sistem Penukaran Buku  Kota </span>
             </div>
         </a>
 

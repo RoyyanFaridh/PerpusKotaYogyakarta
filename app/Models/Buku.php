@@ -20,6 +20,7 @@ class Buku extends Model implements Auditable
         'tahun_terbit',
         'tempat_terbit',
         'resume',
+        'cover',        // ← tambahkan ini
         'stok',
         'kategori',
         'deskripsi',

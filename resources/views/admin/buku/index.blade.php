@@ -97,6 +97,7 @@ $categoryColorMap = [
                     <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
                 @endforeach
             </select>
+            
             <select id="paket"
                     class="px-3 py-2 text-sm text-neutral-600 bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition shrink-0">
                 <option value="">Semua Paket</option>
@@ -133,6 +134,8 @@ $categoryColorMap = [
                 <thead>
                     <tr class="border-b border-neutral-100 bg-neutral-50">
                         <th class="text-center text-xs font-semibold text-neutral-500 px-5 py-3 w-[22%]">Judul</th>
+                        <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Cover</th>
+                        <th class="text-center text-xs font-semibold text-neutral-500 px-5 py-3 w-[20%]">Judul</th>
                         <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">ISBN</th>
                         <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Kategori</th>
                         <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Stok</th>
@@ -145,6 +148,21 @@ $categoryColorMap = [
                 <tbody class="divide-y divide-neutral-50">
                     @forelse ($bukus as $buku)
                         <tr class="hover:bg-neutral-50 transition-colors">
+
+                            {{-- Cover --}}
+                            <td class="px-4 py-3.5 text-center">
+                                @if ($buku->cover)
+                                    <img src="{{ Storage::url($buku->cover) }}"
+                                         alt="Cover {{ $buku->judul }}"
+                                         class="w-10 h-14 object-cover rounded-md border border-neutral-100 mx-auto">
+                                @else
+                                    <div class="w-10 h-14 rounded-md border border-neutral-100 bg-neutral-50 flex items-center justify-center mx-auto">
+                                        <svg class="w-4 h-4 text-neutral-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                            <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+                                        </svg>
+                                    </div>
+                                @endif
+                            </td>
 
                             {{-- Judul + Pengarang + Tahun --}}
                             <td class="px-5 py-3.5">
@@ -240,6 +258,7 @@ $categoryColorMap = [
                                             'lokasi_id'     => $buku->lokasi_id,
                                             'paket_id'      => $buku->paket_id,
                                             'is_visible'    => $buku->is_visible,
+                                            'cover'         => $buku->cover,
                                         ]) }})"
                                         class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-warning-300 hover:text-warning-600 hover:bg-warning-50 transition-colors">
                                         <x-icons.edit/>

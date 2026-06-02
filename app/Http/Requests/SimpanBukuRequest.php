@@ -21,6 +21,7 @@ class SimpanBukuRequest extends FormRequest
             'tahun_terbit'  => 'nullable|integer|min:1900|max:' . date('Y'),
             'tempat_terbit' => 'nullable|string|max:255',
             'resume'        => 'nullable|string',
+            'cover'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'stok'          => 'required|integer|min:0',
             'kategori'      => 'nullable|string|max:255',
             'deskripsi'     => 'nullable|string',
@@ -43,6 +44,9 @@ class SimpanBukuRequest extends FormRequest
             'stok.min'              => 'Stok tidak boleh negatif',
             'lokasi_id.exists'      => 'Lokasi tidak ditemukan',
             'paket_id.exists'       => 'Paket tidak ditemukan',
+            'cover.image'   => 'Cover harus berupa gambar',
+            'cover.mimes'   => 'Format cover harus jpg, jpeg, png, atau webp',
+            'cover.max'     => 'Ukuran cover maksimal 2MB',
         ];
     }
 
@@ -63,11 +67,6 @@ class SimpanBukuRequest extends FormRequest
         ];
     }
 
-    /**
-     * Pastikan is_visible selalu ada sebagai boolean.
-     * Checkbox HTML tidak mengirim nilai saat tidak dicentang,
-     * sehingga perlu di-default ke false jika absen.
-     */
     protected function prepareForValidation(): void
     {
         $this->merge([

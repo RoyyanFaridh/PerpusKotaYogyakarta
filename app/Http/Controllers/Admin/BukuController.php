@@ -10,6 +10,7 @@ use App\Models\Paket;
 use App\Services\BukuService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class BukuController extends Controller
 {
@@ -68,14 +69,16 @@ class BukuController extends Controller
     {
         $this->service->update($id, $request->validated());
 
-        return redirect()->back()->with('success', 'Buku berhasil diperbarui.');
+        return redirect()->back()
+                         ->with('success', 'Buku berhasil diperbarui.');
     }
 
     public function destroy(int $id)
     {
         $this->service->delete($id);
 
-        return redirect()->back()->with('success', 'Buku berhasil dihapus.');
+        return redirect()->back()
+                         ->with('success', 'Buku berhasil dihapus.');
     }
 
     public function toggleVisibility(int $id)
@@ -107,7 +110,6 @@ class BukuController extends Controller
             SUM(CASE WHEN stok > 0             THEN 1 ELSE 0 END) as tersedia,
             SUM(CASE WHEN stok = 0             THEN 1 ELSE 0 END) as habis
         ")->first();
-
-        return $stats->toArray();
+        return (array) $stats;
     }
 }
