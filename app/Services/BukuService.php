@@ -81,7 +81,11 @@ class BukuService
         }
 
         if (! empty($filters['paket'])) {
-            $query->where('paket_id', $filters['paket']);
+            if ($filters['paket'] === 'tanpa_paket') {
+                $query->whereNull('paket_id');   // ← ganti ini
+            } else {
+                $query->where('paket_id', $filters['paket']);
+            }
         }
 
         if (isset($filters['visibility'])) {
@@ -89,7 +93,7 @@ class BukuService
                 'visible' => $query->visible(),
                 'hidden'  => $query->where(function ($q) {
                     $q->whereNull('paket_id')->where('is_visible', false)
-                      ->orWhereHas('paket', fn($p) => $p->where('is_aktif', false));
+                    ->orWhereHas('paket', fn($p) => $p->where('is_aktif', false));
                 }),
                 default   => null,
             };

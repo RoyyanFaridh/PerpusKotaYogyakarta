@@ -109,6 +109,7 @@ class BukuController extends Controller
             SUM(CASE WHEN stok > 0             THEN 1 ELSE 0 END) as tersedia,
             SUM(CASE WHEN stok = 0             THEN 1 ELSE 0 END) as habis
         ")->first();
-        return (array) $stats;
+
+        return $stats->toArray();
     }
 }
