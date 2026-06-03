@@ -11,12 +11,16 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $transaksiHariIni = Transaksi::whereDate('created_at', today())->count();
+        $transaksiBulanIni = Transaksi::whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
 
-        $transaksiKemarin = Transaksi::whereDate('created_at', today()->subDay())->count();
+        $transaksiBulanLalu = Transaksi::whereMonth('created_at', now()->subMonth()->month)
+            ->whereYear('created_at', now()->subMonth()->year)
+            ->count();
 
-        $selisihTransaksi = $transaksiKemarin > 0
-            ? round((($transaksiHariIni - $transaksiKemarin) / $transaksiKemarin) * 100)
+        $selisihTransaksi = $transaksiBulanLalu > 0
+            ? round((($transaksiBulanIni - $transaksiBulanLalu) / $transaksiBulanLalu) * 100)
             : 0;
 
         $bukuTersedia    = Buku::where('stok', '>', 0)->count();
@@ -31,7 +35,7 @@ class DashboardController extends Controller
             ->get();
 
         return view('admin.dashboard', compact(
-            'transaksiHariIni',
+            'transaksiBulanIni',
             'selisihTransaksi',
             'bukuTersedia',
             'bukuMingguIni',
@@ -110,4 +114,4 @@ class DashboardController extends Controller
             ])
             ->all();
     }
-}
+} 

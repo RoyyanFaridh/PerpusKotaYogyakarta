@@ -32,6 +32,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/member',           [MemberController::class, 'index'])->name('member.index');
     Route::get('/member/create',    [MemberController::class, 'create'])->name('member.create')->middleware('has.permission:member.create');
+    Route::get('/member/export',          [MemberController::class, 'export'])->name('member.export');
     Route::post('/member',          [MemberController::class, 'store'])->name('member.store')->middleware('has.permission:member.create');
     Route::get('/member/{member}/edit', [MemberController::class, 'edit'])->name('member.edit')->middleware('has.permission:member.edit');
     Route::put('/member/{member}',  [MemberController::class, 'update'])->name('member.update')->middleware('has.permission:member.edit');

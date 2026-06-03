@@ -9,11 +9,11 @@
         {{-- Stat Cards --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             <x-admin.dashboard.stat-card
-                label="Transaksi Hari Ini"
-                :value="$transaksiHariIni"
+                label="Transaksi Bulan Ini"
+                :value="$transaksiBulanIni"
                 icon="document"
                 color="primary"
-                :badge="($selisihTransaksi >= 0 ? '+' : '') . $selisihTransaksi . '% dari kemarin'"
+                :badge="($selisihTransaksi >= 0 ? '+' : '') . $selisihTransaksi . '% dari bulan lalu'"
                 caption="Total transaksi tukar buku"
             />
             <x-admin.dashboard.stat-card
