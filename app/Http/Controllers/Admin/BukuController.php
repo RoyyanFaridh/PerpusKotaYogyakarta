@@ -31,6 +31,11 @@ class BukuController extends Controller
         return view('admin.buku.index', compact('bukus', 'lokasis', 'pakets', 'filters', 'stats'));
     }
 
+    public function export(Request $request): never
+    {
+        $this->service->export($request->only(['search', 'kategori', 'lokasi', 'paket', 'visibility']));
+    }
+
     public function create()
     {
         $lokasis = Lokasi::aktif()->get();

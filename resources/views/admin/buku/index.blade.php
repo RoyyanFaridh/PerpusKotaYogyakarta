@@ -38,6 +38,14 @@ $categoryColorMap = [
                 </div>
             </div>
             <div class="flex items-center gap-2 shrink-0">
+                <a id="btnExport"
+                    href="{{ route('admin.buku.export') }}"
+                    class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-medium text-neutral-600 border border-neutral-200 hover:bg-neutral-50 transition-colors">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Export Excel
+                </a>
                 <button type="button" onclick="bukaModalBuku()"
                         class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold text-white bg-primary-600 hover:bg-primary-700 transition-colors">
                     Tambah Buku
@@ -97,7 +105,6 @@ $categoryColorMap = [
                     <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
                 @endforeach
             </select>
-
             <select id="paket"
                     class="px-3 py-2 text-sm text-neutral-600 bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition shrink-0">
                 <option value="">Semua Paket</option>
@@ -205,7 +212,6 @@ $categoryColorMap = [
                             {{-- Tampil / Toggle Visibility --}}
                             <td class="px-4 py-3.5 text-center">
                                 @if ($buku->paket_id)
-                                    {{-- Dikontrol paket, toggle dinonaktifkan --}}
                                     <span class="text-xs text-neutral-400" title="Dikontrol oleh paket">
                                         via paket
                                     </span>
@@ -325,8 +331,10 @@ $categoryColorMap = [
     const selectLokasi   = document.getElementById('lokasi');
     const selectPaket    = document.getElementById('paket');
     const selectVis      = document.getElementById('visibility');
+    const btnExport      = document.getElementById('btnExport');
+    const exportBase     = '{{ route('admin.buku.export') }}';
 
-    function applyFilters() {
+    function buildParams() {
         const params = new URLSearchParams();
         const q = searchInput?.value.trim();
         if (q)                     params.set('search',     q);
@@ -334,6 +342,18 @@ $categoryColorMap = [
         if (selectLokasi?.value)   params.set('lokasi',     selectLokasi.value);
         if (selectPaket?.value)    params.set('paket',      selectPaket.value);
         if (selectVis?.value)      params.set('visibility', selectVis.value);
+        return params;
+    }
+
+    function syncExportBtn(params) {
+        if (!btnExport) return;
+        const qs = params.toString();
+        btnExport.href = qs ? `${exportBase}?${qs}` : exportBase;
+    }
+
+    function applyFilters() {
+        const params = buildParams();
+        syncExportBtn(params);
         window.location.href = `${window.location.pathname}?${params.toString()}`;
     }
 
@@ -347,13 +367,15 @@ $categoryColorMap = [
     selectPaket?.addEventListener('change',    applyFilters);
     selectVis?.addEventListener('change',      applyFilters);
 
-    // Restore filter state dari URL
+    // Restore filter state dari URL & sync export button on page load
     const params = new URLSearchParams(window.location.search);
     if (searchInput    && params.get('search'))     searchInput.value    = params.get('search');
     if (selectKategori && params.get('kategori'))   selectKategori.value = params.get('kategori');
     if (selectLokasi   && params.get('lokasi'))     selectLokasi.value   = params.get('lokasi');
     if (selectPaket    && params.get('paket'))      selectPaket.value    = params.get('paket');
     if (selectVis      && params.get('visibility')) selectVis.value      = params.get('visibility');
+
+    syncExportBtn(params);
 })();
 
 // Toggle visibility inline (tanpa reload penuh)
@@ -375,7 +397,6 @@ function toggleVisibilityBuku(id, currentlyVisible, btn) {
         btn.title       = nowVisible ? 'Klik untuk sembunyikan' : 'Klik untuk tampilkan';
         btn.onclick     = () => toggleVisibilityBuku(id, nowVisible, btn);
 
-        // Swap badge colour
         btn.classList.remove(
             'bg-success-50', 'text-success-700', 'hover:bg-success-100',
             'bg-neutral-100', 'text-neutral-500', 'hover:bg-neutral-200'

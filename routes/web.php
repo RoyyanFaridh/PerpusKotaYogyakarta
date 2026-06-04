@@ -58,6 +58,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::post('/',             [BukuController::class, 'store'])->name('store')->middleware('has.permission:buku.create');
         Route::get('/relokasi',      [BukuRelokasiController::class, 'index'])->name('relokasi.index')->middleware('has.permission:buku.edit');
         Route::post('/relokasi',     [BukuRelokasiController::class, 'store'])->name('relokasi.store')->middleware('has.permission:buku.edit');
+        Route::get('/export', [BukuController::class, 'export'])->name('export');
         Route::get('/{buku}',        [BukuController::class, 'show'])->name('show');
         Route::get('/{buku}/edit',   [BukuController::class, 'edit'])->name('edit')->middleware('has.permission:buku.edit');
         Route::put('/{buku}',        [BukuController::class, 'update'])->name('update')->middleware('has.permission:buku.edit');
