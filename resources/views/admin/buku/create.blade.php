@@ -17,7 +17,7 @@
                     aria-label="Tutup modal"
                     class="p-2 rounded-lg text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
             </button>
@@ -96,38 +96,31 @@
                 </div>
             </div>
 
-            {{-- Paket & Lokasi --}}
-            <div class="grid grid-cols-2 gap-3">
-                <div class="flex flex-col gap-1.5">
-                    <div class="flex items-center justify-between">
-                        <label class="text-xs font-medium text-neutral-700">Paket</label>
-                        <button type="button" onclick="bukaPaketDariTambahBuku()"
-                                class="text-[0.68rem] font-medium text-primary-600 hover:text-primary-700 transition-colors">
-                            + Buat Paket Baru
-                        </button>
-                    </div>
-                    <select name="paket_id" id="tambah_paket_id"
-                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
-                        <option value="">Tanpa paket (donasi)</option>
-                        @foreach ($pakets as $paket)
-                            <option value="{{ $paket->id }}">{{ $paket->nama }}</option>
-                        @endforeach
-                    </select>
+            {{-- Paket --}}
+            <div class="flex flex-col gap-1.5">
+                <div class="flex items-center justify-between">
+                    <label class="text-xs font-medium text-neutral-700">Paket</label>
+                    <button type="button" onclick="bukaPaketDariTambahBuku()"
+                            class="text-[0.68rem] font-medium text-primary-600 hover:text-primary-700 transition-colors">
+                        + Buat Paket Baru
+                    </button>
                 </div>
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-xs font-medium text-neutral-700">Lokasi <span class="text-danger-500">*</span></label>
-                    <select name="lokasi_id" id="tambah_lokasi_id"
-                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
-                        <option value="">Pilih lokasi</option>
-                        @foreach ($lokasis as $lokasi)
-                            <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
-                        @endforeach
-                    </select>
-                    <p id="err_lokasi_id" class="hidden text-[0.68rem] text-danger-500">Lokasi wajib dipilih.</p>
-                </div>
+                <select name="paket_id" id="tambah_paket_id"
+                        class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
+                    <option value="">Tanpa paket</option>
+                    @foreach ($pakets as $paket)
+                        <option value="{{ $paket->id }}">
+                            {{ $paket->nama }}
+                            @if ($paket->lokasi)
+                                — {{ $paket->lokasi->nama_lokasi }}
+                            @endif
+                        </option>
+                    @endforeach
+                </select>
+                <p class="text-[0.68rem] text-neutral-400">Lokasi buku mengikuti paket yang dipilih.</p>
             </div>
 
-            {{-- Visibility — hanya relevan kalau tidak dalam paket --}}
+            {{-- Visibility --}}
             <div id="tambah_visibility_wrapper" class="flex items-center gap-2.5">
                 <input type="hidden" name="is_visible" value="0"/>
                 <input type="checkbox" name="is_visible" id="tambah_is_visible" value="1"
@@ -210,22 +203,17 @@
         bukaModalTambahPaket('tambah_buku');
     }
 
-    // Sembunyikan checkbox visibility kalau buku dalam paket
     document.getElementById('tambah_paket_id')?.addEventListener('change', function () {
         const wrapper = document.getElementById('tambah_visibility_wrapper');
-        if (this.value) {
-            wrapper.classList.add('hidden');
-        } else {
-            wrapper.classList.remove('hidden');
-        }
+        wrapper.classList.toggle('hidden', !!this.value);
     });
 
     function resetErrorTambahBuku() {
-        ['judul', 'pengarang', 'stok', 'lokasi_id'].forEach(field => {
-            const err   = document.getElementById('err_' + field);
-            const input = document.getElementById('tambah_' + field);
-            if (err)   err.classList.add('hidden');
-            if (input) input.classList.remove('border-danger-400', 'focus:ring-danger-200', 'focus:border-danger-400');
+        ['judul', 'pengarang', 'stok'].forEach(field => {
+            document.getElementById('err_' + field)?.classList.add('hidden');
+            document.getElementById('tambah_' + field)?.classList.remove(
+                'border-danger-400', 'focus:ring-danger-200', 'focus:border-danger-400'
+            );
         });
     }
 
@@ -248,14 +236,12 @@
         const judul     = document.getElementById('tambah_judul').value.trim();
         const pengarang = document.getElementById('tambah_pengarang').value.trim();
         const stok      = document.getElementById('tambah_stok').value;
-        const lokasiId  = document.getElementById('tambah_lokasi_id').value;
 
         setError('tambah_judul',     'err_judul',     !judul);
         setError('tambah_pengarang', 'err_pengarang', !pengarang);
         setError('tambah_stok',      'err_stok',      stok === '');
-        setError('tambah_lokasi_id', 'err_lokasi_id', !lokasiId);
 
-        if (!judul || !pengarang || stok === '' || !lokasiId) return;
+        if (!judul || !pengarang || stok === '') return;
 
         document.getElementById('formTambahBuku').submit();
     }

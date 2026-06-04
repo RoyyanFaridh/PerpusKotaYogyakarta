@@ -55,8 +55,8 @@ function resetCreate() {
     const fields = [
         'memberId', 'memberNama', 'memberNoTelp', 'memberAlamat', 'memberEmail',
         'cariMemberInput', 'isbnDiserahkan', 'diserahkanJudul', 'diserahkanPengarang',
-        'diserahkanPenerbit', 'diserahkanKategori', 'diserahkanDeskripsi', 'diserahkanTahunTerbit', 
-        'diserahkanTempatTerbit', 'catatanPetugas',
+        'diserahkanPenerbit', 'diserahkanKategori', 'diserahkanDeskripsi',
+        'diserahkanTahunTerbit', 'diserahkanTempatTerbit', 'catatanPetugas',
     ];
     fields.forEach(id => {
         const e = pEl('create', id);
@@ -68,7 +68,6 @@ function resetCreate() {
 
     pEl('create', 'cariMemberResults')?.classList.add('hidden');
 
-    setKondisi('create', '');
     resetBukuDiterima('create');
     state.create.step = 1;
 }
@@ -93,8 +92,6 @@ function simpanTransaksi() {
     })
     .then(r => r.text().then(text => ({ status: r.status, text })))
     .then(({ status, text }) => {
-        console.log('STATUS:', status);
-        console.log('RESPONSE:', text);
         try {
             const data = JSON.parse(text);
             if (data.success) { closeCreate(); location.reload(); }
@@ -126,19 +123,18 @@ function openEditTransaksi(id) {
             pEl('edit', 'memberAlamat').value        = m.alamat   ?? '';
             pEl('edit', 'memberEmail').value         = m.email    ?? '';
 
-            pEl('edit', 'diserahkanJudul').value     = b.judul;
-            pEl('edit', 'diserahkanPengarang').value = b.pengarang;
-            pEl('edit', 'diserahkanPenerbit').value  = b.penerbit  ?? '';
-            pEl('edit', 'diserahkanKategori').value  = b.kategori  ?? '';
-            pEl('edit', 'diserahkanDeskripsi').value = b.deskripsi ?? '';
-            pEl('edit', 'isbnDiserahkan').value      = b.isbn      ?? '';
-            pEl('edit', 'diserahkanTahunTerbit').value  = b.tahun_terbit  ?? '';
-            pEl('edit', 'diserahkanTempatTerbit').value = b.tempat_terbit ?? '';
+            pEl('edit', 'diserahkanJudul').value     = b.buku?.judul     ?? '';
+            pEl('edit', 'diserahkanPengarang').value = b.buku?.pengarang ?? '';
+            pEl('edit', 'diserahkanPenerbit').value  = b.buku?.penerbit  ?? '';
+            pEl('edit', 'diserahkanKategori').value  = b.buku?.kategori  ?? '';
+            pEl('edit', 'diserahkanDeskripsi').value = b.buku?.deskripsi ?? '';
+            pEl('edit', 'isbnDiserahkan').value      = b.buku?.isbn      ?? '';
+            pEl('edit', 'diserahkanTahunTerbit').value  = b.buku?.tahun_terbit  ?? '';
+            pEl('edit', 'diserahkanTempatTerbit').value = b.buku?.tempat_terbit ?? '';
 
-            const lokasiSel = pEl('edit', 'lokasiId');
-            if (lokasiSel) lokasiSel.value = b.lokasi_id ?? '';
+            const paketSel = pEl('edit', 'paketId');
+            if (paketSel) paketSel.value = data.paket_id ?? '';
 
-            setKondisi('edit', b.kondisi ?? '');
             setBukuDiterima('edit', data.buku_diterima);
 
             pEl('edit', 'catatanPetugas').value = data.catatan_petugas ?? '';
@@ -183,18 +179,17 @@ function buildPayload(prefix) {
             email:   pVal(prefix, 'memberEmail'),
         },
         buku_diserahkan: {
-            judul:     pVal(prefix, 'diserahkanJudul'),
-            pengarang: pVal(prefix, 'diserahkanPengarang'),
-            penerbit:  pVal(prefix, 'diserahkanPenerbit'),
-            isbn:      pVal(prefix, 'isbnDiserahkan'),
-            kategori:  pVal(prefix, 'diserahkanKategori'),
-            kondisi:   document.querySelector(`input[name="${prefix}_diserahkanKondisi"]:checked`)?.value ?? null,
-            deskripsi: pVal(prefix, 'diserahkanDeskripsi'),
-            tahun_terbit:  pVal(prefix, 'diserahkanTahunTerbit') || null,
+            judul:         pVal(prefix, 'diserahkanJudul'),
+            pengarang:     pVal(prefix, 'diserahkanPengarang'),
+            penerbit:      pVal(prefix, 'diserahkanPenerbit'),
+            isbn:          pVal(prefix, 'isbnDiserahkan'),
+            kategori:      pVal(prefix, 'diserahkanKategori'),
+            deskripsi:     pVal(prefix, 'diserahkanDeskripsi'),
+            tahun_terbit:  pVal(prefix, 'diserahkanTahunTerbit')  || null,
             tempat_terbit: pVal(prefix, 'diserahkanTempatTerbit') || null,
         },
         buku_diterima_id: pVal(prefix, 'bukuDiterimaId'),
-        lokasi_id:        pVal(prefix, 'lokasiId'),
+        paket_id:         pVal(prefix, 'paketId'),
         catatan_petugas:  pVal(prefix, 'catatanPetugas'),
     };
 }
@@ -238,7 +233,7 @@ function goToStep(prefix, step) {
     el(`${prefix}BtnSimpan`)?.classList.toggle('hidden', step !== TOTAL_STEPS);
 
     if (step === TOTAL_STEPS) fillKonfirmasi(prefix);
-    if (step === 3) loadBukuLokasi(prefix);
+    if (step === 3) loadBukuPaket(prefix);
 
     state[prefix].step = step;
 }
@@ -267,9 +262,6 @@ function validateStep(prefix, step) {
     if (step === 2) {
         if (!requireField('diserahkanJudul',     'Judul buku wajib diisi.'))  return false;
         if (!requireField('diserahkanPengarang', 'Pengarang wajib diisi.'))   return false;
-        if (!document.querySelector(`input[name="${prefix}_diserahkanKondisi"]:checked`)) {
-            alert('Kondisi wajib dipilih.'); return false;
-        }
         return true;
     }
 
@@ -290,49 +282,38 @@ function fillKonfirmasi(prefix) {
         if (e) e.textContent = text;
     };
 
-    set('konfirmasiMemberNama',            pVal(prefix, 'memberNama'));
-    set('konfirmasiMemberTelp',            pVal(prefix, 'memberNoTelp'));
-    set('konfirmasiBukuDiserahkan',        pVal(prefix, 'diserahkanJudul'));
-    set('konfirmasiBukuDiserahkanKondisi', 'Kondisi: ' + (
-        document.querySelector(`input[name="${prefix}_diserahkanKondisi"]:checked`)?.value ?? '-'
-    ));
-    set('konfirmasiBukuDiterima', pEl(prefix, 'bukuDiterimaJudul')?.textContent ?? '-');
-
-    set('konfirmasiLokasi', pVal(prefix, 'lokasiNama'));
+    set('konfirmasiMemberNama',     pVal(prefix, 'memberNama'));
+    set('konfirmasiMemberTelp',     pVal(prefix, 'memberNoTelp'));
+    set('konfirmasiBukuDiserahkan', pVal(prefix, 'diserahkanJudul'));
+    set('konfirmasiBukuDiterima',   pEl(prefix, 'bukuDiterimaJudul')?.textContent ?? '-');
+    set('konfirmasiPaket',          pEl(prefix, 'bukuDiterimaPaket')?.textContent ?? '-');
+    set('konfirmasiLokasi',         pEl(prefix, 'bukuDiterimaLokasi')?.textContent ?? '-');
 }
 
-// ─── Kondisi & Buku Diterima ───────────────────────────────────────────────
-
-function setKondisi(prefix, val) {
-    document.querySelectorAll(`.kondisi-option-${prefix}`).forEach(e => {
-        const active = e.dataset.value === val;
-        e.querySelector('input').checked = active;
-        e.classList.toggle('border-primary-400', active);
-        e.classList.toggle('bg-primary-50',      active);
-        e.classList.toggle('text-primary-700',   active);
-    });
-}
+// ─── Buku Diterima ─────────────────────────────────────────────────────────
 
 function setBukuDiterima(prefix, buku) {
     const idEl = pEl(prefix, 'bukuDiterimaId');
     if (idEl) idEl.value = buku.id;
 
     const judulEl = pEl(prefix, 'bukuDiterimaJudul');
-    if (judulEl) judulEl.textContent = buku.judul;
+    if (judulEl) judulEl.textContent = buku.buku?.judul ?? buku.judul ?? '-';
 
     const pengarangEl = pEl(prefix, 'bukuDiterimaPengarang');
-    if (pengarangEl) pengarangEl.textContent = buku.pengarang;
+    if (pengarangEl) pengarangEl.textContent = buku.buku?.pengarang ?? buku.pengarang ?? '-';
 
     const stokEl = pEl(prefix, 'bukuDiterimaStok');
-    if (stokEl) stokEl.textContent = buku.stok;
+    if (stokEl) stokEl.textContent = buku.stok ?? '-';
+
+    const paketEl = pEl(prefix, 'bukuDiterimaPaket');
+    if (paketEl) paketEl.textContent = buku.paket?.nama ?? '-';
 
     const lokasiEl = pEl(prefix, 'bukuDiterimaLokasi');
-    if (lokasiEl) lokasiEl.textContent = buku.lokasi?.nama_lokasi ?? '-';
+    if (lokasiEl) lokasiEl.textContent = buku.paket?.lokasi?.nama_lokasi ?? '-';
 
     pEl(prefix, 'bukuDiterimaResult')?.classList.remove('hidden');
     pEl(prefix, 'bukuDiterimaEmpty')?.classList.add('hidden');
 
-    // sembunyikan hasil pencarian setelah buku dipilih
     const results = pEl(prefix, 'cariBukuDiterimaResults');
     if (results) { results.innerHTML = ''; results.classList.add('hidden'); }
 }
@@ -360,18 +341,19 @@ function cariIsbnDiserahkan(prefix) {
     const isbn = pEl(prefix, 'isbnDiserahkan')?.value.trim();
     if (!isbn) return;
 
-    const info = pEl(prefix, 'isbnDiserahkanInfo');
+    const info    = pEl(prefix, 'isbnDiserahkanInfo');
+    const paketId = pEl(prefix, 'paketId')?.value ?? '';
+    const param   = paketId ? `&paket_id=${paketId}` : '';
 
-    apiFetch(`/admin/transaksi/cari-buku-isbn?isbn=${encodeURIComponent(isbn)}`)
+    apiFetch(`/admin/transaksi/cari-buku-isbn?isbn=${encodeURIComponent(isbn)}${param}`)
         .then(data => {
             if (data) {
-                pEl(prefix, 'diserahkanJudul').value     = data.judul     ?? '';
-                pEl(prefix, 'diserahkanPengarang').value = data.pengarang ?? '';
-                pEl(prefix, 'diserahkanPenerbit').value  = data.penerbit  ?? '';
-                pEl(prefix, 'diserahkanKategori').value  = data.kategori  ?? '';
-                pEl(prefix, 'diserahkanTahunTerbit').value  = data.tahun_terbit  ?? '';
-                pEl(prefix, 'diserahkanTempatTerbit').value = data.tempat_terbit ?? '';
-                setKondisi(prefix, data.kondisi ?? '');
+                pEl(prefix, 'diserahkanJudul').value        = data.buku?.judul         ?? '';
+                pEl(prefix, 'diserahkanPengarang').value    = data.buku?.pengarang     ?? '';
+                pEl(prefix, 'diserahkanPenerbit').value     = data.buku?.penerbit      ?? '';
+                pEl(prefix, 'diserahkanKategori').value     = data.buku?.kategori      ?? '';
+                pEl(prefix, 'diserahkanTahunTerbit').value  = data.buku?.tahun_terbit  ?? '';
+                pEl(prefix, 'diserahkanTempatTerbit').value = data.buku?.tempat_terbit ?? '';
                 if (info) {
                     info.textContent = '✓ Data buku ditemukan dan diisi otomatis.';
                     info.className   = 'text-[0.68rem] text-success-600 mt-1';
@@ -391,11 +373,11 @@ function cariIsbnDiserahkan(prefix) {
         });
 }
 
-// ─── Pencarian Buku Diterima (gabungan ISBN + judul) ───────────────────────
+// ─── Pencarian Buku Diterima ───────────────────────────────────────────────
 
 function cariBukuDiterima(prefix) {
     const input   = pEl(prefix, 'cariBukuDiterima')?.value.trim();
-    const lokasiId = pEl(prefix, 'lokasiId')?.value ?? '';
+    const paketId = pEl(prefix, 'paketId')?.value ?? '';
     if (!input) return;
 
     const info    = pEl(prefix, 'cariBukuDiterimaInfo');
@@ -403,21 +385,21 @@ function cariBukuDiterima(prefix) {
     if (info)    info.textContent = '';
     if (results) { results.innerHTML = ''; results.classList.add('hidden'); }
 
-    const lokasiParam = lokasiId ? `&lokasi_id=${lokasiId}` : '';
-    const isIsbn = /^[\d\-]{10,}$/.test(input);
+    const paketParam = paketId ? `&paket_id=${paketId}` : '';
+    const isIsbn     = /^[\d\-]{10,}$/.test(input);
 
     if (isIsbn) {
         const isbn = input.replace(/-/g, '');
-        apiFetch(`/admin/transaksi/cari-buku-isbn?isbn=${encodeURIComponent(isbn)}${lokasiParam}`)
+        apiFetch(`/admin/transaksi/cari-buku-isbn?isbn=${encodeURIComponent(isbn)}${paketParam}`)
             .then(data => {
                 if (!data) {
                     if (info) {
-                        info.textContent = 'Buku tidak ditemukan di lokasi ini.';
+                        info.textContent = 'Buku tidak ditemukan di paket ini.';
                         info.className   = 'text-[0.68rem] text-warning-600 mt-1';
                     }
                 } else if (data.stok <= 0) {
                     if (info) {
-                        info.textContent = 'Stok buku ini habis di lokasi Anda.';
+                        info.textContent = 'Stok buku ini habis.';
                         info.className   = 'text-[0.68rem] text-danger-600 mt-1';
                     }
                 } else {
@@ -431,11 +413,11 @@ function cariBukuDiterima(prefix) {
                 }
             });
     } else {
-        apiFetch(`/admin/transaksi/cari-buku-judul?keyword=${encodeURIComponent(input)}${lokasiParam}`)
+        apiFetch(`/admin/transaksi/cari-buku-judul?keyword=${encodeURIComponent(input)}${paketParam}`)
             .then(data => {
                 if (!data.length) {
                     if (info) {
-                        info.textContent = 'Buku tidak ditemukan di lokasi ini atau stok habis.';
+                        info.textContent = 'Buku tidak ditemukan atau stok habis.';
                         info.className   = 'text-[0.68rem] text-warning-600 mt-1';
                     }
                     return;
@@ -454,16 +436,16 @@ function cariBukuDiterima(prefix) {
 
                         const judul = document.createElement('span');
                         judul.className   = 'font-semibold text-neutral-800';
-                        judul.textContent = buku.judul;
+                        judul.textContent = buku.buku?.judul ?? '-';
 
                         const pengarang = document.createElement('span');
                         pengarang.className   = 'text-neutral-400 ml-1';
-                        pengarang.textContent = `— ${buku.pengarang}`;
+                        pengarang.textContent = `— ${buku.buku?.pengarang ?? '-'}`;
 
                         const meta = document.createElement('span');
                         meta.className   = `ml-2 text-[0.65rem] font-medium ${buku.stok > 0 ? 'text-primary-600' : 'text-danger-500'}`;
                         meta.textContent = buku.stok > 0
-                            ? `Stok: ${buku.stok} · ${buku.lokasi?.nama_lokasi ?? '-'}`
+                            ? `Stok: ${buku.stok} · ${buku.paket?.lokasi?.nama_lokasi ?? '-'}`
                             : 'Stok habis';
 
                         btn.append(judul, pengarang, meta);
@@ -484,16 +466,20 @@ function cariBukuDiterima(prefix) {
     }
 }
 
-function loadBukuLokasi(prefix) {
+function loadBukuPaket(prefix) {
     const container = pEl(prefix, 'listBukuLokasi');
     if (!container) return;
 
+    const paketId = pEl(prefix, 'paketId')?.value ?? '';
+
     container.innerHTML = '<div class="px-3 py-4 text-center text-xs text-neutral-400">Memuat daftar buku...</div>';
 
-    apiFetch('/admin/transaksi/cari-buku-lokasi')
+    const param = paketId ? `?paket_id=${paketId}` : '';
+
+    apiFetch(`/admin/transaksi/buku-by-paket${param}`)
         .then(data => {
             if (!data.length) {
-                container.innerHTML = '<div class="px-3 py-4 text-center text-xs text-neutral-400">Tidak ada buku tersedia di cabang ini.</div>';
+                container.innerHTML = '<div class="px-3 py-4 text-center text-xs text-neutral-400">Tidak ada buku tersedia di paket ini.</div>';
                 return;
             }
 
@@ -505,11 +491,11 @@ function loadBukuLokasi(prefix) {
 
                 const judul = document.createElement('span');
                 judul.className   = 'font-semibold text-neutral-800';
-                judul.textContent = buku.judul;
+                judul.textContent = buku.buku?.judul ?? '-';
 
                 const pengarang = document.createElement('span');
                 pengarang.className   = 'text-neutral-400 ml-1';
-                pengarang.textContent = `— ${buku.pengarang}`;
+                pengarang.textContent = `— ${buku.buku?.pengarang ?? '-'}`;
 
                 const stok = document.createElement('span');
                 stok.className   = 'ml-2 text-[0.65rem] font-medium text-primary-600';
@@ -609,13 +595,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'Enter') cariIsbnDiserahkan(prefix);
         });
 
-        // update: listener gabungan untuk ISBN + judul buku diterima
         pEl(prefix, 'cariBukuDiterima')?.addEventListener('keydown', e => {
             if (e.key === 'Enter') cariBukuDiterima(prefix);
-        });
-
-        document.querySelectorAll(`.kondisi-option-${prefix}`).forEach(e => {
-            e.addEventListener('click', () => setKondisi(prefix, e.dataset.value));
         });
     });
 

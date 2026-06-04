@@ -17,7 +17,7 @@
                     aria-label="Tutup modal"
                     class="p-2 rounded-lg text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
             </button>
@@ -29,6 +29,8 @@
               class="px-6 sm:px-8 py-6 flex flex-col gap-4 max-h-[75vh] overflow-y-auto custom-scroll">
             @csrf
             @method('PUT')
+
+            <input type="hidden" id="edit_eksemplar_id" name="eksemplar_id"/>
 
             {{-- Judul --}}
             <div class="flex flex-col gap-1.5">
@@ -53,7 +55,8 @@
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label for="edit_tahun_terbit" class="text-xs font-medium text-neutral-700">Tahun Terbit</label>
-                    <input type="number" id="edit_tahun_terbit" name="tahun_terbit" placeholder="Contoh: 2020" min="1900" max="2099"
+                    <input type="number" id="edit_tahun_terbit" name="tahun_terbit" placeholder="2024"
+                           min="1900" max="{{ date('Y') }}"
                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
                 </div>
             </div>
@@ -62,12 +65,12 @@
             <div class="grid grid-cols-2 gap-3">
                 <div class="flex flex-col gap-1.5">
                     <label for="edit_isbn" class="text-xs font-medium text-neutral-700">ISBN</label>
-                    <input type="text" id="edit_isbn" name="isbn" placeholder="Contoh: 978-xxx"
+                    <input type="text" id="edit_isbn" name="isbn" placeholder="978-xxx"
                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 font-mono focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label for="edit_tempat_terbit" class="text-xs font-medium text-neutral-700">Tempat Terbit</label>
-                    <input type="text" id="edit_tempat_terbit" name="tempat_terbit" placeholder="Contoh: Jakarta"
+                    <input type="text" id="edit_tempat_terbit" name="tempat_terbit" placeholder="Jakarta"
                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
                 </div>
             </div>
@@ -78,6 +81,7 @@
                     <label for="edit_stok" class="text-xs font-medium text-neutral-700">Stok <span class="text-danger-500">*</span></label>
                     <input type="number" id="edit_stok" name="stok" placeholder="0" min="0"
                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
+                    <p class="text-[0.68rem] text-neutral-400">Stok untuk eksemplar ini di paket terkait.</p>
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label for="edit_kategori" class="text-xs font-medium text-neutral-700">Kategori</label>
@@ -94,52 +98,40 @@
                 </div>
             </div>
 
-            {{-- Paket & Lokasi --}}
-            <div class="grid grid-cols-2 gap-3">
-                <div class="flex flex-col gap-1.5">
-                    <div class="flex items-center justify-between">
-                        <label for="edit_paket_id" class="text-xs font-medium text-neutral-700">Paket</label>
-                        <button type="button" onclick="bukaPaketDariEditBuku()"
-                                class="text-[0.68rem] font-medium text-primary-600 hover:text-primary-700 transition-colors">
-                            + Buat Paket Baru
-                        </button>
-                    </div>
-                    <select id="edit_paket_id" name="paket_id"
-                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
-                        <option value="">Tanpa paket (donasi)</option>
-                        @foreach ($pakets as $paket)
-                            <option value="{{ $paket->id }}">{{ $paket->nama }}</option>
-                        @endforeach
-                    </select>
+            {{-- Paket --}}
+            <div class="flex flex-col gap-1.5">
+                <div class="flex items-center justify-between">
+                    <label for="edit_paket_id" class="text-xs font-medium text-neutral-700">Paket</label>
+                    <button type="button" onclick="bukaPaketDariEditBuku()"
+                            class="text-[0.68rem] font-medium text-primary-600 hover:text-primary-700 transition-colors">
+                        + Buat Paket Baru
+                    </button>
                 </div>
-                <div class="flex flex-col gap-1.5">
-                    <label for="edit_lokasi_id" class="text-xs font-medium text-neutral-700">Lokasi <span class="text-danger-500">*</span></label>
-                    <select id="edit_lokasi_id" name="lokasi_id"
-                            class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
-                        <option value="">Pilih lokasi</option>
-                        @foreach ($lokasis as $lokasi)
-                            <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                <select id="edit_paket_id" name="paket_id"
+                        class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
+                    <option value="">Tanpa paket</option>
+                    @foreach ($pakets as $paket)
+                        <option value="{{ $paket->id }}">
+                            {{ $paket->nama }}
+                            @if ($paket->lokasi)
+                                — {{ $paket->lokasi->nama_lokasi }}
+                            @endif
+                        </option>
+                    @endforeach
+                </select>
+                <p class="text-[0.68rem] text-neutral-400">Lokasi dan visibilitas buku mengikuti paket yang dipilih.</p>
             </div>
 
-            {{-- Visibility — hanya muncul kalau buku tidak dalam paket --}}
-            <div id="edit_visibility_wrapper" class="flex items-center gap-2.5">
-                <input type="hidden" name="is_visible" value="0"/>
-                <input type="checkbox" name="is_visible" id="edit_is_visible" value="1"
-                       class="w-4 h-4 rounded border-neutral-300 text-primary-600 focus:ring-primary-300"/>
-                <label for="edit_is_visible" class="text-xs font-medium text-neutral-700">
-                    Tampilkan buku ini ke publik
-                </label>
-            </div>
-
-            {{-- Info kalau dalam paket --}}
-            <div id="edit_paket_info" class="hidden items-center gap-2 px-3 py-2.5 rounded-lg bg-primary-50 border border-primary-100">
-                <svg class="w-4 h-4 text-primary-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            {{-- Info visibilitas --}}
+            <div class="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-primary-50 border border-primary-100">
+                <svg class="w-4 h-4 text-primary-500 shrink-0" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
                 </svg>
-                <p class="text-xs text-primary-700">Visibility dikontrol oleh status paket.</p>
+                <p class="text-xs text-primary-700">
+                    Buku otomatis tampil ke publik jika paketnya aktif, dan tersembunyi jika paket nonaktif.
+                </p>
             </div>
 
             {{-- Resume --}}
@@ -162,7 +154,8 @@
                 <div class="flex items-start gap-4">
                     <div id="preview-cover-edit"
                          class="w-16 h-24 rounded-lg border border-neutral-200 bg-neutral-50 flex items-center justify-center overflow-hidden shrink-0">
-                        <svg class="w-5 h-5 text-neutral-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <svg class="w-5 h-5 text-neutral-300" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.5">
                             <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
                         </svg>
                     </div>
@@ -198,6 +191,7 @@
     function bukaModalEditBuku(data) {
         document.getElementById('formEditBuku').action = `/admin/buku/${data.id}`;
 
+        document.getElementById('edit_eksemplar_id').value  = data.eksemplar_id  ?? '';
         document.getElementById('edit_judul').value         = data.judul         ?? '';
         document.getElementById('edit_pengarang').value     = data.pengarang     ?? '';
         document.getElementById('edit_penerbit').value      = data.penerbit      ?? '';
@@ -208,13 +202,8 @@
         document.getElementById('edit_stok').value          = data.stok          ?? 0;
         document.getElementById('edit_kategori').value      = data.kategori      ?? '';
         document.getElementById('edit_deskripsi').value     = data.deskripsi     ?? '';
-        document.getElementById('edit_lokasi_id').value     = data.lokasi_id     ?? '';
         document.getElementById('edit_paket_id').value      = data.paket_id      ?? '';
-        document.getElementById('edit_is_visible').checked  = !!data.is_visible;
 
-        toggleEditVisibilityUI(data.paket_id);
-
-        // Tampilkan cover existing jika ada
         const preview = document.getElementById('preview-cover-edit');
         if (data.cover) {
             preview.innerHTML = `<img src="/storage/${data.cover}" class="w-full h-full object-cover">`;
@@ -222,7 +211,6 @@
             preview.innerHTML = `<svg class="w-5 h-5 text-neutral-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>`;
         }
 
-        // Reset input file
         document.getElementById('cover-input-edit').value = '';
 
         const el = document.getElementById('modalEditBuku');
@@ -230,22 +218,6 @@
         el.classList.add('flex');
         document.body.style.overflow = 'hidden';
     }
-
-    function toggleEditVisibilityUI(paketId) {
-        const wrapper = document.getElementById('edit_visibility_wrapper');
-        const info    = document.getElementById('edit_paket_info');
-        if (paketId) {
-            wrapper.classList.add('hidden');
-            info.classList.remove('hidden');
-        } else {
-            wrapper.classList.remove('hidden');
-            info.classList.add('hidden');
-        }
-    }
-
-    document.getElementById('edit_paket_id')?.addEventListener('change', function () {
-        toggleEditVisibilityUI(this.value);
-    });
 
     function bukaPaketDariEditBuku() {
         tutupModalEditBuku();

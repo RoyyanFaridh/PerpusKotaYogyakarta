@@ -4,7 +4,6 @@
     <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden">
         <div class="absolute top-0 left-0 right-0 h-0.5 bg-warning-400"></div>
 
-        {{-- Header --}}
         <div class="flex items-center justify-between px-6 sm:px-8 pt-6 pb-5 border-b border-neutral-100">
             <div>
                 <h2 class="text-base font-semibold text-neutral-800">Edit Transaksi</h2>
@@ -23,7 +22,6 @@
 
         @include('admin.transaksi._step-indicator', ['prefix' => 'edit'])
 
-        {{-- Body --}}
         <div class="px-6 sm:px-8 py-6 min-h-96">
             @include('admin.transaksi._step-member',     ['prefix' => 'edit'])
             @include('admin.transaksi._step-diserahkan', ['prefix' => 'edit'])
@@ -31,7 +29,6 @@
             @include('admin.transaksi._step-konfirmasi', ['prefix' => 'edit'])
         </div>
 
-        {{-- Footer --}}
         <div class="flex items-center justify-between px-6 sm:px-8 py-4 border-t border-neutral-100 bg-neutral-50">
             <button id="editBtnPrev" onclick="prevStep('edit')"
                     class="hidden text-sm font-medium px-4 py-2 rounded-lg border border-neutral-200 text-neutral-600 hover:bg-white transition-colors">

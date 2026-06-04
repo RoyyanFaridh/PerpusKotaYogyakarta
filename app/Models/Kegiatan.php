@@ -11,22 +11,34 @@ class Kegiatan extends Model
         'nama_kegiatan',
         'deskripsi',
         'tanggal_mulai',
+        'tanggal_selesai',
         'jam_pelaksanaan',
         'jam_selesai',
     ];
 
     protected $casts = [
-        'tanggal_mulai' => 'date',
+        'tanggal_mulai'   => 'datetime',
+        'tanggal_selesai' => 'datetime',
     ];
+
+    public function pakets()
+    {
+        return $this->belongsToMany(Paket::class, 'kegiatan_paket');
+    }
 
     public function getStatusOtomatisAttribute(): string
     {
-        $now   = Carbon::now();
-        $mulai = Carbon::parse($this->tanggal_mulai->format('Y-m-d')
-            . ($this->jam_pelaksanaan ? ' ' . $this->jam_pelaksanaan : ' 00:00:00'));
+        $now = Carbon::now();
+
+        $mulai = Carbon::parse(
+            $this->tanggal_mulai->format('Y-m-d') .
+            ($this->jam_pelaksanaan ? ' ' . $this->jam_pelaksanaan : ' 00:00:00')
+        );
+
+        $tanggalSelesai = $this->tanggal_selesai ?? $this->tanggal_mulai;
         $selesai = $this->jam_selesai
-            ? Carbon::parse($this->tanggal_mulai->format('Y-m-d') . ' ' . $this->jam_selesai)
-            : $mulai->copy()->endOfDay();
+            ? Carbon::parse($tanggalSelesai->format('Y-m-d') . ' ' . $this->jam_selesai)
+            : Carbon::parse($tanggalSelesai->format('Y-m-d'))->endOfDay();
 
         if ($now->lt($mulai)) {
             return 'akan_berlangsung';

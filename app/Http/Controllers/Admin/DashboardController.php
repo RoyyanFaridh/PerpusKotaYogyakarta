@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Buku;
+use App\Models\BukuEksemplar;
 use App\Models\Member;
 use App\Models\Transaksi;
 
@@ -23,13 +24,17 @@ class DashboardController extends Controller
             ? round((($transaksiBulanIni - $transaksiBulanLalu) / $transaksiBulanLalu) * 100)
             : 0;
 
-        $bukuTersedia    = Buku::where('stok', '>', 0)->count();
+        $bukuTersedia    = BukuEksemplar::where('stok', '>', 0)->sum('stok');
         $bukuMingguIni   = Buku::whereBetween('created_at', [now()->startOfWeek(), now()])->count();
         $perluVerifikasi = Transaksi::whereNull('tanggal_tukar')->count();
 
         $kategoris        = $this->getKategoris();
         $aktivitas        = $this->getAktivitasTerkini();
-        $transaksiTerbaru = Transaksi::with(['member', 'bukuDiserahkan', 'bukuDiterima'])
+        $transaksiTerbaru = Transaksi::with([
+                'member',
+                'bukuDiserahkan.buku',
+                'bukuDiterima.buku',
+            ])
             ->latest()
             ->limit(15)
             ->get();
@@ -50,13 +55,13 @@ class DashboardController extends Controller
     {
         $items = collect();
 
-        Transaksi::with(['member', 'bukuDiserahkan'])
+        Transaksi::with(['member', 'bukuDiserahkan.buku'])
             ->latest()
             ->limit(20)
             ->get()
             ->each(function ($t) use (&$items) {
                 $nama  = $t->member?->nama ?? 'Member';
-                $judul = $t->bukuDiserahkan?->judul ?? 'Buku';
+                $judul = $t->bukuDiserahkan?->buku?->judul ?? 'Buku';
 
                 $items->push([
                     'tipe'      => 'transaksi_pending',
@@ -107,7 +112,7 @@ class DashboardController extends Controller
             ->groupBy('kategori')
             ->orderByDesc('jumlah')
             ->get()
-            ->map(fn ($row) => [
+            ->map(fn($row) => [
                 'nama'   => $row->kategori,
                 'jumlah' => (int) $row->jumlah,
                 'warna'  => $kategoriWarna[$row->kategori] ?? 'sky',

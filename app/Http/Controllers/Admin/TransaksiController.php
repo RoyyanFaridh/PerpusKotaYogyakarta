@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\BukuEksemplar;
+use App\Models\Paket;
 use App\Models\Transaksi;
-use App\Models\Lokasi;
-use App\Models\Buku;
 use App\Services\TransaksiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,14 +25,19 @@ class TransaksiController extends Controller
     {
         $filters = $request->only(['search', 'tanggal']);
 
-        $transaksi = Transaksi::with(['member', 'bukuDiserahkan', 'bukuDiterima'])
+        $transaksi = Transaksi::with([
+                'member',
+                'paket.lokasi',
+                'bukuDiserahkan.buku',
+                'bukuDiterima.buku',
+            ])
             ->when($filters['search'] ?? null, function ($q, $search) {
                 $q->where(function ($q) use ($search) {
                     $q->whereHas('member', fn($m) =>
                             $m->where('nama', 'ilike', "%{$search}%")
                               ->orWhere('no_telp', 'ilike', "%{$search}%"))
-                      ->orWhereHas('bukuDiserahkan', fn($b) => $b->where('judul', 'ilike', "%{$search}%"))
-                      ->orWhereHas('bukuDiterima',   fn($b) => $b->where('judul', 'ilike', "%{$search}%"));
+                      ->orWhereHas('bukuDiserahkan.buku', fn($b) => $b->where('judul', 'ilike', "%{$search}%"))
+                      ->orWhereHas('bukuDiterima.buku',   fn($b) => $b->where('judul', 'ilike', "%{$search}%"));
                 });
             })
             ->when($filters['tanggal'] ?? null, function ($q, $tanggal) {
@@ -52,16 +57,18 @@ class TransaksiController extends Controller
         $transaksiMingguIni = Transaksi::whereBetween('created_at', [now()->startOfWeek(), now()])->count();
         $transaksiBulanIni  = Transaksi::whereMonth('created_at', now()->month)->count();
 
-        $lokasis    = Lokasi::aktif()->get();
-        $lokasiUser = Auth::user()->lokasi;
+        $paketAktif = Paket::aktif()->with('lokasi')->get();
+        $paketUser  = Auth::user()->lokasi
+            ? Paket::aktif()->where('lokasi_id', Auth::user()->lokasi_id)->first()
+            : null;
 
         return view('admin.transaksi.index', compact(
             'transaksi',
             'transaksiHariIni',
             'transaksiMingguIni',
             'transaksiBulanIni',
-            'lokasis',
-            'lokasiUser',
+            'paketAktif',
+            'paketUser',
         ));
     }
 
@@ -72,26 +79,25 @@ class TransaksiController extends Controller
             'member.no_telp'            => 'required|string|max:15',
             'buku_diserahkan.judul'     => 'required|string|max:255',
             'buku_diserahkan.pengarang' => 'required|string|max:255',
-            'buku_diterima_id'          => 'required|exists:bukus,id',
+            'buku_diterima_id'          => 'required|exists:buku_eksemplars,id',
+            'paket_id'                  => 'required|exists:pakets,id',
         ]);
 
-        // Pastikan buku yang dipilih memang visible dan tersedia
-        $bukuDiterima = Buku::visible()->tersedia()->find($request->buku_diterima_id);
+        $eksemplarDiterima = BukuEksemplar::tersedia()
+            ->diPaketAktif()
+            ->find($request->buku_diterima_id);
 
-        if (! $bukuDiterima) {
+        if (! $eksemplarDiterima) {
             return response()->json([
                 'success' => false,
-                'message' => 'Buku tidak tersedia atau tidak dapat ditukar saat ini.',
+                'message' => 'Buku tidak tersedia atau paket tidak aktif.',
             ], 422);
         }
 
         try {
             $this->service->simpan(array_merge(
                 $request->all(),
-                [
-                    'user_id'   => Auth::id(),
-                    'lokasi_id' => Auth::user()->lokasi_id,
-                ]
+                ['user_id' => Auth::id()]
             ));
 
             return response()->json(['success' => true, 'message' => 'Transaksi berhasil disimpan.']);
@@ -100,7 +106,6 @@ class TransaksiController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
             ], 500);
         }
     }
@@ -110,7 +115,7 @@ class TransaksiController extends Controller
         $request->validate([
             'member.nama'      => 'required|string|max:255',
             'member.no_telp'   => 'required|string|max:15',
-            'buku_diterima_id' => 'required|exists:bukus,id',
+            'buku_diterima_id' => 'required|exists:buku_eksemplars,id',
         ]);
 
         try {
@@ -122,7 +127,6 @@ class TransaksiController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
             ], 500);
         }
     }
@@ -136,12 +140,18 @@ class TransaksiController extends Controller
 
     public function show(int $id)
     {
-        $transaksi = Transaksi::with(['member', 'bukuDiserahkan.lokasi', 'bukuDiterima', 'user'])
+        $transaksi = Transaksi::with([
+                'member',
+                'paket.lokasi',
+                'bukuDiserahkan.buku',
+                'bukuDiterima.buku',
+                'user',
+            ])
             ->findOrFail($id);
 
         return response()->json([
             ...$transaksi->toArray(),
-            'lokasi_id' => $transaksi->bukuDiserahkan?->lokasi_id,
+            'lokasi' => $transaksi->paket?->lokasi,
         ]);
     }
 
@@ -166,7 +176,7 @@ class TransaksiController extends Controller
     {
         $buku = $this->service->cariBukuByIsbn(
             $request->isbn ?? '',
-            $request->integer('lokasi_id') ?: null,
+            $request->integer('paket_id') ?: null,
         );
         return response()->json($buku);
     }
@@ -175,23 +185,23 @@ class TransaksiController extends Controller
     {
         $hasil = $this->service->cariBukuByJudul(
             $request->keyword ?? '',
-            $request->integer('lokasi_id') ?: null,
+            $request->integer('paket_id') ?: null,
         );
         return response()->json($hasil);
     }
 
-    public function bukuByLokasi()
+    public function bukuByPaket(Request $request)
     {
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
+        $paketId = $request->integer('paket_id') ?: null;
 
-        $buku = Buku::visible()
-                    ->tersedia()
-                    ->where('lokasi_id', $user->lokasi_id)
-                    ->orderBy('judul')
-                    ->get(['id', 'judul', 'pengarang', 'stok', 'lokasi_id', 'paket_id']);
+        $eksemplars = BukuEksemplar::with('buku')
+            ->tersedia()
+            ->diPaketAktif()
+            ->when($paketId, fn($q) => $q->where('paket_id', $paketId))
+            ->orderByDesc('stok')
+            ->get();
 
-        return response()->json($buku);
+        return response()->json($eksemplars);
     }
 
     public function export()

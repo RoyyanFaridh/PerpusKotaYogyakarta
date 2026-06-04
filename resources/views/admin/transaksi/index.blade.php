@@ -143,7 +143,7 @@
                             $txnId = '#TXN-' . str_pad($item->id, 4, '0', STR_PAD_LEFT);
                         @endphp
                         <tr class="hover:bg-neutral-50 transition-colors table-row-data"
-                            data-search="{{ strtolower($item->member->nama ?? '') }} {{ strtolower($item->bukuDiserahkan->judul ?? '') }} {{ strtolower($item->bukuDiterima->judul ?? '') }}">
+                            data-search="{{ strtolower($item->member?->nama ?? '') }} {{ strtolower($item->bukuDiserahkan?->buku?->judul ?? '') }} {{ strtolower($item->bukuDiterima?->buku?->judul ?? '') }}">
 
                             <td class="px-2 py-3.5 text-center">
                                 <span class="text-xs font-mono font-medium text-neutral-500">{{ $txnId }}</span>
@@ -162,13 +162,13 @@
                             </td>
 
                             <td class="px-4 py-3.5 max-w-40 text-center">
-                                <p class="text-sm font-medium text-neutral-700 truncate">{{ $item->bukuDiserahkan->judul ?? '-' }}</p>
-                                <p class="text-xs text-neutral-400 mt-0.5">{{ $item->bukuDiserahkan->pengarang ?? '' }}</p>
+                                <p class="text-sm font-medium text-neutral-700 truncate">{{ $item->bukuDiserahkan?->buku?->judul ?? '-' }}</p>
+                                <p class="text-xs text-neutral-400 mt-0.5">{{ $item->bukuDiserahkan?->buku?->pengarang ?? '' }}</p>
                             </td>
 
                             <td class="px-4 py-3.5 max-w-40 text-center">
-                                <p class="text-sm font-medium text-neutral-700 truncate">{{ $item->bukuDiterima->judul ?? '-' }}</p>
-                                <p class="text-xs text-neutral-400 mt-0.5">{{ $item->bukuDiterima->pengarang ?? '' }}</p>
+                                <p class="text-sm font-medium text-neutral-700 truncate">{{ $item->bukuDiterima?->buku?->judul ?? '-' }}</p>
+                                <p class="text-xs text-neutral-400 mt-0.5">{{ $item->bukuDiterima?->buku?->pengarang ?? '' }}</p>
                             </td>
 
                             <td class="px-4 py-3.5 whitespace-nowrap text-center">

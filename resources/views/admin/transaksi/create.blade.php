@@ -23,9 +23,9 @@
 
         {{-- Body --}}
         <div class="px-6 sm:px-8 py-6 min-h-96">
-            <input type="hidden" id="{{ 'create' }}_lokasiId"   value="{{ $lokasiUser?->id ?? '' }}"/>
-            <input type="hidden" id="{{ 'create' }}_lokasiNama" value="{{ $lokasiUser?->nama_lokasi ?? '' }}"/>
-            <input type="hidden" id="{{ 'create' }}_memberId"/>
+            <input type="hidden" id="create_paketId"   value="{{ $paketUser?->id ?? '' }}"/>
+            <input type="hidden" id="create_paketNama" value="{{ $paketUser?->nama ?? '' }}"/>
+            <input type="hidden" id="create_memberId"/>
 
             @include('admin.transaksi._step-member',     ['prefix' => 'create'])
             @include('admin.transaksi._step-diserahkan', ['prefix' => 'create'])
@@ -34,7 +34,6 @@
         </div>
 
         <div class="flex items-center justify-between px-6 sm:px-8 py-4 border-t border-neutral-100 bg-neutral-50">
-
             <button id="createBtnPrev" onclick="prevStep('create')"
                     class="hidden text-sm font-medium px-4 py-2 rounded-lg border border-neutral-200 text-neutral-600 hover:bg-white transition-colors">
                 Sebelumnya

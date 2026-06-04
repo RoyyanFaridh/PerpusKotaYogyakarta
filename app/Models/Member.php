@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Transaksi;
 use OwenIt\Auditing\Contracts\Auditable;
 
 class Member extends Model implements Auditable
@@ -21,11 +20,6 @@ class Member extends Model implements Auditable
         'user_id',
     ];
 
-    public function bukus()
-    {
-        return $this->hasMany(Buku::class);
-    }
-
     public function transaksis()
     {
         return $this->hasMany(Transaksi::class);
@@ -40,7 +34,7 @@ class Member extends Model implements Auditable
     {
         return $query->where(function ($q) use ($keyword) {
             $q->where('nama', 'like', "%{$keyword}%")
-            ->orWhere('no_telp', 'like', "%{$keyword}%");
+              ->orWhere('no_telp', 'like', "%{$keyword}%");
         });
     }
 

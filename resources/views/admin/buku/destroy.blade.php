@@ -1,68 +1,65 @@
 <div id="modalHapusBuku"
-     class="hidden fixed inset-0 z-50 items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+     class="hidden fixed inset-0 z-50 items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div class="bg-white rounded-xl shadow-xl border border-neutral-200 w-full max-w-sm mx-4">
 
-    <div class="absolute inset-0" onclick="tutupModalHapusBuku()"></div>
-
-    <div class="relative z-10 w-full max-w-md rounded-2xl bg-white overflow-hidden shadow-xl">
-
-        <div class="absolute top-0 left-0 right-0 h-0.5 bg-danger-400"></div>
-
-        <div class="px-6 sm:px-8 pt-7 pb-6 flex flex-col items-center text-center gap-3">
-            <div class="w-12 h-12 rounded-full bg-danger-50 border border-danger-100 flex items-center justify-center shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-danger-500"
-                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <polyline points="3 6 5 6 21 6"/>
-                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                    <path d="M10 11v6"/><path d="M14 11v6"/>
-                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                </svg>
+        <div class="flex items-center gap-3 px-5 pt-5 pb-4 border-b border-neutral-100">
+            <div class="w-9 h-9 rounded-lg bg-danger-50 text-danger-600 flex items-center justify-center shrink-0">
+                <x-icons.delete class="w-4 h-4"/>
             </div>
-
             <div>
-                <h2 class="text-base font-semibold text-neutral-800">Hapus Buku?</h2>
-                <p class="text-sm text-neutral-400 mt-1.5 leading-relaxed">
-                    Buku <span id="hapusBukuNama" class="font-semibold text-neutral-600"></span>
-                    akan dihapus permanen dan tidak bisa dikembalikan.
-                </p>
+                <p class="text-sm font-semibold text-neutral-800">Hapus Buku</p>
+                <p class="text-xs text-neutral-400">Tindakan ini tidak bisa dibatalkan</p>
             </div>
         </div>
 
-        <div class="flex items-center gap-2 px-6 sm:px-8 pb-6">
-            <button type="button" onclick="tutupModalHapusBuku()"
-                    class="flex-1 px-4 py-2 text-sm font-medium rounded-lg text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 transition-colors">
+        <div class="px-5 py-4">
+            <p class="text-sm text-neutral-600">
+                Yakin ingin menghapus buku
+                <span id="hapusBukuJudul" class="font-semibold text-neutral-800"></span>?
+            </p>
+            <p class="text-xs text-neutral-400 mt-1">
+                Semua eksemplar buku ini juga akan dihapus.
+            </p>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 px-5 pb-5">
+            <button type="button"
+                    onclick="tutupModalHapusBuku()"
+                    class="px-4 py-2 rounded-lg text-xs font-medium text-neutral-600 border border-neutral-200 hover:bg-neutral-50 transition-colors">
                 Batal
             </button>
-            <form id="formHapusBuku" method="POST" action="" class="flex-1">
+            <form id="formHapusBuku" method="POST">
                 @csrf
                 @method('DELETE')
                 <button type="submit"
-                        class="w-full px-4 py-2 text-sm font-medium rounded-lg bg-danger-500 text-white hover:bg-danger-600 transition-colors">
-                    Ya, Hapus
+                        class="px-4 py-2 rounded-lg text-xs font-semibold text-white bg-danger-600 hover:bg-danger-700 transition-colors">
+                    Hapus
                 </button>
             </form>
         </div>
     </div>
 </div>
 
+@push('scripts')
 <script>
-    function bukaModalHapusBuku(action, nama) {
-        document.getElementById('formHapusBuku').action = action;
-        document.getElementById('hapusBukuNama').textContent = nama;
-        const el = document.getElementById('modalHapusBuku');
-        el.classList.remove('hidden');
-        el.classList.add('flex');
-        document.body.style.overflow = 'hidden';
-    }
+function bukaModalHapusBuku(action, judul) {
+    document.getElementById('formHapusBuku').action    = action;
+    document.getElementById('hapusBukuJudul').textContent = judul;
+    const modal = document.getElementById('modalHapusBuku');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+}
 
-    function tutupModalHapusBuku() {
-        const el = document.getElementById('modalHapusBuku');
-        el.classList.add('hidden');
-        el.classList.remove('flex');
-        document.body.style.overflow = '';
-    }
+function tutupModalHapusBuku() {
+    const modal = document.getElementById('modalHapusBuku');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = '';
+}
 
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') tutupModalHapusBuku();
-    });
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') tutupModalHapusBuku();
+});
 </script>
+@endpush

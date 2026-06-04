@@ -9,11 +9,6 @@ class BukuSeeder extends Seeder
 {
     public function run(): void
     {
-        // lokasi_id: 1=Kotabaru, 2=PEVITA, 3=Bank Buku
-        // is_visible: false untuk menyembunyikan buku dari katalog publik
-        // paket_id: null = buku tanpa paket (visibility dikontrol is_visible)
-        // cover_url belum ada di skema, ditambahkan setelah migration siap
-
         $buku = [
             [
                 'judul'         => 'Sapiens: Riwayat Singkat Umat Manusia',
@@ -23,11 +18,10 @@ class BukuSeeder extends Seeder
                 'tahun_terbit'  => 2017,
                 'tempat_terbit' => 'Jakarta',
                 'resume'        => 'Buku ini mengisahkan perjalanan panjang umat manusia dari zaman batu hingga era modern.',
-                'stok'          => 3,
                 'kategori'      => 'Geografi & Sejarah',
-                'lokasi_id'     => 1,
+                'deskripsi'     => null,
+                'cover'         => null,
                 'user_id'       => 1,
-                'paket_id'      => null,
                 'is_visible'    => true,
             ],
             [
@@ -38,11 +32,10 @@ class BukuSeeder extends Seeder
                 'tahun_terbit'  => 2019,
                 'tempat_terbit' => 'Jakarta',
                 'resume'        => 'Panduan praktis untuk membangun kebiasaan baik dan menghilangkan kebiasaan buruk.',
-                'stok'          => 2,
                 'kategori'      => 'Filsafat & Psikologi',
-                'lokasi_id'     => 1,
+                'deskripsi'     => null,
+                'cover'         => null,
                 'user_id'       => 1,
-                'paket_id'      => null,
                 'is_visible'    => true,
             ],
             [
@@ -53,11 +46,10 @@ class BukuSeeder extends Seeder
                 'tahun_terbit'  => 2018,
                 'tempat_terbit' => 'Jakarta',
                 'resume'        => 'Eksplorasi tentang masa depan umat manusia di era kecerdasan buatan dan bioteknologi.',
-                'stok'          => 2,
                 'kategori'      => 'Sains & Matematika',
-                'lokasi_id'     => 2,
+                'deskripsi'     => null,
+                'cover'         => null,
                 'user_id'       => 1,
-                'paket_id'      => null,
                 'is_visible'    => true,
             ],
             [
@@ -68,11 +60,10 @@ class BukuSeeder extends Seeder
                 'tahun_terbit'  => 2005,
                 'tempat_terbit' => 'Yogyakarta',
                 'resume'        => 'Kisah inspiratif tentang sepuluh anak Belitung yang berjuang meraih mimpi di tengah keterbatasan.',
-                'stok'          => 5,
                 'kategori'      => 'Literatur & Sastra',
-                'lokasi_id'     => 1,
+                'deskripsi'     => null,
+                'cover'         => null,
                 'user_id'       => 2,
-                'paket_id'      => null,
                 'is_visible'    => true,
             ],
             [
@@ -83,11 +74,10 @@ class BukuSeeder extends Seeder
                 'tahun_terbit'  => 2005,
                 'tempat_terbit' => 'Jakarta',
                 'resume'        => 'Novel sejarah tentang perjuangan Minke di era kolonial Hindia Belanda.',
-                'stok'          => 4,
                 'kategori'      => 'Literatur & Sastra',
-                'lokasi_id'     => 2,
+                'deskripsi'     => null,
+                'cover'         => null,
                 'user_id'       => 2,
-                'paket_id'      => null,
                 'is_visible'    => true,
             ],
             [
@@ -98,11 +88,10 @@ class BukuSeeder extends Seeder
                 'tahun_terbit'  => 2015,
                 'tempat_terbit' => 'Jakarta',
                 'resume'        => 'Pelajaran tentang keuangan dan investasi dari dua sudut pandang ayah yang berbeda.',
-                'stok'          => 3,
                 'kategori'      => 'Ilmu Sosial',
-                'lokasi_id'     => 1,
+                'deskripsi'     => null,
+                'cover'         => null,
                 'user_id'       => 1,
-                'paket_id'      => null,
                 'is_visible'    => true,
             ],
             [
@@ -113,11 +102,10 @@ class BukuSeeder extends Seeder
                 'tahun_terbit'  => 2014,
                 'tempat_terbit' => 'Jakarta',
                 'resume'        => 'Telaah komprehensif tentang sejarah dan perkembangan peradaban Islam dari masa ke masa.',
-                'stok'          => 2,
                 'kategori'      => 'Agama',
-                'lokasi_id'     => 2,
+                'deskripsi'     => null,
+                'cover'         => null,
                 'user_id'       => 3,
-                'paket_id'      => null,
                 'is_visible'    => true,
             ],
             [
@@ -128,11 +116,10 @@ class BukuSeeder extends Seeder
                 'tahun_terbit'  => 2018,
                 'tempat_terbit' => 'Jakarta',
                 'resume'        => 'Penerapan filsafat Stoa dalam kehidupan modern untuk menghadapi tekanan dan kecemasan.',
-                'stok'          => 4,
                 'kategori'      => 'Filsafat & Psikologi',
-                'lokasi_id'     => 1,
+                'deskripsi'     => null,
+                'cover'         => null,
                 'user_id'       => 2,
-                'paket_id'      => null,
                 'is_visible'    => true,
             ],
             [
@@ -143,11 +130,10 @@ class BukuSeeder extends Seeder
                 'tahun_terbit'  => 2016,
                 'tempat_terbit' => 'Bandung',
                 'resume'        => 'Pengenalan konsep dasar ilmu komputer untuk mahasiswa tingkat awal.',
-                'stok'          => 6,
                 'kategori'      => 'Umum/Komputer',
-                'lokasi_id'     => 2,
+                'deskripsi'     => null,
+                'cover'         => null,
                 'user_id'       => 3,
-                'paket_id'      => null,
                 'is_visible'    => true,
             ],
             [
@@ -158,11 +144,10 @@ class BukuSeeder extends Seeder
                 'tahun_terbit'  => 2009,
                 'tempat_terbit' => 'Jakarta',
                 'resume'        => 'Kisah enam santri dari pelosok nusantara yang bermimpi meraih cita-cita setinggi langit.',
-                'stok'          => 3,
                 'kategori'      => 'Literatur & Sastra',
-                'lokasi_id'     => 1,
+                'deskripsi'     => null,
+                'cover'         => null,
                 'user_id'       => 1,
-                'paket_id'      => null,
                 'is_visible'    => true,
             ],
         ];

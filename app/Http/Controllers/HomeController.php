@@ -38,38 +38,55 @@ class HomeController extends Controller
             'kegiatan'     => $sorted,
             'closestIndex' => $closestIndex,
             'lokasis'      => Lokasi::aktif()->tampilDiSearch()->orderBy('nama_lokasi')->get(),
-            'bukuTerbaru'  => Buku::with('lokasi')->orderBy('created_at', 'desc')->take(10)->get(),
+            'bukuTerbaru'  => Buku::with(['eksemplars.paket.lokasi'])
+                                  ->visible()
+                                  ->tersedia()
+                                  ->latest()
+                                  ->take(10)
+                                  ->get(),
         ]);
     }
 
     public function searchBuku(Request $request)
     {
-        $query = Buku::with('lokasi')->visible()->tersedia();
+        $query = Buku::with(['eksemplars.paket.lokasi'])
+            ->visible()
+            ->tersedia();
 
         if ($request->q)
-            $query->where(fn($q) => $q->where('judul', 'like', "%{$request->q}%")
-                                      ->orWhere('pengarang', 'like', "%{$request->q}%"));
+            $query->cari($request->q);
 
         if ($request->kategori)
             $query->where('kategori', $request->kategori);
 
-        if ($request->lokasi_id)
-            $query->where('lokasi_id', $request->lokasi_id);
+        if ($request->lokasi_id) {
+            $query->whereHas('eksemplars.paket.lokasi', fn($l) =>
+                $l->where('id', $request->lokasi_id)
+            );
+        }
 
         $paginated = $query->paginate(12);
 
-        $paginated->getCollection()->transform(fn($buku) => [
-            'id'           => $buku->id,
-            'judul'        => $buku->judul,
-            'pengarang'    => $buku->pengarang,
-            'kategori'     => $buku->kategori,
-            'tahun_terbit' => $buku->tahun_terbit,
-            'resume'       => $buku->resume,
-            'stok'         => $buku->stok,
-            'lokasi_id'    => $buku->lokasi_id,
-            'lokasi'       => $buku->lokasi?->nama_lokasi,
-            'cover_url'    => $buku->cover ? Storage::url($buku->cover) : null,
-        ]);
+        $paginated->getCollection()->transform(function ($buku) {
+            $lokasis = $buku->eksemplars
+                ->filter(fn($e) => $e->paket?->is_aktif && $e->stok > 0)
+                ->map(fn($e) => $e->paket?->lokasi?->nama_lokasi)
+                ->filter()
+                ->unique()
+                ->values();
+
+            return [
+                'id'           => $buku->id,
+                'judul'        => $buku->judul,
+                'pengarang'    => $buku->pengarang,
+                'kategori'     => $buku->kategori,
+                'tahun_terbit' => $buku->tahun_terbit,
+                'resume'       => $buku->resume,
+                'stok'         => $buku->stok,
+                'lokasis'      => $lokasis,
+                'cover_url'    => $buku->cover ? Storage::url($buku->cover) : null,
+            ];
+        });
 
         return response()->json($paginated);
     }

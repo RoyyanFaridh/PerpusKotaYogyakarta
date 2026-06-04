@@ -18,7 +18,7 @@ class Lokasi extends Model implements Auditable
         'nama_lokasi',
         'alamat',
         'no_telp',
-        'tipe',
+        'user_id',
         'tampil_di_search',
         'aktif',
     ];
@@ -28,10 +28,19 @@ class Lokasi extends Model implements Auditable
         'aktif'            => 'boolean',
     ];
 
-    public function isBankBuku(): bool
+    // Relationships
+
+    public function user()
     {
-        return $this->tipe === 'bank_buku';
+        return $this->belongsTo(User::class);
     }
+
+    public function pakets()
+    {
+        return $this->hasMany(Paket::class);
+    }
+
+    // Scopes
 
     public function scopeAktif(Builder $query): Builder
     {
@@ -43,23 +52,18 @@ class Lokasi extends Model implements Auditable
         return $query->where('tampil_di_search', true);
     }
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function bukus()
-    {
-        return $this->hasMany(Buku::class);
-    }
+    // Accessors
 
     public function getTotalStokAttribute(): int
     {
-        return $this->bukus()->sum('stok');
+        return BukuEksemplar::whereHas('paket', fn($q) => $q->where('lokasi_id', $this->id))
+            ->sum('stok');
     }
 
     public function getTotalJudulAttribute(): int
     {
-        return $this->bukus()->count();
+        return BukuEksemplar::whereHas('paket', fn($q) => $q->where('lokasi_id', $this->id))
+            ->distinct('buku_id')
+            ->count('buku_id');
     }
 }

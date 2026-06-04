@@ -14,7 +14,6 @@ class LokasiSeeder extends Seeder
                 'nama_lokasi'      => 'Perpustakaan Kotabaru',
                 'alamat'           => 'Jl. Suroto No.9, Kotabaru, Kec. Gondokusuman, Kota Yogyakarta, DIY 55224',
                 'no_telp'          => '(0274) 511314',
-                'tipe'             => 'kotabaru',
                 'tampil_di_search' => true,
                 'aktif'            => true,
             ],
@@ -22,7 +21,6 @@ class LokasiSeeder extends Seeder
                 'nama_lokasi'      => 'PEVITA',
                 'alamat'           => 'Jl. Mayjend Sutoyo No.32, Mantrijeron, Kota Yogyakarta, DIY 55143',
                 'no_telp'          => '081226839100',
-                'tipe'             => 'pevita',
                 'tampil_di_search' => true,
                 'aktif'            => true,
             ],
@@ -30,9 +28,8 @@ class LokasiSeeder extends Seeder
                 'nama_lokasi'      => 'Bank Buku',
                 'alamat'           => '',
                 'no_telp'          => '',
-                'tipe'             => 'bank_buku',
                 'tampil_di_search' => false,
-                'aktif'            => false,
+                'aktif'            => true,
             ],
         ];
 

@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('nama');
             $table->boolean('is_aktif')->default(false);
+            $table->foreignId('lokasi_id')->nullable()->constrained('lokasis')->nullOnDelete();
             $table->timestamps();
         });
     }

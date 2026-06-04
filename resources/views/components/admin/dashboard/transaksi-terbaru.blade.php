@@ -68,14 +68,16 @@
                             </div>
                         </td>
 
+                        {{-- Diserahkan --}}
                         <td class="px-5 py-3.5 min-w-0 max-w-40">
-                            <p class="text-xs font-medium text-neutral-700 truncate">{{ $t->bukuDiserahkan?->judul ?? '-' }}</p>               
-                            <p class="text-xs text-neutral-500 mt-0.5 truncate">{{ $t->bukuDiserahkan?->pengarang ?? '' }}</p>
+                            <p class="text-xs font-medium text-neutral-700 truncate">{{ $t->bukuDiserahkan?->buku?->judul ?? '-' }}</p>
+                            <p class="text-xs text-neutral-500 mt-0.5 truncate">{{ $t->bukuDiserahkan?->buku?->pengarang ?? '' }}</p>
                         </td>
 
+                        {{-- Diterima --}}
                         <td class="px-5 py-3.5 min-w-0 max-w-40">
-                            <p class="text-xs font-medium text-neutral-700 truncate">{{ $t->bukuDiterima?->judul ?? '-' }}</p>
-                            <p class="text-xs text-neutral-500 mt-0.5 truncate">{{ $t->bukuDiterima?->pengarang ?? '' }}</p>
+                            <p class="text-xs font-medium text-neutral-700 truncate">{{ $t->bukuDiterima?->buku?->judul ?? '-' }}</p>
+                            <p class="text-xs text-neutral-500 mt-0.5 truncate">{{ $t->bukuDiterima?->buku?->pengarang ?? '' }}</p>
                         </td>
 
                         {{-- Tanggal --}}

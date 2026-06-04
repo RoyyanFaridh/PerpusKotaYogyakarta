@@ -382,14 +382,14 @@
                                 ${buku.stok > 0 ? `Stok ${buku.stok}` : 'Habis'}
                             </span>
                         </div>
-                        ${buku.lokasi ? `
-                        <div class="flex items-center gap-1 text-[0.65rem] text-neutral-400">
-                            <svg class="w-3 h-3 stroke-current fill-none shrink-0" viewBox="0 0 24 24" stroke-width="2">
-                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-                                <circle cx="12" cy="9" r="2.5"/>
-                            </svg>
-                            <span>${escHtml(buku.lokasi)}</span>
-                        </div>` : ''}
+                        ${buku.lokasis && buku.lokasis.length ? `
+                            <div class="flex items-center gap-1 text-[0.65rem] text-neutral-400">
+                                <svg class="w-3 h-3 stroke-current fill-none shrink-0" viewBox="0 0 24 24" stroke-width="2">
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                                    <circle cx="12" cy="9" r="2.5"/>
+                                </svg>
+                                <span>${escHtml(buku.lokasis.join(', '))}</span>
+                            </div>` : ''}
                     </div>
                 </div>
             </div>

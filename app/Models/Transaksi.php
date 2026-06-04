@@ -16,6 +16,7 @@ class Transaksi extends Model implements Auditable
 
     protected $fillable = [
         'member_id',
+        'paket_id',
         'buku_diserahkan_id',
         'buku_diterima_id',
         'user_id',
@@ -32,14 +33,19 @@ class Transaksi extends Model implements Auditable
         return $this->belongsTo(Member::class);
     }
 
+    public function paket()
+    {
+        return $this->belongsTo(Paket::class);
+    }
+
     public function bukuDiserahkan()
     {
-        return $this->belongsTo(Buku::class, 'buku_diserahkan_id');
+        return $this->belongsTo(BukuEksemplar::class, 'buku_diserahkan_id');
     }
 
     public function bukuDiterima()
     {
-        return $this->belongsTo(Buku::class, 'buku_diterima_id');
+        return $this->belongsTo(BukuEksemplar::class, 'buku_diterima_id');
     }
 
     public function user()

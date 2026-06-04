@@ -38,17 +38,14 @@ class CatalogController extends Controller
         return view('katalog.index', compact('buku'));
     }
 
-    public function searchAjax(Request $request)
+   public function searchAjax(Request $request)
     {
-        $query = Buku::with('lokasi')->visible()->tersedia();
+        $query = Buku::with(['eksemplars.paket.lokasi'])
+            ->visible()
+            ->tersedia();
 
         if ($request->filled('q')) {
-            $q = $request->q;
-            $query->where(function ($builder) use ($q) {
-                $builder->where('judul',     'like', "%{$q}%")
-                        ->orWhere('pengarang', 'like', "%{$q}%")
-                        ->orWhere('resume',    'like', "%{$q}%");
-            });
+            $query->cari($request->q);
         }
 
         if ($request->filled('kategori')) {
@@ -56,28 +53,38 @@ class CatalogController extends Controller
         }
 
         if ($request->filled('lokasi_id')) {
-            $query->where('lokasi_id', $request->lokasi_id);
+            $query->whereHas('eksemplars.paket.lokasi', fn($l) =>
+                $l->where('id', $request->lokasi_id)
+            );
         }
 
         $buku = $query->get();
 
         return response()->json([
             'total' => $buku->count(),
-            'data'  => $buku->map(fn($b) => [
-                'id'           => $b->id,
-                'judul'        => $b->judul,
-                'pengarang'    => $b->pengarang,
-                'kategori'     => $b->kategori,
-                'tahun_terbit' => $b->tahun_terbit,
-                'resume'       => $b->resume,
-                'stok'         => $b->stok,
-                'lokasi_id'    => $b->lokasi_id,
-                'lokasi'       => $b->lokasi?->nama_lokasi ?? null,
-                'cover_url'    => $b->cover ? Storage::url($b->cover) : null,
-            ]),
+            'data'  => $buku->map(function ($b) {
+                $lokasis = $b->eksemplars
+                    ->filter(fn($e) => $e->paket?->is_aktif && $e->stok > 0)
+                    ->map(fn($e) => $e->paket?->lokasi?->nama_lokasi)
+                    ->filter()
+                    ->unique()
+                    ->values();
+
+                return [
+                    'id'           => $b->id,
+                    'judul'        => $b->judul,
+                    'pengarang'    => $b->pengarang,
+                    'kategori'     => $b->kategori,
+                    'tahun_terbit' => $b->tahun_terbit,
+                    'resume'       => $b->resume,
+                    'stok'         => $b->stok,
+                    'lokasis'      => $lokasis,
+                    'cover_url'    => $b->cover ? Storage::url($b->cover) : null,
+                ];
+            }),
         ]);
     }
-
+    
     public function show(int $book)
     {
         $buku = Buku::with('lokasi')->visible()->findOrFail($book);

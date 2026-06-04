@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\BukuEksemplar;
 use App\Models\Paket;
 use Illuminate\Http\Request;
 
@@ -10,15 +11,16 @@ class PaketController extends Controller
 {
     public function index()
     {
-        $pakets = Paket::withCount('bukus')
-                       ->withSum('bukus', 'stok')
-                       ->orderBy('nama')
-                       ->paginate(20);
+        $pakets = Paket::with('lokasi')
+            ->withCount('eksemplars')
+            ->withSum('eksemplars', 'stok')
+            ->orderBy('nama')
+            ->paginate(20);
 
         $stats = [
-            'total'      => Paket::count(),
-            'aktif'      => Paket::where('is_aktif', true)->count(),
-            'total_buku' => \App\Models\Buku::whereNotNull('paket_id')->count(),
+            'total'       => Paket::count(),
+            'aktif'       => Paket::where('is_aktif', true)->count(),
+            'total_stok'  => BukuEksemplar::sum('stok'),
         ];
 
         return view('admin.paket.index', compact('pakets', 'stats'));
@@ -54,10 +56,11 @@ class PaketController extends Controller
 
     public function destroy(int $id)
     {
-        $paket = Paket::withCount('bukus')->findOrFail($id);
+        $paket = Paket::withCount('eksemplars')->findOrFail($id);
 
-        if ($paket->bukus_count > 0) {
-            return redirect()->back()->with('error', 'Paket tidak bisa dihapus karena masih memiliki buku.');
+        if ($paket->eksemplars_count > 0) {
+            return redirect()->back()
+                ->with('error', 'Paket tidak bisa dihapus karena masih memiliki buku.');
         }
 
         $paket->delete();
@@ -65,10 +68,17 @@ class PaketController extends Controller
         return redirect()->back()->with('success', 'Paket berhasil dihapus.');
     }
 
-    public function aktifkan(int $id)
+    public function aktifkan(Request $request, int $id)
     {
+        $request->validate([
+            'lokasi_id' => 'required|exists:lokasis,id',
+        ]);
+
         $paket = Paket::findOrFail($id);
-        $paket->aktivasi();
+        $paket->update([
+            'is_aktif'  => true,
+            'lokasi_id' => $request->lokasi_id,
+        ]);
 
         return redirect()->back()->with('success', "Paket \"{$paket->nama}\" diaktifkan.");
     }

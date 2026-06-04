@@ -26,7 +26,7 @@ class MemberController extends Controller
             ->paginate(15);
 
         $totalMember = Member::count();
-        $users = User::orderBy('nama')->get();
+        $users       = User::orderBy('nama')->get();
 
         return view('admin.member.index', compact('members', 'totalMember', 'users'));
     }
@@ -152,11 +152,6 @@ class MemberController extends Controller
                         ->with('success', 'Member berhasil ditambahkan.');
     }
 
-    public function show(string $id)
-    {
-        //
-    }
-
     public function edit(Member $member)
     {
         $users = User::orderBy('nama')->get();
@@ -183,11 +178,14 @@ class MemberController extends Controller
                          ->with('success', 'Data member berhasil diperbarui.');
     }
 
-    public function destroy(Member $member)
+    public function toggleAktif(Member $member)
     {
-        $member->delete();
+        $member->update(['aktif' => ! $member->aktif]);
 
-        return redirect()->route('admin.member.index')
-                         ->with('success', 'Member berhasil dihapus.');
+        return response()->json([
+            'success' => true,
+            'aktif'   => $member->aktif,
+            'message' => $member->aktif ? 'Member diaktifkan.' : 'Member dinonaktifkan.',
+        ]);
     }
 }

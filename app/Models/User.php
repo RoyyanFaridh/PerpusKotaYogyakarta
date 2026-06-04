@@ -39,7 +39,7 @@ class User extends Authenticatable implements Auditable
 
     public function lokasi()
     {
-        return $this->belongsTo(Lokasi::class, 'lokasi_id');
+        return $this->belongsTo(Lokasi::class);
     }
 
     public function members()
@@ -78,7 +78,7 @@ class User extends Authenticatable implements Auditable
 
     public function getPermissionList(): array
     {
-        if ($this->isSuperAdmin()) return ['*']; 
+        if ($this->isSuperAdmin()) return ['*'];
 
         return $this->permissions()->pluck('permission')->toArray();
     }

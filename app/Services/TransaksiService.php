@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Buku;
+use App\Models\BukuEksemplar;
 use App\Models\Member;
 use App\Models\Transaksi;
 use Illuminate\Support\Facades\DB;
@@ -30,36 +31,34 @@ class TransaksiService
         return Member::create($data);
     }
 
-    public function cariBukuByIsbn(string $isbn, ?int $lokasiId = null): ?Buku
+    public function cariBukuByIsbn(string $isbn, ?int $paketId = null): ?BukuEksemplar
     {
-        $query = Buku::where('isbn', $isbn)->visible()->with('lokasi');
+        $query = BukuEksemplar::whereHas('buku', fn($q) => $q->where('isbn', $isbn))
+            ->with('buku', 'paket.lokasi');
 
-        if ($lokasiId) {
-            $buku = (clone $query)->where('lokasi_id', $lokasiId)->tersedia()->first();
-            if ($buku) return $buku;
+        if ($paketId) {
+            $eksemplar = (clone $query)->where('paket_id', $paketId)->tersedia()->first();
+            if ($eksemplar) return $eksemplar;
 
-            $buku = (clone $query)->where('lokasi_id', $lokasiId)->first();
-            if ($buku) return $buku;
-
-            return null;
+            return (clone $query)->where('paket_id', $paketId)->first();
         }
 
-        return $query->tersedia()->first() ?? $query->first();
+        return $query->diPaketAktif()->tersedia()->first()
+            ?? $query->diPaketAktif()->first();
     }
 
-    public function cariBukuByJudul(string $keyword, ?int $lokasiId = null): \Illuminate\Database\Eloquent\Collection
+    public function cariBukuByJudul(string $keyword, ?int $paketId = null): \Illuminate\Database\Eloquent\Collection
     {
-        $query = Buku::where(function ($q) use ($keyword) {
+        $query = BukuEksemplar::whereHas('buku', function ($q) use ($keyword) {
                 $q->where('judul', 'ilike', "%{$keyword}%")
                   ->orWhere('pengarang', 'ilike', "%{$keyword}%");
             })
-            ->visible()
-            ->with('lokasi')
-            ->limit(10)
-            ->select(['id', 'judul', 'pengarang', 'isbn', 'stok', 'lokasi_id', 'paket_id']);
+            ->with('buku', 'paket.lokasi')
+            ->diPaketAktif()
+            ->limit(10);
 
-        if ($lokasiId) {
-            $query->where('lokasi_id', $lokasiId);
+        if ($paketId) {
+            $query->where('paket_id', $paketId);
         }
 
         return $query->orderByDesc('stok')->get();
@@ -70,45 +69,65 @@ class TransaksiService
         return DB::transaction(function () use ($data) {
             $member         = $this->simpanAtauUpdateMember($data['member']);
             $isbnDiserahkan = $data['buku_diserahkan']['isbn'] ?? null;
-            $lokasiId       = $data['lokasi_id'];
+            $paketId        = $data['paket_id'];
 
-            $bukuDiserahkan = null;
+            // Cari eksemplar buku diserahkan di paket aktif
+            $eksemplarDiserahkan = null;
             if ($isbnDiserahkan) {
-                $bukuDiserahkan = Buku::where('isbn', $isbnDiserahkan)
-                    ->where('lokasi_id', $lokasiId)
+                $eksemplarDiserahkan = BukuEksemplar::whereHas('buku', fn($q) => $q->where('isbn', $isbnDiserahkan))
+                    ->where('paket_id', $paketId)
                     ->first();
             }
 
-            if ($bukuDiserahkan) {
-                $bukuDiserahkan->tambahStok();
+            if ($eksemplarDiserahkan) {
+                $eksemplarDiserahkan->tambahStok();
             } else {
-                // Buku donasi masuk dengan is_visible = false
-                // Admin yang akan decide: tampilkan langsung atau masukkan paket
-                $bukuDiserahkan = Buku::create([
-                    'judul'         => $data['buku_diserahkan']['judul'],
-                    'pengarang'     => $data['buku_diserahkan']['pengarang'],
-                    'penerbit'      => $data['buku_diserahkan']['penerbit']      ?? null,
-                    'isbn'          => $isbnDiserahkan,
-                    'tahun_terbit'  => $data['buku_diserahkan']['tahun_terbit']  ?? null,
-                    'tempat_terbit' => $data['buku_diserahkan']['tempat_terbit'] ?? null,
-                    'kategori'      => $data['buku_diserahkan']['kategori']      ?? null,
-                    'deskripsi'     => $data['buku_diserahkan']['deskripsi']     ?? null,
-                    'stok'          => 1,
-                    'is_visible'    => false,
-                    'paket_id'      => null,
-                    'member_id'     => $member->id,
-                    'user_id'       => $data['user_id'],
-                    'lokasi_id'     => $lokasiId,
+                // Cari atau buat row di bukus (bibliografi)
+                $buku = $isbnDiserahkan
+                    ? Buku::firstOrCreate(
+                        ['isbn' => $isbnDiserahkan],
+                        [
+                            'judul'         => $data['buku_diserahkan']['judul'],
+                            'pengarang'     => $data['buku_diserahkan']['pengarang'],
+                            'penerbit'      => $data['buku_diserahkan']['penerbit']      ?? null,
+                            'tahun_terbit'  => $data['buku_diserahkan']['tahun_terbit']  ?? null,
+                            'tempat_terbit' => $data['buku_diserahkan']['tempat_terbit'] ?? null,
+                            'kategori'      => $data['buku_diserahkan']['kategori']      ?? null,
+                            'deskripsi'     => $data['buku_diserahkan']['deskripsi']     ?? null,
+                            'is_visible'    => false,
+                            'user_id'       => $data['user_id'],
+                        ]
+                    )
+                    : Buku::create([
+                        'judul'         => $data['buku_diserahkan']['judul'],
+                        'pengarang'     => $data['buku_diserahkan']['pengarang'],
+                        'penerbit'      => $data['buku_diserahkan']['penerbit']      ?? null,
+                        'tahun_terbit'  => $data['buku_diserahkan']['tahun_terbit']  ?? null,
+                        'tempat_terbit' => $data['buku_diserahkan']['tempat_terbit'] ?? null,
+                        'kategori'      => $data['buku_diserahkan']['kategori']      ?? null,
+                        'deskripsi'     => $data['buku_diserahkan']['deskripsi']     ?? null,
+                        'is_visible'    => false,
+                        'user_id'       => $data['user_id'],
+                    ]);
+
+                // Buat eksemplar baru di paket aktif
+                $eksemplarDiserahkan = BukuEksemplar::create([
+                    'buku_id'  => $buku->id,
+                    'paket_id' => $paketId,
+                    'stok'     => 1,
                 ]);
             }
 
-            $bukuDiterima = Buku::visible()->tersedia()->findOrFail($data['buku_diterima_id']);
-            $bukuDiterima->kurangiStok();
+            $eksemplarDiterima = BukuEksemplar::tersedia()
+                ->diPaketAktif()
+                ->findOrFail($data['buku_diterima_id']);
+            $eksemplarDiterima->kurangiStok();
 
             return Transaksi::create([
                 'member_id'          => $member->id,
-                'buku_diserahkan_id' => $bukuDiserahkan->id,
-                'buku_diterima_id'   => $bukuDiterima->id,
+                'paket_id'           => $paketId,
+                'buku_diserahkan_id' => $eksemplarDiserahkan->id,
+                'buku_diterima_id'   => $eksemplarDiterima->id,
                 'user_id'            => $data['user_id'],
                 'catatan_petugas'    => $data['catatan_petugas'] ?? null,
                 'tanggal_tukar'      => now(),
@@ -123,14 +142,15 @@ class TransaksiService
 
             $transaksi->bukuDiterima->tambahStok();
 
-            // Pastikan buku pengganti juga visible dan tersedia
-            $bukuDiterima = Buku::visible()->tersedia()->findOrFail($data['buku_diterima_id']);
-            $bukuDiterima->kurangiStok();
+            $eksemplarDiterima = BukuEksemplar::tersedia()
+                ->diPaketAktif()
+                ->findOrFail($data['buku_diterima_id']);
+            $eksemplarDiterima->kurangiStok();
 
             $this->simpanAtauUpdateMember($data['member']);
 
             $transaksi->update([
-                'buku_diterima_id' => $bukuDiterima->id,
+                'buku_diterima_id' => $eksemplarDiterima->id,
                 'catatan_petugas'  => $data['catatan_petugas'] ?? null,
             ]);
 

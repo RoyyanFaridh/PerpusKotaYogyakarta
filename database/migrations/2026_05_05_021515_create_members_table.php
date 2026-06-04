@@ -15,6 +15,7 @@ return new class extends Migration
             $table->text('alamat')->nullable();
             $table->string('email')->nullable();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->boolean('aktif')->default(true);
             $table->timestamps();
         });
     }
