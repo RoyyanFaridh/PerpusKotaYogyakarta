@@ -30,7 +30,10 @@ class BukuController extends Controller
 
     public function export(Request $request): never
     {
-        $this->service->export($request->only(['search', 'kategori', 'paket', 'visibility']));
+        $this->service->export(
+            $request->only(['search', 'kategori', 'paket', 'visibility']),
+            $request->boolean('publik')
+        );
     }
 
     public function show(int $id)

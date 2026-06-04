@@ -57,7 +57,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     // Buku
     Route::prefix('buku')->name('buku.')->group(function () {
         Route::get('/',            [BukuController::class, 'index'])->name('index');
-        Route::get('/export',      [BukuController::class, 'export'])->name('export');
+        Route::get('/export',        [BukuController::class, 'export'])->name('export');
+        Route::get('/export-publik', [BukuController::class, 'export'])->name('export.publik');
         Route::get('/create',      [BukuController::class, 'create'])->name('create')->middleware('has.permission:buku.create');
         Route::post('/',           [BukuController::class, 'store'])->name('store')->middleware('has.permission:buku.create');
         Route::get('/{buku}',      [BukuController::class, 'show'])->name('show');

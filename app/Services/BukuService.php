@@ -164,10 +164,25 @@ class BukuService
             ->get();
     }
 
-    public function export(array $filters): never
+    public function export(array $filters, bool $publikOnly = false): never
     {
+        if ($publikOnly) {
+            $filters['visibility'] = 'visible';
+        }
+
         $bukus = $this->buildExportQuery($filters)->get();
-        $this->streamExcel($bukus, $this->buildExportFilterDesc($filters));
+
+        $bulan = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+        ];
+
+        $namaFile = $publikOnly
+            ? 'Katalog Buku Tukar_' . $bulan[now()->month] . ' ' . now()->year
+            : 'Data Buku_' . $bulan[now()->month] . ' ' . now()->year;
+
+        $this->streamExcel($bukus, $this->buildExportFilterDesc($filters), $namaFile, $publikOnly);
     }
 
     private function buildExportQuery(array $filters = [])
@@ -217,16 +232,20 @@ class BukuService
         return implode(' | ', $parts);
     }
 
-    private function streamExcel($bukus, string $filterDesc): never
+    private function streamExcel(\Illuminate\Database\Eloquent\Collection $bukus, string $filterDesc, string $namaFile, bool $publikOnly = false): never
     {
         $spreadsheet = new Spreadsheet();
         $sheet       = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Data Buku');
 
+        // Kolom terakhir berbeda tergantung mode
+        $lastCol = $publikOnly ? 'I' : 'J';
+
+        // Header info rows
         $sheet->setCellValue('A1', 'Data Buku Perpustakaan');
         $sheet->setCellValue('A2', $filterDesc ?: 'Semua Data');
         $sheet->setCellValue('A3', 'Diekspor: ' . now()->format('d/m/Y H:i'));
-        foreach (['A1:J1', 'A2:J2', 'A3:J3'] as $merge) {
+        foreach (["A1:{$lastCol}1", "A2:{$lastCol}2", "A3:{$lastCol}3"] as $merge) {
             $sheet->mergeCells($merge);
         }
         $sheet->getStyle('A1')->applyFromArray([
@@ -239,18 +258,23 @@ class BukuService
         ]);
         $sheet->getRowDimension(4)->setRowHeight(8);
 
-        // Header — hapus kolom Lokasi (sudah via paket), hapus Stok (via eksemplar)
-        $headers = ['No', 'Judul', 'Pengarang', 'Penerbit', 'ISBN', 'Kategori', 'Tahun', 'Paket', 'Lokasi', 'Tampil'];
+        // Headers — publik tidak include kolom Tampil
+        $headers = $publikOnly
+            ? ['No', 'Judul', 'Pengarang', 'Penerbit', 'ISBN', 'Kategori', 'Tahun', 'Stok', 'Lokasi']
+            : ['No', 'Judul', 'Pengarang', 'Penerbit', 'ISBN', 'Kategori', 'Tahun', 'Stok', 'Lokasi', 'Tampil'];
+
         foreach ($headers as $i => $label) {
             $sheet->setCellValue(Coordinate::stringFromColumnIndex($i + 1) . '5', $label);
         }
-        $sheet->getStyle('A5:J5')->applyFromArray([
+        $sheet->getStyle("A5:{$lastCol}5")->applyFromArray([
             'font'      => ['bold' => true, 'color' => ['rgb' => 'FFFFFF'], 'size' => 10, 'name' => 'Arial'],
             'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '1D4ED8']],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
             'borders'   => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'BFDBFE']]],
         ]);
         $sheet->getRowDimension(5)->setRowHeight(22);
+
+        $sheet->setAutoFilter("A5:{$lastCol}5");
 
         $row = 6;
         foreach ($bukus as $i => $buku) {
@@ -259,39 +283,57 @@ class BukuService
             $lokasi    = $paket?->lokasi?->nama_lokasi ?? '-';
             $tampil    = $buku->is_visible ? 'Tampil' : 'Tersembunyi';
 
-            $sheet->fromArray([
+            // ISBN sebagai numeric string agar tidak scientific notation
+            $isbnValue = $buku->isbn ? (string) preg_replace('/[^0-9]/', '', $buku->isbn) : '-';
+
+            $rowData = [
                 $i + 1,
                 $buku->judul,
                 $buku->pengarang,
-                $buku->penerbit      ?? '-',
-                $buku->isbn          ?? '-',
-                $buku->kategori      ?? '-',
-                $buku->tahun_terbit  ?? '-',
-                $paket?->nama        ?? '-',
+                $buku->penerbit     ?? '-',
+                $isbnValue,
+                $buku->kategori     ?? '-',
+                $buku->tahun_terbit ?? '-',
+                $eksemplar?->stok   ?? 0,
                 $lokasi,
-                $tampil,
-            ], null, 'A' . $row);
+            ];
+
+            if (! $publikOnly) {
+                $rowData[] = $tampil;
+            }
+
+            $sheet->fromArray($rowData, null, 'A' . $row);
 
             $bg = $i % 2 === 0 ? 'FFFFFF' : 'EFF6FF';
-            $sheet->getStyle("A{$row}:J{$row}")->applyFromArray([
+            $sheet->getStyle("A{$row}:{$lastCol}{$row}")->applyFromArray([
                 'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => $bg]],
                 'font'      => ['name' => 'Arial', 'size' => 10],
                 'alignment' => ['vertical' => Alignment::VERTICAL_CENTER],
                 'borders'   => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'DBEAFE']]],
             ]);
             $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle("G{$row}:J{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("G{$row}:{$lastCol}{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $sheet->getRowDimension($row)->setRowHeight(18);
+
+            // Format ISBN kolom E sebagai integer tanpa desimal
+            $sheet->getStyle("E{$row}")->getNumberFormat()->setFormatCode('0');
+
             $row++;
         }
 
-        foreach (['A'=>5,'B'=>36,'C'=>22,'D'=>20,'E'=>16,'F'=>22,'G'=>8,'H'=>18,'I'=>20,'J'=>14] as $col => $w) {
+        // Column widths — J (Tampil) hanya untuk admin
+        $colWidths = ['A' => 5, 'B' => 36, 'C' => 22, 'D' => 26, 'E' => 16, 'F' => 22, 'G' => 8, 'H' => 10, 'I' => 26];
+        if (! $publikOnly) {
+            $colWidths['J'] = 14;
+        }
+        foreach ($colWidths as $col => $w) {
             $sheet->getColumnDimension($col)->setWidth($w);
         }
+
         $sheet->freezePane('A6');
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment; filename="data-buku-' . now()->format('Ymd-His') . '.xlsx"');
+        header('Content-Disposition: attachment; filename="' . $namaFile . '.xlsx"');
         header('Cache-Control: max-age=0');
         (new Xlsx($spreadsheet))->save('php://output');
         exit;

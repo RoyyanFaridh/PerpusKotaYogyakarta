@@ -13,7 +13,12 @@ class TransaksiExport implements FromCollection, WithHeadings, WithMapping, With
 {
     public function collection()
     {
-        return Transaksi::with(['member', 'bukuDiserahkan.lokasi', 'bukuDiterima'])
+        return Transaksi::with([
+                'member',
+                'paket.lokasi',
+                'bukuDiserahkan.buku',
+                'bukuDiterima.buku',
+            ])
             ->latest()
             ->get();
     }
@@ -26,9 +31,9 @@ class TransaksiExport implements FromCollection, WithHeadings, WithMapping, With
             'No. Telepon',
             'Buku Diserahkan',
             'Pengarang (Diserahkan)',
-            'Kondisi (Diserahkan)',
             'Buku Diterima',
             'Pengarang (Diterima)',
+            'Paket',
             'Lokasi',
             'Tanggal Tukar',
         ];
@@ -38,15 +43,15 @@ class TransaksiExport implements FromCollection, WithHeadings, WithMapping, With
     {
         return [
             '#TXN-' . str_pad($row->id, 4, '0', STR_PAD_LEFT),
-            $row->member->nama        ?? '-',
-            $row->member->no_telp     ?? '-',
-            $row->bukuDiserahkan->judul     ?? '-',
-            $row->bukuDiserahkan->pengarang ?? '-',
-            $row->bukuDiserahkan->kondisi   ?? '-',
-            $row->bukuDiterima->judul       ?? '-',
-            $row->bukuDiterima->pengarang   ?? '-',
-            $row->bukuDiserahkan->lokasi->nama_lokasi ?? '-',
-            $row->tanggal_tukar?->format('d M Y') ?? '-',
+            $row->member?->nama                             ?? '-',
+            $row->member?->no_telp                         ?? '-',
+            $row->bukuDiserahkan?->buku?->judul             ?? '-',
+            $row->bukuDiserahkan?->buku?->pengarang         ?? '-',
+            $row->bukuDiterima?->buku?->judul               ?? '-',
+            $row->bukuDiterima?->buku?->pengarang           ?? '-',
+            $row->paket?->nama                              ?? '-',
+            $row->paket?->lokasi?->nama_lokasi              ?? '-',
+            $row->tanggal_tukar?->format('d M Y')           ?? '-',
         ];
     }
 
