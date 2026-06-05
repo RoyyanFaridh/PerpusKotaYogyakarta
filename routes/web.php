@@ -14,14 +14,18 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PengaturanController;
 use App\Http\Controllers\Admin\KegiatanController;
 use App\Http\Controllers\Admin\PaketController;
+use App\Http\Controllers\Api\BukuApiController;
+
+
+Route::get('/detail-buku/{buku}', [BukuApiController::class, 'show']);
 
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/search-buku', [CatalogController::class, 'searchAjax'])->name('search.buku');
 
 Route::prefix('katalog')->name('katalog.')->group(function () {
-    Route::get('/',      [CatalogController::class, 'index'])->name('index');
-    Route::get('/cari',  [CatalogController::class, 'search'])->name('cari');
-    Route::get('/{book}',[CatalogController::class, 'show'])->name('show');
+    Route::get('/',            [CatalogController::class, 'index'])->name('index');
+    Route::get('/cari',        [CatalogController::class, 'search'])->name('cari');
+    Route::get('/{book}',      [CatalogController::class, 'show'])->name('show');
 });
 
 Route::get('/admin/login',  [AdminAuthController::class, 'showLoginForm'])->name('auth.login');
@@ -33,12 +37,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Member
-    Route::get('/member',                         [MemberController::class, 'index'])->name('member.index');
-    Route::get('/member/export',                  [MemberController::class, 'export'])->name('member.export');
-    Route::post('/member',                        [MemberController::class, 'store'])->name('member.store')->middleware('has.permission:member.create');
-    Route::get('/member/{member}/edit',           [MemberController::class, 'edit'])->name('member.edit')->middleware('has.permission:member.edit');
-    Route::put('/member/{member}',                [MemberController::class, 'update'])->name('member.update')->middleware('has.permission:member.edit');
-    Route::patch('/member/{member}/toggle-aktif', [MemberController::class, 'toggleAktif'])->name('member.toggle-aktif')->middleware('has.permission:member.edit');
+    Route::get('/member',          [MemberController::class, 'index'])->name('member.index');
+    Route::get('/member/export',   [MemberController::class, 'export'])->name('member.export');
+    Route::post('/member',         [MemberController::class, 'store'])->name('member.store')->middleware('has.permission:member.create');
+    Route::put('/member/{member}', [MemberController::class, 'update'])->name('member.update')->middleware('has.permission:member.edit');
+    Route::delete('/member/{member}', [MemberController::class, 'destroy'])->name('member.destroy')->middleware('has.permission:member.delete');
 
     // Lokasi
     Route::get('/lokasi',                  [LokasiController::class, 'index'])->name('lokasi.index');

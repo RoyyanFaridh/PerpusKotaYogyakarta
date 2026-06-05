@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Kegiatan;
-use App\Models\Paket;
 use Illuminate\Http\Request;
 
 class KegiatanController extends Controller
@@ -26,16 +25,24 @@ class KegiatanController extends Controller
             'tanggal_mulai'   => 'required|date',
             'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
             'jam_pelaksanaan' => 'nullable|date_format:H:i',
-            'jam_selesai'     => 'nullable|date_format:H:i|after:jam_pelaksanaan',
-            'paket_ids'       => 'nullable|array',
-            'paket_ids.*'     => 'exists:pakets,id',
+            'jam_selesai'     => [
+                'nullable',
+                'date_format:H:i',
+                function ($attribute, $value, $fail) use ($request) {
+                    $jamMulai = $request->jam_pelaksanaan;
+                    if ($jamMulai && $value && $value <= $jamMulai) {
+                        $fail('Jam selesai harus setelah jam mulai.');
+                    }
+                },
+            ],
+            'paket_ids'   => 'nullable|array',
+            'paket_ids.*' => 'exists:pakets,id',
         ]);
 
         $kegiatan = Kegiatan::create($validated);
 
         if (! empty($validated['paket_ids'])) {
             $kegiatan->pakets()->sync($validated['paket_ids']);
-            Paket::whereIn('id', $validated['paket_ids'])->update(['is_aktif' => true]);
         }
 
         return redirect()->route('admin.kegiatan.index')
@@ -63,25 +70,22 @@ class KegiatanController extends Controller
             'tanggal_mulai'   => 'required|date',
             'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
             'jam_pelaksanaan' => 'nullable|date_format:H:i',
-            'jam_selesai'     => 'nullable|date_format:H:i|after:jam_pelaksanaan',
-            'paket_ids'       => 'nullable|array',
-            'paket_ids.*'     => 'exists:pakets,id',
+            'jam_selesai'     => [
+                'nullable',
+                'date_format:H:i',
+                function ($attribute, $value, $fail) use ($request) {
+                    $jamMulai = $request->jam_pelaksanaan;
+                    if ($jamMulai && $value && $value <= $jamMulai) {
+                        $fail('Jam selesai harus setelah jam mulai.');
+                    }
+                },
+            ],
+            'paket_ids'   => 'nullable|array',
+            'paket_ids.*' => 'exists:pakets,id',
         ]);
 
-        $paketIdsBaru = $validated['paket_ids'] ?? [];
-        $paketIdsLama = $kegiatan->pakets->pluck('id')->toArray();
-
         $kegiatan->update($validated);
-        $kegiatan->pakets()->sync($paketIdsBaru);
-
-        if (! empty($paketIdsBaru)) {
-            Paket::whereIn('id', $paketIdsBaru)->update(['is_aktif' => true]);
-        }
-
-        $dilepas = array_diff($paketIdsLama, $paketIdsBaru);
-        if (! empty($dilepas)) {
-            Paket::whereIn('id', $dilepas)->update(['is_aktif' => false]);
-        }
+        $kegiatan->pakets()->sync($validated['paket_ids'] ?? []);
 
         return redirect()->route('admin.kegiatan.index')
             ->with('success', 'Kegiatan berhasil diperbarui.');
@@ -89,13 +93,7 @@ class KegiatanController extends Controller
 
     public function destroy(Kegiatan $kegiatan)
     {
-        $paketIds = $kegiatan->pakets->pluck('id')->toArray();
-
         $kegiatan->delete();
-
-        if (! empty($paketIds)) {
-            Paket::whereIn('id', $paketIds)->update(['is_aktif' => false]);
-        }
 
         return redirect()->route('admin.kegiatan.index')
             ->with('success', 'Kegiatan berhasil dihapus.');

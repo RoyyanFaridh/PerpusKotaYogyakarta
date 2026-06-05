@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\BukuEksemplar;
 use App\Models\Paket;
 use Illuminate\Http\Request;
+use App\Models\PaketPemindahan;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PaketController extends Controller
 {
@@ -46,10 +49,30 @@ class PaketController extends Controller
         $paket = Paket::findOrFail($id);
 
         $request->validate([
-            'nama' => 'required|string|max:255|unique:pakets,nama,' . $id,
+            'nama'      => 'required|string|max:255|unique:pakets,nama,' . $id,
+            'lokasi_id' => 'nullable|exists:lokasis,id',
         ]);
 
-        $paket->update(['nama' => $request->nama]);
+        $lokasiIdBaru = $request->lokasi_id ?: null;
+        $lokasiIdLama = $paket->lokasi_id;
+
+        DB::transaction(function () use ($paket, $request, $lokasiIdBaru, $lokasiIdLama) {
+            $paket->update([
+                'nama'      => $request->nama,
+                'lokasi_id' => $lokasiIdBaru,
+            ]);
+
+            if ((int) $lokasiIdBaru !== (int) $lokasiIdLama && $lokasiIdBaru !== null) {
+                PaketPemindahan::create([
+                    'paket_id'         => $paket->id,
+                    'lokasi_asal_id'   => $lokasiIdLama,
+                    'lokasi_tujuan_id' => $lokasiIdBaru,
+                    'catatan'          => 'Diubah via edit paket.',
+                    'user_id'          => Auth::id(),
+                    'dipindah_pada'    => now(),
+                ]);
+            }
+        });
 
         return redirect()->back()->with('success', 'Paket berhasil diperbarui.');
     }

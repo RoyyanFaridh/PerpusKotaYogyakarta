@@ -19,10 +19,7 @@ class PaketPemindahanController extends Controller
             ->latest('dipindah_pada')
             ->paginate(10);
 
-        return response()->json([
-            'paket'   => $paket,
-            'riwayat' => $riwayat,
-        ]);
+        return view('admin.paket.riwayat', compact('paket', 'riwayat'));
     }
 
     public function store(Request $request, int $paketId): \Illuminate\Http\RedirectResponse

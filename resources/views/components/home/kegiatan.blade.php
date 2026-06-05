@@ -1,8 +1,8 @@
-<section class="relative z-10 py-12 sm:py-16 px-4 sm:px-6 lg:px-8 bg-white border-b border-primary-100">
+<section class="relative z-10 py-14 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white border-b border-primary-100">
     <div class="w-full max-w-4xl mx-auto">
 
         {{-- Header --}}
-        <div class="text-center mb-6 sm:mb-8">
+        <div class="text-center mb-8 sm:mb-12">
             <p class="text-xs font-semibold tracking-[0.2em] uppercase text-primary-400 mb-3 flex items-center justify-center gap-2 sm:gap-3">
                 <span class="block w-5 sm:w-7 h-px bg-primary-300 rounded"></span>
                 Agenda Mendatang
@@ -19,103 +19,214 @@
         </div>
 
         @php
-            $namaBulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+            $namaBulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
             $sorted = $kegiatan->sortBy(function ($item) {
                 $s   = $item->status_otomatis;
                 $tgl = \Carbon\Carbon::parse($item->tanggal_mulai)->timestamp;
-                return [$s === 'selesai' ? 0 : 1, $tgl];
+                $priority = match ($s) {
+                    'sedang_berlangsung' => 1,
+                    'selesai'            => 0,
+                    default              => 2,
+                };
+                return [$priority, $tgl];
             })->values();
+
+            $focalIndex = $sorted->search(fn($item) => $item->status_otomatis !== 'selesai');
+            if ($focalIndex === false) $focalIndex = 0;
         @endphp
 
-        {{-- Timeline --}}
-        <div
-            id="timeline-container"
-            class="relative overflow-y-auto flex flex-col items-center gap-3 scrollbar-hide"
-            style="height: 360px; padding: 100px 0; scroll-behavior: smooth; overscroll-behavior: contain;"
-        >
-            @forelse ($sorted as $index => $item)
-                @php
-                    $tgl    = \Carbon\Carbon::parse($item->tanggal_mulai);
-                    $judul  = $item->nama_kegiatan;
-                    $desc   = $item->deskripsi;
-                    $status = $item->status_otomatis;
-                    $isPast = $status === 'selesai';
-                @endphp
-                <div id="event-{{ $index }}"
-                     class="w-full max-w-2xl shrink-0 transition-all duration-300"
-                     style="opacity: 0.3; transform: scale(0.9);">
-                    <div class="timeline-scroll-item flex items-start gap-3 sm:gap-5 px-4 sm:px-6 py-4 sm:py-5 rounded-xl
-                        {{ $isPast ? 'bg-neutral-50' : 'bg-white' }}">
+        @if ($sorted->isEmpty())
+            <div class="flex flex-col items-center justify-center py-14 gap-3 text-center">
+                <svg class="w-12 h-12 text-primary-200 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="1.3" aria-hidden="true">
+                    <rect x="3" y="4" width="18" height="18" rx="2"/>
+                    <path d="M16 2v4M8 2v4M3 10h18" stroke-linecap="round"/>
+                </svg>
+                <p class="font-semibold text-primary-800 text-sm">Belum ada kegiatan terjadwal</p>
+                <p class="text-xs text-neutral-400">Pantau terus halaman ini untuk informasi terbaru</p>
+            </div>
+        @else
+            <div class="relative">
+                {{-- Fade atas --}}
+                <div class="pointer-events-none absolute inset-x-0 top-0 z-10 h-32"
+                     style="background: linear-gradient(to bottom, white 30%, transparent 100%);"></div>
 
-                        {{-- Kolom Tanggal --}}
-                        <div class="shrink-0 text-center leading-none min-w-13">
-                            <span class="block font-extrabold text-3xl sm:text-4xl leading-none
-                                {{ $isPast ? 'text-neutral-300' : 'text-primary-600' }}">
-                                {{ $tgl->format('d') }}
-                            </span>
-                            <span class="block text-xs font-semibold tracking-widest uppercase mt-0.5
-                                {{ $isPast ? 'text-neutral-300' : 'text-primary-500' }}">
-                                {{ $namaBulan[$tgl->month - 1] }}
-                            </span>
-                            <span class="block text-xs font-medium mt-0.5
-                                {{ $isPast ? 'text-neutral-200' : 'text-primary-300' }}">
-                                {{ $tgl->format('Y') }}
-                            </span>
-                        </div>
+                {{-- Fade bawah --}}
+                <div class="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-32"
+                     style="background: linear-gradient(to top, white 30%, transparent 100%);"></div>
 
-                        {{-- Garis Pembatas --}}
-                        <div class="shrink-0 self-stretch w-px mx-0.5 sm:mx-1
-                            {{ $isPast ? 'bg-neutral-100' : 'bg-primary-100' }}">
-                        </div>
+                {{-- Scroll container --}}
+                <div id="kegiatan-scroll"
+                     class="relative overflow-y-auto scrollbar-hide"
+                     style="height: 460px; scroll-behavior: smooth; overscroll-behavior: contain;">
 
-                        {{-- Konten --}}
-                        <div class="flex-1 min-w-0 pt-0.5">
-                            @if ($status === 'sedang_berlangsung')
-                                <span class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase text-primary-600 bg-primary-50 border border-primary-100 px-2.5 py-0.5 rounded-full mb-2">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-primary-500 animate-pulse inline-block"></span>
-                                    Berlangsung
+                    {{-- Top padding spacer --}}
+                    <div style="height: 100px;"></div>
+
+                    @foreach ($sorted as $index => $item)
+                        @php
+                            $tgl    = \Carbon\Carbon::parse($item->tanggal_mulai);
+                            $status = $item->status_otomatis;
+                            $isPast = $status === 'selesai';
+                            $isLive = $status === 'sedang_berlangsung';
+                            $isFocal = $index === $focalIndex;
+                        @endphp
+
+                        {{-- Separator atas (kecuali item pertama) --}}
+                        @if ($index > 0)
+                            <div class="w-full h-px {{ $isPast ? 'bg-neutral-100' : 'bg-primary-100' }}"></div>
+                        @endif
+
+                        <div data-kegiatan-index="{{ $index }}"
+                             data-is-focal="{{ $isFocal ? 'true' : 'false' }}"
+                             class="kegiatan-item w-full flex items-center gap-3 sm:gap-5 px-2 sm:px-4 py-6 sm:py-8 transition-all duration-300">
+
+                            {{-- Kolom Tanggal + Tahun --}}
+                            <div class="shrink-0 flex items-center gap-1.5 sm:gap-2" style="width: 4.5rem;">
+
+                                {{-- Tanggal + Bulan --}}
+                                <div class="text-right leading-none">
+                                    <span class="block font-extrabold leading-none
+                                        {{ $isPast ? 'text-neutral-300' : 'text-primary-700' }}"
+                                          style="font-size: clamp(1.6rem, 4vw, 2.2rem);">
+                                        {{ $tgl->format('d') }}
+                                    </span>
+                                    <span class="block text-xs font-semibold tracking-widest uppercase mt-1
+                                        {{ $isPast ? 'text-neutral-300' : 'text-primary-500' }}">
+                                        {{ $namaBulan[$tgl->month - 1] }}
+                                    </span>
+                                </div>
+
+                                {{-- Tahun vertikal --}}
+                                <span class="block text-[0.6rem] font-bold tracking-[0.25em] uppercase
+                                    {{ $isPast ? 'text-neutral-200' : 'text-primary-300' }}"
+                                      style="writing-mode: vertical-rl; transform: rotate(180deg); letter-spacing: 0.25em;">
+                                    {{ $tgl->format('Y') }}
                                 </span>
-                            @elseif ($status === 'selesai')
-                                <span class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase text-neutral-400 bg-neutral-100 px-2.5 py-0.5 rounded-full mb-2">
-                                    Selesai
-                                </span>
-                            @else
-                                <span class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase text-success-600 bg-success-50 border border-success-100 px-2.5 py-0.5 rounded-full mb-2">
-                                    Akan Berlangsung
-                                </span>
-                            @endif
+                            </div>
 
-                            @if ($item->jam_pelaksanaan)
-                                <p class="text-xs mb-1.5 flex items-center gap-1
-                                    {{ $isPast ? 'text-neutral-300' : 'text-primary-400' }}">
-                                    <svg class="w-3 h-3 shrink-0" viewBox="0 0 24 24" fill="none"
-                                         stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                         stroke-linejoin="round" aria-hidden="true">
-                                        <circle cx="12" cy="12" r="10"/>
-                                        <polyline points="12 6 12 12 16 14"/>
-                                    </svg>
-                                    {{ \Carbon\Carbon::parse($item->jam_pelaksanaan)->format('H:i') }}
-                                    @if ($item->jam_selesai)– {{ \Carbon\Carbon::parse($item->jam_selesai)->format('H:i') }}@endif WIB
-                                </p>
-                            @endif
+                            {{-- Garis Pembatas Vertikal --}}
+                            <div class="shrink-0 self-stretch w-px
+                                {{ $isPast ? 'bg-neutral-100' : ($isFocal ? 'bg-primary-300' : 'bg-primary-100') }}">
+                            </div>
 
-                            <h3 class="font-bold text-sm sm:text-base leading-snug mb-1
-                                {{ $isPast ? 'text-neutral-400' : 'text-primary-700' }}">
-                                {{ $judul }}
-                            </h3>
-                            <p class="text-xs sm:text-sm leading-relaxed
-                                {{ $isPast ? 'text-neutral-300' : 'text-primary-400' }}">
-                                {{ $desc }}
-                            </p>
+                            {{-- Konten kiri --}}
+                            <div class="flex-1 min-w-0">
+
+                                {{-- Jam --}}
+                                @if ($item->jam_pelaksanaan)
+                                    <p class="text-xs mb-1.5 flex items-center gap-1.5
+                                        {{ $isPast ? 'text-neutral-300' : 'text-primary-400' }}">
+                                        <svg class="w-3 h-3 shrink-0" viewBox="0 0 24 24" fill="none"
+                                             stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                             stroke-linejoin="round" aria-hidden="true">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <polyline points="12 6 12 12 16 14"/>
+                                        </svg>
+                                        {{ \Carbon\Carbon::parse($item->jam_pelaksanaan)->format('H:i') }}
+                                        @if ($item->jam_selesai)
+                                            &ndash; {{ \Carbon\Carbon::parse($item->jam_selesai)->format('H:i') }}
+                                        @endif
+                                        WIB
+                                    </p>
+                                @endif
+
+                                {{-- Judul --}}
+                                <h3 class="font-bold leading-snug mb-1.5
+                                    {{ $isPast
+                                        ? 'text-neutral-300 text-sm sm:text-base'
+                                        : ($isFocal
+                                            ? 'text-primary-700 text-base sm:text-xl'
+                                            : 'text-primary-600 text-sm sm:text-base') }}">
+                                    {{ $item->nama_kegiatan }}
+                                </h3>
+
+                                {{-- Deskripsi --}}
+                                @if ($item->deskripsi)
+                                    <p class="text-xs sm:text-sm leading-relaxed
+                                        {{ $isPast ? 'text-neutral-300' : 'text-primary-400' }}">
+                                        {{ $item->deskripsi }}
+                                    </p>
+                                @endif
+
+                                {{-- Paket / Lokasi --}}
+                                @if ($item->pakets && $item->pakets->isNotEmpty())
+                                    <div class="flex flex-wrap gap-1.5 mt-2.5">
+                                        @foreach ($item->pakets as $paket)
+                                            <span class="inline-flex items-center gap-1 text-[0.62rem] font-medium px-2 py-0.5 rounded-full
+                                                {{ $isPast
+                                                    ? 'bg-neutral-100 text-neutral-400'
+                                                    : 'bg-primary-50 text-primary-500 border border-primary-100' }}">
+                                                <svg class="w-2.5 h-2.5 shrink-0" viewBox="0 0 24 24" fill="none"
+                                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                     stroke-linejoin="round" aria-hidden="true">
+                                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                                                    <circle cx="12" cy="9" r="2.5"/>
+                                                </svg>
+                                                {{ $paket->lokasi?->nama_lokasi ?? $paket->nama_paket ?? '-' }}
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+
+                            {{-- Kolom kanan: badge semua status --}}
+                            <div class="shrink-0 flex items-center justify-end" style="min-width: 7rem;">
+                                @if ($isLive)
+                                    {{-- Titik berkedip + hover badge --}}
+                                    <div class="flex items-center justify-center w-8 group relative">
+                                        <span class="relative flex h-3 w-3">
+                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-60"></span>
+                                            <span class="relative inline-flex rounded-full h-3 w-3 bg-primary-500"></span>
+                                        </span>
+                                        <span class="pointer-events-none absolute right-full mr-2 top-1/2 -translate-y-1/2
+                                                     opacity-0 group-hover:opacity-100 transition-opacity duration-200
+                                                     whitespace-nowrap text-[0.62rem] font-semibold tracking-[0.15em] uppercase
+                                                     text-primary-600 bg-primary-50 border border-primary-100
+                                                     px-2.5 py-0.5 rounded-full">
+                                            Sedang Berlangsung
+                                        </span>
+                                    </div>
+                                @elseif ($isPast)
+                                    <span class="inline-flex items-center text-[0.62rem] font-semibold tracking-[0.15em] uppercase text-neutral-400 bg-neutral-100 px-2.5 py-0.5 rounded-full">
+                                        Selesai
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center text-[0.62rem] font-semibold tracking-[0.15em] uppercase text-success-600 bg-success-50 border border-success-100 px-2.5 py-0.5 rounded-full">
+                                        Akan Berlangsung
+                                    </span>
+                                @endif
+                            </div>
+
                         </div>
-                    </div>
+                    @endforeach
+
+                    {{-- Bottom padding spacer --}}
+                    <div style="height: 100px;"></div>
+
                 </div>
-            @empty
-                <div class="flex flex-col items-center justify-center py-12 gap-3 text-center">
-                    <p class="font-semibold text-primary-800 text-sm">Belum ada kegiatan terjadwal</p>
-                    <p class="text-xs text-neutral-400">Pantau terus halaman ini untuk informasi terbaru</p>
-                </div>
-            @endforelse
-        </div>
+            </div>
+        @endif
     </div>
 </section>
+
+<script>
+(function () {
+    const container = document.getElementById('kegiatan-scroll');
+    if (!container) return;
+
+    const focal = container.querySelector('[data-is-focal="true"]');
+    if (!focal) return;
+
+    const containerH = container.clientHeight;
+    const itemH      = focal.offsetHeight;
+
+    // Pakai getBoundingClientRect agar akurat meski ada nested positioning
+    requestAnimationFrame(function () {
+        const contRect  = container.getBoundingClientRect();
+        const itemRect  = focal.getBoundingClientRect();
+        const scrollTo  = container.scrollTop + (itemRect.top - contRect.top) - (containerH / 2) + (itemH / 2);
+        container.scrollTop = scrollTo;
+    });
+})();
+</script>
