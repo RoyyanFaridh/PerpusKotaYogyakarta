@@ -46,7 +46,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     // Lokasi
     Route::get('/lokasi',                  [LokasiController::class, 'index'])->name('lokasi.index');
     Route::post('/lokasi',                 [LokasiController::class, 'store'])->name('lokasi.store')->middleware('has.permission:lokasi.create');
-    Route::get('/lokasi/{lokasi}/edit',    [LokasiController::class, 'edit'])->name('lokasi.edit')->middleware('has.permission:lokasi.edit');
     Route::put('/lokasi/{lokasi}',         [LokasiController::class, 'update'])->name('lokasi.update')->middleware('has.permission:lokasi.edit');
     Route::delete('/lokasi/{lokasi}',      [LokasiController::class, 'destroy'])->name('lokasi.destroy')->middleware('has.permission:lokasi.delete');
 
@@ -87,6 +86,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::get('/cari-buku-isbn',    [TransaksiController::class, 'cariBukuIsbn'])->name('cari-buku-isbn');
         Route::get('/cari-buku-judul',   [TransaksiController::class, 'cariBukuJudul'])->name('cari-buku-judul');
         Route::get('/buku-by-paket',     [TransaksiController::class, 'bukuByPaket'])->name('buku-by-paket');
+        Route::get('/paket-aktif',       [TransaksiController::class, 'paketAktif'])->name('paket-aktif');
+        Route::get('/cari-buku-meta',    [TransaksiController::class, 'cariBukuMeta'])->name('cari-buku-meta');
         Route::get('/{id}',              [TransaksiController::class, 'show'])->name('show');
         Route::put('/{id}',              [TransaksiController::class, 'update'])->name('update')->middleware('has.permission:transaksi.edit');
         Route::delete('/{id}',           [TransaksiController::class, 'destroy'])->name('destroy')->middleware('has.permission:transaksi.delete');

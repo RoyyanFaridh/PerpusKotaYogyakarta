@@ -1,5 +1,17 @@
 <div class="step-content-{{ $prefix }} hidden" data-step="2">
 
+    {{-- Paket Tujuan --}}
+    <div class="mb-5">
+        <label class="block text-sm font-medium text-neutral-600 mb-1.5">
+            Paket Tujuan <span class="text-danger-500">*</span>
+        </label>
+        <select id="{{ $prefix }}_paketDiserahkanId"
+                class="w-full px-3.5 py-2.5 text-sm rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition bg-white">
+            <option value="">Memuat paket...</option>
+        </select>
+        <p class="text-xs text-neutral-400 mt-1.5">Paket tempat buku yang diserahkan member akan disimpan.</p>
+    </div>
+
     <div class="mb-4">
         <label class="block text-sm font-medium text-neutral-600 mb-1.5">Scan / Cari ISBN</label>
         <div class="flex gap-2">

@@ -11,17 +11,22 @@ class PaketSeeder extends Seeder
     {
         $pakets = [
             [
-                'nama' => 'Paket Aktif Kotabaru',
+                'nama' => 'Paket A',
                 'is_aktif' => true,
                 'lokasi_id' => 1,
             ],
             [
-                'nama' => 'Paket Aktif PEVITA',
+                'nama' => 'Paket B',
                 'is_aktif' => true,
                 'lokasi_id' => 2,
             ],
             [
-                'nama' => 'Paket Bank Buku',
+                'nama' => 'Paket C',
+                'is_aktif' => true,
+                'lokasi_id' => 3,
+            ],
+            [
+                'nama' => 'Paket D',
                 'is_aktif' => true,
                 'lokasi_id' => 3,
             ],

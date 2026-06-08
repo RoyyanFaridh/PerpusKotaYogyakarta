@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\BukuEksemplar;
+use App\Models\Lokasi;
 use App\Models\Paket;
 use App\Models\Transaksi;
 use App\Services\TransaksiService;
@@ -19,6 +19,24 @@ class TransaksiController extends Controller
     public function __construct(TransaksiService $service)
     {
         $this->service = $service;
+    }
+
+    /**
+     * Resolve lokasi_id dari user yang sedang login.
+     *
+     * - Admin      : lokasi yang punya user_id = Auth::id()
+     * - Superadmin : tidak punya lokasi tetap → return null
+     *
+     * Superadmin perlu kirim lokasi_id secara eksplisit via request
+     * untuk endpoint yang butuh konteks lokasi.
+     */
+    private function getLokasiId(?int $fallbackFromRequest = null): ?int
+    {
+        if (Auth::user()->role === 'superadmin') {
+            return $fallbackFromRequest;
+        }
+
+        return Lokasi::where('user_id', Auth::id())->value('id');
     }
 
     public function index(Request $request)
@@ -58,8 +76,10 @@ class TransaksiController extends Controller
         $transaksiBulanIni  = Transaksi::whereMonth('created_at', now()->month)->count();
 
         $paketAktif = Paket::aktif()->with('lokasi')->get();
-        $paketUser  = Auth::user()->lokasi
-            ? Paket::aktif()->where('lokasi_id', Auth::user()->lokasi_id)->first()
+
+        $lokasiId  = $this->getLokasiId();
+        $paketUser = $lokasiId
+            ? Paket::aktif()->where('lokasi_id', $lokasiId)->first()
             : null;
 
         return view('admin.transaksi.index', compact(
@@ -80,19 +100,9 @@ class TransaksiController extends Controller
             'buku_diserahkan.judul'     => 'required|string|max:255',
             'buku_diserahkan.pengarang' => 'required|string|max:255',
             'buku_diterima_id'          => 'required|exists:buku_eksemplars,id',
-            'paket_id'                  => 'required|exists:pakets,id',
+            'paket_diserahkan_id'       => 'required|exists:pakets,id',
+            'paket_diterima_id'         => 'required|exists:pakets,id',
         ]);
-
-        $eksemplarDiterima = BukuEksemplar::tersedia()
-            ->diPaketAktif()
-            ->find($request->buku_diterima_id);
-
-        if (! $eksemplarDiterima) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Buku tidak tersedia atau paket tidak aktif.',
-            ], 422);
-        }
 
         try {
             $this->service->simpan(array_merge(
@@ -102,10 +112,15 @@ class TransaksiController extends Controller
 
             return response()->json(['success' => true, 'message' => 'Transaksi berhasil disimpan.']);
 
-        } catch (\Exception $e) {
+        } catch (\RuntimeException $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan sistem.',
             ], 500);
         }
     }
@@ -123,10 +138,15 @@ class TransaksiController extends Controller
 
             return response()->json(['success' => true, 'message' => 'Transaksi berhasil diperbarui.']);
 
-        } catch (\Exception $e) {
+        } catch (\RuntimeException $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan sistem.',
             ], 500);
         }
     }
@@ -174,34 +194,72 @@ class TransaksiController extends Controller
 
     public function cariBukuIsbn(Request $request)
     {
-        $buku = $this->service->cariBukuByIsbn(
-            $request->isbn ?? '',
-            $request->integer('paket_id') ?: null,
-        );
+        $request->validate(['isbn' => 'required|string']);
+
+        // Superadmin bisa kirim lokasi_id eksplisit via query string
+        $lokasiId = $this->getLokasiId($request->integer('lokasi_id') ?: null);
+
+        if (! $lokasiId) {
+            return response()->json(['message' => 'Lokasi tidak ditemukan untuk user ini.'], 422);
+        }
+
+        $buku = $this->service->cariBukuByIsbn($request->isbn, $lokasiId);
+
         return response()->json($buku);
     }
 
     public function cariBukuJudul(Request $request)
     {
-        $hasil = $this->service->cariBukuByJudul(
-            $request->keyword ?? '',
-            $request->integer('paket_id') ?: null,
-        );
+        $lokasiId = $this->getLokasiId($request->integer('lokasi_id') ?: null);
+
+        if (! $lokasiId) {
+            return response()->json(['message' => 'Lokasi tidak ditemukan untuk user ini.'], 422);
+        }
+
+        $hasil = $this->service->cariBukuByJudul($request->keyword ?? '', $lokasiId);
+
         return response()->json($hasil);
     }
 
     public function bukuByPaket(Request $request)
     {
-        $paketId = $request->integer('paket_id') ?: null;
+        $lokasiId = $this->getLokasiId($request->integer('lokasi_id') ?: null);
 
-        $eksemplars = BukuEksemplar::with('buku')
-            ->tersedia()
-            ->diPaketAktif()
-            ->when($paketId, fn($q) => $q->where('paket_id', $paketId))
-            ->orderByDesc('stok')
-            ->get();
+        if (! $lokasiId) {
+            return response()->json(['message' => 'Lokasi tidak ditemukan untuk user ini.'], 422);
+        }
+
+        $eksemplars = $this->service->bukuByLokasi($lokasiId);
 
         return response()->json($eksemplars);
+    }
+    
+
+    public function paketAktif(Request $request)
+    {
+        $lokasiId = $this->getLokasiId($request->integer('lokasi_id') ?: null);
+
+        if (! $lokasiId) {
+            return response()->json(['message' => 'Lokasi tidak ditemukan untuk user ini.'], 422);
+        }
+
+        $pakets = Paket::aktif()
+            ->where('lokasi_id', $lokasiId)
+            ->with('lokasi')
+            ->get();
+
+        return response()->json($pakets);
+    }
+
+    public function cariBukuMeta(Request $request)
+    {
+        $request->validate(['isbn' => 'required|string']);
+
+        $buku = \App\Models\Buku::where('isbn', $request->isbn)
+            ->first(['judul', 'pengarang', 'penerbit', 'kategori', 
+                    'tahun_terbit', 'tempat_terbit', 'isbn']);
+
+        return response()->json($buku);
     }
 
     public function export()

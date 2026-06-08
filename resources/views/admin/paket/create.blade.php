@@ -13,12 +13,25 @@
         </div>
         <form method="POST" action="{{ route('admin.paket.store') }}" class="px-6 pb-6 pt-4 flex flex-col gap-4">
             @csrf
+
             <div class="flex flex-col gap-1.5">
                 <label for="namaPaketBaru" class="text-xs font-medium text-neutral-600">Nama Paket</label>
                 <input id="namaPaketBaru" name="nama" type="text" required maxlength="255"
                        placeholder="Contoh: Paket Rotasi Juni 2025"
                        class="w-full px-3 py-2 text-sm text-neutral-700 bg-neutral-50 border border-neutral-200 rounded-lg placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition"/>
             </div>
+
+            <div class="flex flex-col gap-1.5">
+                <label for="lokasiPaketBaru" class="text-xs font-medium text-neutral-600">Lokasi</label>
+                <select id="lokasiPaketBaru" name="lokasi_id"
+                        class="w-full px-3 py-2 text-sm text-neutral-700 bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition">
+                    <option value="">Tanpa lokasi</option>
+                    @foreach (\App\Models\Lokasi::aktif()->orderBy('nama_lokasi')->get() as $lokasi)
+                        <option value="{{ $lokasi->id }}">{{ $lokasi->nama_lokasi }}</option>
+                    @endforeach
+                </select>
+            </div>
+
             <div class="flex items-center gap-2 pt-1">
                 <button type="button" onclick="tutupModalBuatPaket()"
                         class="flex-1 px-4 py-2 text-sm font-medium rounded-lg text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 transition-colors">

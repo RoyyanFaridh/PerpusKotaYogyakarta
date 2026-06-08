@@ -75,14 +75,29 @@ class MemberController extends Controller
     public function destroy(Member $member)
     {
         if ($member->transaksis()->exists()) {
-            return redirect()->back()
-                ->with('error', "Member \"{$member->nama}\" tidak bisa dihapus karena memiliki riwayat transaksi.");
+            return response()->json([
+                'success' => false,
+                'message' => "Member \"{$member->nama}\" tidak bisa dihapus karena memiliki riwayat transaksi.",
+            ], 422);
         }
 
         $member->delete();
 
-        return redirect()->route('admin.member.index')
-            ->with('success', "Member \"{$member->nama}\" berhasil dihapus.");
+        return response()->json([
+            'success' => true,
+            'message' => "Member \"{$member->nama}\" berhasil dihapus.",
+        ]);
+    }
+
+    public function toggleAktif(Member $member)
+    {
+        $member->update(['aktif' => ! $member->aktif]);
+
+        return response()->json([
+            'success' => true,
+            'aktif'   => $member->aktif,
+            'message' => $member->aktif ? 'Member diaktifkan.' : 'Member dinonaktifkan.',
+        ]);
     }
 
     public function export()

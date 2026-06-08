@@ -31,58 +31,62 @@ class TransaksiService
         return Member::create($data);
     }
 
-    public function cariBukuByIsbn(string $isbn, ?int $paketId = null): ?BukuEksemplar
+    public function cariBukuByIsbn(string $isbn, int $lokasiId): ?BukuEksemplar
     {
-        $query = BukuEksemplar::whereHas('buku', fn($q) => $q->where('isbn', $isbn))
-            ->with('buku', 'paket.lokasi');
-
-        if ($paketId) {
-            $eksemplar = (clone $query)->where('paket_id', $paketId)->tersedia()->first();
-            if ($eksemplar) return $eksemplar;
-
-            return (clone $query)->where('paket_id', $paketId)->first();
-        }
-
-        return $query->diPaketAktif()->tersedia()->first()
-            ?? $query->diPaketAktif()->first();
+        return BukuEksemplar::whereHas('buku', fn($q) => $q->where('isbn', $isbn))
+            ->whereHas('paket', fn($q) => $q->aktif()->where('lokasi_id', $lokasiId))
+            ->with('buku', 'paket.lokasi')
+            ->tersedia()
+            ->first()
+            ?? BukuEksemplar::whereHas('buku', fn($q) => $q->where('isbn', $isbn))
+                ->whereHas('paket', fn($q) => $q->aktif()->where('lokasi_id', $lokasiId))
+                ->with('buku', 'paket.lokasi')
+                ->first();
     }
 
-    public function cariBukuByJudul(string $keyword, ?int $paketId = null): \Illuminate\Database\Eloquent\Collection
+    public function cariBukuByJudul(string $keyword, int $lokasiId): \Illuminate\Database\Eloquent\Collection
     {
-        $query = BukuEksemplar::whereHas('buku', function ($q) use ($keyword) {
+        return BukuEksemplar::whereHas('buku', function ($q) use ($keyword) {
                 $q->where('judul', 'ilike', "%{$keyword}%")
-                  ->orWhere('pengarang', 'ilike', "%{$keyword}%");
+                ->orWhere('pengarang', 'ilike', "%{$keyword}%");
             })
+            ->whereHas('paket', fn($q) => $q->aktif()->where('lokasi_id', $lokasiId))
             ->with('buku', 'paket.lokasi')
-            ->diPaketAktif()
-            ->limit(10);
+            ->limit(10)
+            ->orderByDesc('stok')
+            ->get();
+    }
 
-        if ($paketId) {
-            $query->where('paket_id', $paketId);
-        }
-
-        return $query->orderByDesc('stok')->get();
+    public function bukuByLokasi(int $lokasiId): \Illuminate\Database\Eloquent\Collection
+    {
+        return BukuEksemplar::with('buku')
+            ->whereHas('paket', fn($q) => $q->aktif()->where('lokasi_id', $lokasiId))
+            ->tersedia()
+            ->orderByDesc('stok')
+            ->get();
     }
 
     public function simpan(array $data): Transaksi
     {
         return DB::transaction(function () use ($data) {
-            $member         = $this->simpanAtauUpdateMember($data['member']);
-            $isbnDiserahkan = $data['buku_diserahkan']['isbn'] ?? null;
-            $paketId        = $data['paket_id'];
+            $member              = $this->simpanAtauUpdateMember($data['member']);
+            $isbnDiserahkan      = $data['buku_diserahkan']['isbn'] ?? null;
+            $paketDiserahkanId   = $data['paket_diserahkan_id'];
+            $paketDiterimaId     = $data['paket_diterima_id'];
 
-            // Cari eksemplar buku diserahkan di paket aktif
+            // --- Buku diserahkan (masuk ke paket diserahkan) ---
             $eksemplarDiserahkan = null;
+
             if ($isbnDiserahkan) {
                 $eksemplarDiserahkan = BukuEksemplar::whereHas('buku', fn($q) => $q->where('isbn', $isbnDiserahkan))
-                    ->where('paket_id', $paketId)
+                    ->where('paket_id', $paketDiserahkanId)
+                    ->lockForUpdate()
                     ->first();
             }
 
             if ($eksemplarDiserahkan) {
                 $eksemplarDiserahkan->tambahStok();
             } else {
-                // Cari atau buat row di bukus (bibliografi)
                 $buku = $isbnDiserahkan
                     ? Buku::firstOrCreate(
                         ['isbn' => $isbnDiserahkan],
@@ -110,22 +114,30 @@ class TransaksiService
                         'user_id'       => $data['user_id'],
                     ]);
 
-                // Buat eksemplar baru di paket aktif
                 $eksemplarDiserahkan = BukuEksemplar::create([
                     'buku_id'  => $buku->id,
-                    'paket_id' => $paketId,
+                    'paket_id' => $paketDiserahkanId,
                     'stok'     => 1,
                 ]);
             }
 
-            $eksemplarDiterima = BukuEksemplar::tersedia()
-                ->diPaketAktif()
+            $eksemplarDiterima = BukuEksemplar::with('paket')
+                ->lockForUpdate()
                 ->findOrFail($data['buku_diterima_id']);
+
+            if ($eksemplarDiterima->stok < 1) {
+                throw new \RuntimeException('Stok buku yang dipilih sudah habis.');
+            }
+
+            if (! $eksemplarDiterima->paket?->is_aktif) {
+                throw new \RuntimeException('Paket buku yang dipilih tidak aktif.');
+            }
+
             $eksemplarDiterima->kurangiStok();
 
             return Transaksi::create([
                 'member_id'          => $member->id,
-                'paket_id'           => $paketId,
+                'paket_id'           => $paketDiterimaId,
                 'buku_diserahkan_id' => $eksemplarDiserahkan->id,
                 'buku_diterima_id'   => $eksemplarDiterima->id,
                 'user_id'            => $data['user_id'],
@@ -140,17 +152,28 @@ class TransaksiService
         return DB::transaction(function () use ($id, $data) {
             $transaksi = Transaksi::findOrFail($id);
 
-            $transaksi->bukuDiterima->tambahStok();
+            // Restore stok buku diterima lama sebelum diganti
+            $eksemplarLama = BukuEksemplar::lockForUpdate()->findOrFail($transaksi->buku_diterima_id);
+            $eksemplarLama->tambahStok();
 
-            $eksemplarDiterima = BukuEksemplar::tersedia()
-                ->diPaketAktif()
+            $eksemplarBaru = BukuEksemplar::with('paket')
+                ->lockForUpdate()
                 ->findOrFail($data['buku_diterima_id']);
-            $eksemplarDiterima->kurangiStok();
+
+            if ($eksemplarBaru->stok < 1) {
+                throw new \RuntimeException('Stok buku yang dipilih sudah habis.');
+            }
+
+            if (! $eksemplarBaru->paket?->is_aktif) {
+                throw new \RuntimeException('Paket buku yang dipilih tidak aktif.');
+            }
+
+            $eksemplarBaru->kurangiStok();
 
             $this->simpanAtauUpdateMember($data['member']);
 
             $transaksi->update([
-                'buku_diterima_id' => $eksemplarDiterima->id,
+                'buku_diterima_id' => $eksemplarBaru->id,
                 'catatan_petugas'  => $data['catatan_petugas'] ?? null,
             ]);
 
@@ -162,7 +185,9 @@ class TransaksiService
     {
         DB::transaction(function () use ($id) {
             $transaksi = Transaksi::findOrFail($id);
-            $transaksi->bukuDiterima->tambahStok();
+
+            BukuEksemplar::lockForUpdate()->findOrFail($transaksi->buku_diterima_id)->tambahStok();
+
             $transaksi->delete();
         });
     }

@@ -28,13 +28,14 @@ class LokasiController extends Controller
     {
         $validated = $request->validate([
             'nama_lokasi'      => ['required', 'string', 'max:255'],
-            'alamat'           => ['nullable', 'string'],
+            'alamat'           => ['required', 'string'],
             'no_telp'          => ['nullable', 'string', 'max:20'],
             'user_id'          => ['required', 'exists:users,id'],
             'tampil_di_search' => ['boolean'],
             'aktif'            => ['boolean'],
         ], [
             'nama_lokasi.required' => 'Nama lokasi wajib diisi.',
+            'alamat.required'      => 'Alamat wajib diisi.',
             'no_telp.max'          => 'Nomor telepon maksimal 20 karakter.',
             'user_id.required'     => 'Penanggung jawab wajib dipilih.',
             'user_id.exists'       => 'User tidak ditemukan.',
@@ -43,26 +44,21 @@ class LokasiController extends Controller
         Lokasi::create($validated);
 
         return redirect()->route('admin.lokasi.index')
-                         ->with('success', 'Lokasi berhasil ditambahkan.');
-    }
-
-    public function edit(Lokasi $lokasi)
-    {
-        $users = User::orderBy('nama')->get();
-        return view('admin.lokasi.edit', compact('lokasi', 'users'));
+                        ->with('success', 'Lokasi berhasil ditambahkan.');
     }
 
     public function update(Request $request, Lokasi $lokasi)
     {
         $validated = $request->validate([
             'nama_lokasi'      => ['required', 'string', 'max:255'],
-            'alamat'           => ['nullable', 'string'],
+            'alamat'           => ['required', 'string'],
             'no_telp'          => ['nullable', 'string', 'max:20'],
             'user_id'          => ['required', 'exists:users,id'],
             'tampil_di_search' => ['boolean'],
             'aktif'            => ['boolean'],
         ], [
             'nama_lokasi.required' => 'Nama lokasi wajib diisi.',
+            'alamat.required'      => 'Alamat wajib diisi.',
             'no_telp.max'          => 'Nomor telepon maksimal 20 karakter.',
             'user_id.required'     => 'Penanggung jawab wajib dipilih.',
             'user_id.exists'       => 'User tidak ditemukan.',
@@ -71,7 +67,7 @@ class LokasiController extends Controller
         $lokasi->update($validated);
 
         return redirect()->route('admin.lokasi.index')
-                         ->with('success', 'Lokasi berhasil diperbarui.');
+                        ->with('success', 'Lokasi berhasil diperbarui.');
     }
 
     public function destroy(Lokasi $lokasi)

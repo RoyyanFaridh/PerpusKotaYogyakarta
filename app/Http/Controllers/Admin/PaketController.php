@@ -32,10 +32,14 @@ class PaketController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required|string|max:255|unique:pakets,nama',
+            'nama'      => 'required|string|max:255|unique:pakets,nama',
+            'lokasi_id' => 'nullable|exists:lokasis,id',
         ]);
 
-        $paket = Paket::create(['nama' => $request->nama]);
+        $paket = Paket::create([
+            'nama'      => $request->nama,
+            'lokasi_id' => $request->lokasi_id ?: null,
+        ]);
 
         if ($request->expectsJson()) {
             return response()->json($paket, 201);
