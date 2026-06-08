@@ -15,6 +15,7 @@
                 color="primary"
                 :badge="($selisihTransaksi >= 0 ? '+' : '') . $selisihTransaksi . '% dari bulan lalu'"
                 caption="Total transaksi tukar buku"
+                :href="route('admin.transaksi.index')"
             />
             <x-admin.dashboard.stat-card
                 label="Buku Tersedia"
@@ -23,14 +24,16 @@
                 color="success"
                 :badge="'+' . $bukuMingguIni . ' minggu ini'"
                 caption="Buku tukar yang sudah diterima"
+                :href="route('admin.buku.index')"
             />
             <x-admin.dashboard.stat-card
-                label="Perlu Verifikasi"
-                :value="$perluVerifikasi"
-                icon="clock"
+                label="Member Bulan Ini"
+                :value="$memberBulanIni"
+                icon="users"
                 color="warning"
-                badge="Perlu tindakan"
-                caption="Transaksi menunggu konfirmasi"
+                :badge="($selisihMember >= 0 ? '+' : '') . $selisihMember . ' dari bulan lalu'"
+                caption="Total member yang bergabung"
+                :href="route('admin.member.index')"
             />
         </div>
 

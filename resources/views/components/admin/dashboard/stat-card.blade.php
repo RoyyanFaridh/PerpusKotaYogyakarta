@@ -5,6 +5,7 @@
     'color'   => 'primary',
     'badge'   => null,
     'caption' => null,
+    'href'    => null,
 ])
 
 @php
@@ -41,7 +42,11 @@
     $c = $colorMap[$color] ?? $colorMap['primary'];
 @endphp
 
+@if($href)
+<a href="{{ $href }}" class="relative overflow-hidden rounded-xl bg-white border border-neutral-200 flex flex-col p-5 w-full hover:shadow-md hover:border-neutral-300 transition-all duration-200 cursor-pointer">
+@else
 <div class="relative overflow-hidden rounded-xl bg-white border border-neutral-200 flex flex-col p-5 w-full">
+@endif
 
     <div class="absolute top-0 left-0 right-0 h-0.5 {{ $c['accent'] }}"></div>
 
@@ -75,4 +80,8 @@
         <x-icons.ellipsis aria-hidden="true"/>
     </button>
 
+@if($href)
+</a>
+@else
 </div>
+@endif

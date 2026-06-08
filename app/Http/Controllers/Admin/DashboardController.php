@@ -24,9 +24,20 @@ class DashboardController extends Controller
             ? round((($transaksiBulanIni - $transaksiBulanLalu) / $transaksiBulanLalu) * 100)
             : 0;
 
-        $bukuTersedia    = BukuEksemplar::where('stok', '>', 0)->sum('stok');
+        $bukuTersedia = BukuEksemplar::where('stok', '>', 0)
+            ->whereHas('paket', fn($p) => $p->where('is_aktif', true))
+            ->whereHas('buku', fn($b) => $b->where('is_visible', true))
+            ->sum('stok');
         $bukuMingguIni   = Buku::whereBetween('created_at', [now()->startOfWeek(), now()])->count();
-        $perluVerifikasi = Transaksi::whereNull('tanggal_tukar')->count();
+        $memberBulanIni = Member::whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+
+        $memberBulanLalu = Member::whereMonth('created_at', now()->subMonth()->month)
+            ->whereYear('created_at', now()->subMonth()->year)
+            ->count();
+
+        $selisihMember = $memberBulanIni - $memberBulanLalu;
 
         $kategoris        = $this->getKategoris();
         $aktivitas        = $this->getAktivitasTerkini();
@@ -44,7 +55,8 @@ class DashboardController extends Controller
             'selisihTransaksi',
             'bukuTersedia',
             'bukuMingguIni',
-            'perluVerifikasi',
+            'memberBulanIni',
+            'selisihMember',
             'kategoris',
             'aktivitas',
             'transaksiTerbaru',
