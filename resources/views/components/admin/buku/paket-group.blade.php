@@ -42,23 +42,25 @@ $isAktif = $paket->is_aktif;
                 <p class="text-xs text-neutral-400">Belum ada buku dalam paket ini.</p>
             </div>
         @else
-            <table class="w-full text-sm">
-                <thead>
-                    <tr class="border-b border-neutral-100 bg-neutral-50/50">
-                        <th class="text-left text-xs font-medium text-neutral-500 px-5 py-2.5">Judul</th>
-                        <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">ISBN</th>
-                        <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">Kategori</th>
-                        <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">Stok</th>
-                        <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">Tampil</th>
-                        <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-neutral-50">
-                    @foreach ($paket->eksemplars as $eksemplar)
-                        <x-admin.buku.eksemplar-row :eksemplar="$eksemplar"/>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="overflow-x-auto">
+                <table class="w-full min-w-[600px] text-sm">
+                    <thead>
+                        <tr class="border-b border-neutral-100 bg-neutral-50/50">
+                            <th class="text-left text-xs font-medium text-neutral-500 px-5 py-2.5">Judul</th>
+                            <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">ISBN</th>
+                            <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">Kategori</th>
+                            <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">Stok</th>
+                            <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">Tampil</th>
+                            <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-neutral-50">
+                        @foreach ($paket->eksemplars as $eksemplar)
+                            <x-admin.buku.eksemplar-row :eksemplar="$eksemplar"/>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         @endif
     </div>
 

@@ -20,19 +20,22 @@
                     <p class="text-xs text-neutral-400 leading-tight">{{ $stats['total_judul'] }} judul terdaftar</p>
                 </div>
             </div>
+
             <div class="flex items-center gap-2 shrink-0">
+                {{-- Export Dropdown --}}
                 <div class="relative" x-data="{ open: false }" @click.outside="open = false">
                     <button
                         @click="open = !open"
-                        class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-medium text-neutral-600 border border-neutral-200 hover:bg-neutral-50 transition-colors"
+                        title="Export"
+                        class="flex items-center gap-1.5 px-2.5 py-2 sm:px-3.5 rounded-lg text-xs font-medium text-neutral-600 border border-neutral-200 hover:bg-neutral-50 transition-colors"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                             <polyline points="7 10 12 15 17 10"/>
                             <line x1="12" y1="15" x2="12" y2="3"/>
                         </svg>
-                        Export
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 transition-transform duration-150" :class="{ 'rotate-180': open }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <span class="hidden sm:inline">Export</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="hidden sm:block w-3 h-3 transition-transform duration-150" :class="{ 'rotate-180': open }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <polyline points="6 9 12 15 18 9"/>
                         </svg>
                     </button>
@@ -50,15 +53,15 @@
                     >
                         <div class="py-1">
                             <a href="{{ route('admin.buku.export') }}"
-                            class="flex items-center gap-2.5 px-3.5 py-2 text-xs text-neutral-700 hover:bg-neutral-50 transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                               class="flex items-center gap-2.5 px-3.5 py-2 text-xs text-neutral-700 hover:bg-neutral-50 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-neutral-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
                                 </svg>
                                 Export Internal
                             </a>
                             <a href="{{ route('admin.buku.export') }}?publik=1"
-                            class="flex items-center gap-2.5 px-3.5 py-2 text-xs text-neutral-700 hover:bg-neutral-50 transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                               class="flex items-center gap-2.5 px-3.5 py-2 text-xs text-neutral-700 hover:bg-neutral-50 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-neutral-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
                                 </svg>
                                 Export Katalog Publik
@@ -67,29 +70,48 @@
                     </div>
                 </div>
 
-                <button type="button" onclick="bukaModalBuku()"
-                        class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold text-white bg-primary-600 hover:bg-primary-700 transition-colors">
-                    Tambah Buku
+                {{-- Tambah Buku --}}
+                <button type="button"
+                        onclick="bukaModalBuku()"
+                        title="Tambah Buku"
+                        class="flex items-center gap-1.5 px-2.5 py-2 sm:px-3.5 rounded-lg text-xs font-semibold text-white bg-primary-600 hover:bg-primary-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    <span class="hidden sm:inline">Tambah Buku</span>
                 </button>
+
+                {{-- Kelola Paket --}}
                 <a href="{{ route('admin.paket.index') }}"
-                class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold text-neutral-600 border border-neutral-200 hover:bg-neutral-50 transition-colors">
-                    Kelola Paket
+                   title="Kelola Paket"
+                   class="flex items-center gap-1.5 px-2.5 py-2 sm:px-3.5 rounded-lg text-xs font-semibold text-neutral-600 border border-neutral-200 hover:bg-neutral-50 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                        <line x1="12" y1="22.08" x2="12" y2="12"/>
+                    </svg>
+                    <span class="hidden sm:inline">Kelola Paket</span>
                 </a>
             </div>
         </div>
 
         {{-- Stats --}}
-        <div class="grid grid-cols-2 sm:grid-cols-4 divide-x divide-neutral-100 border-b border-neutral-100">
-            @foreach ([
+        @php
+            $statItems = [
                 ['label' => 'Total Judul',   'value' => $stats['total_judul'],   'color' => 'text-neutral-800'],
                 ['label' => 'Total Stok',    'value' => $stats['total_stok'],    'color' => 'text-primary-700'],
                 ['label' => 'Dalam Paket',   'value' => $stats['dalam_paket'],   'color' => 'text-warning-700'],
                 ['label' => 'Stok Tersedia', 'value' => $stats['stok_tersedia'], 'color' => 'text-success-700'],
-            ] as $stat)
-            <div class="px-5 py-3.5 flex flex-col gap-0.5">
-                <span class="text-xs text-neutral-400 font-medium">{{ $stat['label'] }}</span>
-                <span class="text-2xl font-semibold tabular-nums {{ $stat['color'] }}">{{ $stat['value'] }}</span>
-            </div>
+            ];
+        @endphp
+        <div class="grid grid-cols-2 sm:grid-cols-4 border-b border-neutral-100">
+            @foreach ($statItems as $index => $stat)
+                <div class="px-5 py-3.5 flex flex-col gap-0.5
+                    {{ $index > 0 ? 'border-l border-neutral-100' : '' }}
+                    {{ $index === 2 ? 'border-t border-neutral-100 sm:border-t-0' : '' }}">
+                    <span class="text-xs text-neutral-400 font-medium">{{ $stat['label'] }}</span>
+                    <span class="text-2xl font-semibold tabular-nums {{ $stat['color'] }}">{{ $stat['value'] }}</span>
+                </div>
             @endforeach
         </div>
 
@@ -98,13 +120,15 @@
             <div class="relative flex-1 min-w-48">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none"
                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                     stroke-linecap="round" stroke-linejoin="round">
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
+                <label for="filterSearch" class="sr-only">Cari buku</label>
                 <input id="filterSearch" type="text"
                        placeholder="Cari judul, pengarang, ISBN..."
                        class="w-full pl-9 pr-4 py-2 text-sm text-neutral-700 bg-neutral-50 border border-neutral-200 rounded-lg placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition"/>
             </div>
+            <label for="filterKategori" class="sr-only">Filter kategori</label>
             <select id="filterKategori"
                     class="px-3 py-2 text-sm text-neutral-600 bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition shrink-0">
                 <option value="">Semua Kategori</option>
@@ -156,28 +180,30 @@
                     </div>
                     <svg class="w-4 h-4 text-neutral-400 transition-transform"
                          :class="open ? 'rotate-180' : ''"
-                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                         <polyline points="6 9 12 15 18 9"/>
                     </svg>
                 </button>
                 <div x-show="open" x-collapse>
-                    <table class="w-full text-sm">
-                        <thead>
-                            <tr class="border-b border-neutral-100 bg-neutral-50/50">
-                                <th class="text-left text-xs font-medium text-neutral-500 px-5 py-2.5">Judul</th>
-                                <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">ISBN</th>
-                                <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">Kategori</th>
-                                <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">Stok</th>
-                                <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">Tampil</th>
-                                <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-neutral-50">
-                            @foreach ($tanpaPaket as $eksemplar)
-                                <x-admin.buku.eksemplar-row :eksemplar="$eksemplar"/>
-                            @endforeach
-                        </tbody>
-                    </table>
+                    <div class="overflow-x-auto">
+                        <table class="w-full min-w-[600px] text-sm">
+                            <thead>
+                                <tr class="border-b border-neutral-100 bg-neutral-50/50">
+                                    <th class="text-left text-xs font-medium text-neutral-500 px-5 py-2.5">Judul</th>
+                                    <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">ISBN</th>
+                                    <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">Kategori</th>
+                                    <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">Stok</th>
+                                    <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">Tampil</th>
+                                    <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-neutral-50">
+                                @foreach ($tanpaPaket as $eksemplar)
+                                    <x-admin.buku.eksemplar-row :eksemplar="$eksemplar"/>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         @endif
@@ -195,7 +221,6 @@
 (function () {
     const searchInput = document.getElementById('filterSearch');
     const kategoriSel = document.getElementById('filterKategori');
-    const btnExport   = document.getElementById('btnExport');
     const exportBase  = '{{ route('admin.buku.export') }}';
 
     function filterRows() {
@@ -209,14 +234,6 @@
             const matchK  = !kat || katCell.includes(kat);
             row.style.display = matchQ && matchK ? '' : 'none';
         });
-
-        // Sync export button dengan filter kategori
-        if (btnExport) {
-            const params = new URLSearchParams();
-            if (kat) params.set('kategori', kategoriSel.value);
-            const qs = params.toString();
-            btnExport.href = qs ? `${exportBase}?${qs}` : exportBase;
-        }
     }
 
     let debounce;
@@ -248,11 +265,11 @@ function toggleVisibilityBuku(id, currentlyVisible, btn) {
             'bg-success-50', 'text-success-700', 'hover:bg-success-100',
             'bg-neutral-100', 'text-neutral-500', 'hover:bg-neutral-200'
         );
-        if (nowVisible) {
-            btn.classList.add('bg-success-50', 'text-success-700', 'hover:bg-success-100');
-        } else {
-            btn.classList.add('bg-neutral-100', 'text-neutral-500', 'hover:bg-neutral-200');
-        }
+        btn.classList.add(
+            ...(nowVisible
+                ? ['bg-success-50', 'text-success-700', 'hover:bg-success-100']
+                : ['bg-neutral-100', 'text-neutral-500', 'hover:bg-neutral-200'])
+        );
     })
     .catch(() => alert('Gagal mengubah visibilitas.'))
     .finally(() => {

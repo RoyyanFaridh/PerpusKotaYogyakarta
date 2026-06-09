@@ -110,7 +110,7 @@ class DashboardController extends Controller
             'Umum/Komputer'        => 'indigo',
             'Filsafat & Psikologi' => 'violet',
             'Agama'                => 'rose',
-            'ILmu Sosial'          => 'amber',
+            'Ilmu Sosial'          => 'amber',
             'Bahasa'               => 'teal',
             'Sains & Matematika'   => 'success',
             'Teknologi'            => 'danger',
@@ -119,16 +119,27 @@ class DashboardController extends Controller
             'Geografi & Sejarah'   => 'sky',
         ];
 
-        return Buku::selectRaw('kategori, COUNT(*) as jumlah')
-            ->whereNotNull('kategori')
-            ->groupBy('kategori')
+        // Data transaksi bulan ini per kategori
+        $dataTransaksi = Transaksi::join('buku_eksemplars', 'transaksis.buku_diterima_id', '=', 'buku_eksemplars.id')
+            ->join('bukus', 'buku_eksemplars.buku_id', '=', 'bukus.id')
+            ->whereMonth('transaksis.created_at', now()->month)
+            ->whereYear('transaksis.created_at', now()->year)
+            ->whereNotNull('bukus.kategori')
+            ->selectRaw('bukus.kategori, COUNT(*) as jumlah')
+            ->groupBy('bukus.kategori')
             ->orderByDesc('jumlah')
             ->get()
-            ->map(fn($row) => [
-                'nama'   => $row->kategori,
-                'jumlah' => (int) $row->jumlah,
-                'warna'  => $kategoriWarna[$row->kategori] ?? 'sky',
+            ->keyBy('kategori');
+
+        // Semua kategori yang ada di sistem
+        return collect(array_keys($kategoriWarna))
+            ->map(fn($nama) => [
+                'nama'   => $nama,
+                'jumlah' => (int) ($dataTransaksi->get($nama)?->jumlah ?? 0),
+                'warna'  => $kategoriWarna[$nama],
             ])
+            ->sortByDesc('jumlah')
+            ->values()
             ->all();
     }
 } 

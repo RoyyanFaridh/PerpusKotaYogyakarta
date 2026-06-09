@@ -41,11 +41,9 @@
 @section('content')
 <div class="flex flex-col gap-5">
 
-    {{-- Page Header Card --}}
     <div class="relative overflow-hidden rounded-xl bg-white border border-neutral-200">
         <div class="absolute top-0 left-0 right-0 h-0.5 bg-primary-400"></div>
 
-        {{-- Title row --}}
         <div class="flex items-center justify-between gap-4 px-5 pt-5 pb-4 border-b border-neutral-100">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-primary-50 text-primary-700 flex items-center justify-center shrink-0">
@@ -58,18 +56,21 @@
             </div>
             <div class="flex items-center gap-2 shrink-0">
                 <a href="{{ route('admin.transaksi.export') }}"
-                   class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-medium text-neutral-600 border border-neutral-200 hover:bg-neutral-50 transition-colors">
-                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                title="Export Excel"
+                class="flex items-center gap-1.5 px-2.5 py-2 sm:px-3.5 rounded-lg text-xs font-medium text-neutral-600 border border-neutral-200 hover:bg-neutral-50 transition-colors">
+                    <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
                     </svg>
-                    Export Excel
+                    <span class="hidden sm:inline">Export Excel</span>
                 </a>
-                <button type="button" onclick="openModal()"
-                        class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold text-white bg-primary-600 hover:bg-primary-700 transition-colors">
-                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <button type="button"
+                        onclick="openModal()"
+                        title="Tambah Transaksi"
+                        class="flex items-center gap-1.5 px-2.5 py-2 sm:px-3.5 rounded-lg text-xs font-semibold text-white bg-primary-600 hover:bg-primary-700 transition-colors">
+                    <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                     </svg>
-                    Tambah Transaksi
+                    <span class="hidden sm:inline">Tambah Transaksi</span>
                 </button>
             </div>
         </div>

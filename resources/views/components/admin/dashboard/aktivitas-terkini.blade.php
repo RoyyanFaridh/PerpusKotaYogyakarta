@@ -40,13 +40,8 @@
     </div>
 
     {{-- List --}}
-    {{--
-        PERBAIKAN 4: divide-neutral-100
-        PERBAIKAN 5: hapus max-h-[300px] hardcoded, biarkan flex-1 + overflow-y-auto
-        mengisi sisa tinggi container secara alami
-    --}}
-    <ul class="divide-y divide-neutral-100 overflow-y-auto flex-1 custom-scroll">
 
+    <ul class="divide-y divide-neutral-100 px-5 max-h-96 overflow-y-auto custom-scroll">
         @forelse ($aktivitas as $item)
             @php
                 $cfg = $tipeConfig[$item['tipe'] ?? ''] ?? $defaultConfig;

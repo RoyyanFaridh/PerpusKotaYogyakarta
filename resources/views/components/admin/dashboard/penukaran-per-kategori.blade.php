@@ -59,7 +59,7 @@
 
     {{-- List --}}
     {{-- PERBAIKAN 5: divide-neutral-100 lebih visible dari divide-neutral-50 --}}
-    <ul class="divide-y divide-neutral-100 px-5">
+    <ul class="divide-y divide-neutral-100 px-5 max-h-96 overflow-y-auto custom-scroll">
         @foreach ($kategoris as $item)
             @php
                 $persen = $total > 0 ? round(($item['jumlah'] / $total) * 100) : 0;

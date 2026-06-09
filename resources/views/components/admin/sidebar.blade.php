@@ -148,10 +148,10 @@
 
         {{-- Expanded state --}}
         <div x-show="open"
-            x-transition:enter="transition-opacity duration-150"
-            x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100"
-            class="flex items-center gap-3 rounded-xl px-2 py-2">
+             x-transition:enter="transition-opacity duration-150"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             class="flex items-center gap-3 rounded-xl px-2 py-2">
             <div class="shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-white/20 text-white text-sm font-bold uppercase select-none">
                 {{ substr(auth()->user()->name ?? 'A', 0, 1) }}
             </div>
@@ -159,25 +159,22 @@
                 <p class="text-white text-xs font-semibold truncate">{{ auth()->user()->name ?? 'Admin' }}</p>
                 <p class="text-primary-300 text-xs truncate">{{ auth()->user()->email ?? '' }}</p>
             </div>
-            <form method="POST" action="{{ route('auth.logout') }}"
-                  onsubmit="return confirm('Yakin ingin keluar?')">
-                @csrf
-                <button type="submit"
-                        aria-label="Logout"
-                        class="shrink-0 p-1.5 rounded-lg text-primary-300 hover:text-white hover:bg-white/10 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                        <polyline points="16 17 21 12 16 7"/>
-                        <line x1="21" y1="12" x2="9" y2="12"/>
-                    </svg>
-                </button>
-            </form>
+            <button type="button"
+                    @click="$dispatch('logout-confirm')"
+                    aria-label="Logout"
+                    class="shrink-0 p-1.5 rounded-lg text-primary-300 hover:text-white hover:bg-white/10 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+            </button>
         </div>
 
         {{-- Collapsed state --}}
         <div x-show="!open"
-            x-data="{ dropdownOpen: false }"
-            class="relative flex justify-center">
+             x-data="{ dropdownOpen: false }"
+             class="relative flex justify-center">
 
             <button @click="dropdownOpen = !dropdownOpen"
                     @click.outside="dropdownOpen = false"
@@ -187,35 +184,92 @@
             </button>
 
             <div x-show="dropdownOpen"
-                x-transition:enter="transition ease-out duration-150"
-                x-transition:enter-start="opacity-0 -translate-x-2"
-                x-transition:enter-end="opacity-100 translate-x-0"
-                x-transition:leave="transition ease-in duration-100"
-                x-transition:leave-start="opacity-100 translate-x-0"
-                x-transition:leave-end="opacity-0 -translate-x-2"
-                class="absolute bottom-0 left-full ml-2 w-48 bg-white rounded-lg shadow-lg border border-neutral-200 overflow-hidden z-50">
+                 x-transition:enter="transition ease-out duration-150"
+                 x-transition:enter-start="opacity-0 -translate-x-2"
+                 x-transition:enter-end="opacity-100 translate-x-0"
+                 x-transition:leave="transition ease-in duration-100"
+                 x-transition:leave-start="opacity-100 translate-x-0"
+                 x-transition:leave-end="opacity-0 -translate-x-2"
+                 class="absolute bottom-0 left-full ml-2 w-48 bg-white rounded-lg shadow-lg border border-neutral-200 overflow-hidden z-50">
 
                 <div class="px-3 py-2.5 border-b border-neutral-100">
                     <p class="text-xs font-semibold text-neutral-800 truncate">{{ auth()->user()->name ?? 'Admin' }}</p>
                     <p class="text-xs text-neutral-500 truncate">{{ auth()->user()->email ?? '' }}</p>
                 </div>
 
-                <form method="POST" action="{{ route('auth.logout') }}"
-                      onsubmit="return confirm('Yakin ingin keluar?')">
-                    @csrf
-                    <button type="submit"
-                            class="w-full flex items-center gap-2 px-3 py-2.5 text-xs font-medium text-danger-600 hover:bg-danger-50 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                            <polyline points="16 17 21 12 16 7"/>
-                            <line x1="21" y1="12" x2="9" y2="12"/>
-                        </svg>
-                        Logout
-                    </button>
-                </form>
+                <button type="button"
+                        @click="$dispatch('logout-confirm'); dropdownOpen = false"
+                        class="w-full flex items-center gap-2 px-3 py-2.5 text-xs font-medium text-danger-600 hover:bg-danger-50 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    Logout
+                </button>
             </div>
         </div>
 
     </div>
 
 </aside>
+
+{{-- Logout Confirmation Modal --}}
+{{-- Taruh di layout utama, di luar <aside>, sebelum </body> --}}
+<div x-data="{ showLogout: false }"
+     @logout-confirm.window="showLogout = true"
+     x-cloak>
+
+    <div x-show="showLogout"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-[999] flex items-center justify-center p-4">
+
+        {{-- Backdrop --}}
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+             @click="showLogout = false"></div>
+
+        {{-- Panel --}}
+        <div x-show="showLogout"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             class="relative bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 flex flex-col items-center gap-4">
+
+            <div class="w-12 h-12 rounded-full bg-danger-50 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-danger-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+            </div>
+
+            <div class="text-center">
+                <p class="text-sm font-semibold text-neutral-800">Keluar dari akun?</p>
+                <p class="text-xs text-neutral-500 mt-1">Sesi kamu akan diakhiri dan kamu perlu login kembali.</p>
+            </div>
+
+            <div class="flex gap-2 w-full">
+                <button type="button"
+                        @click="showLogout = false"
+                        class="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-neutral-600 border border-neutral-200 hover:bg-neutral-50 transition-colors">
+                    Batal
+                </button>
+                <form method="POST" action="{{ route('auth.logout') }}" class="flex-1">
+                    @csrf
+                    <button type="submit"
+                            class="w-full px-4 py-2 rounded-lg text-xs font-semibold text-white bg-danger-600 hover:bg-danger-700 transition-colors">
+                        Ya, Keluar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
