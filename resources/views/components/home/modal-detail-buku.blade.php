@@ -1,11 +1,5 @@
-{{--
-    Komponen: modal-detail-buku
-    Satu modal yang dipakai bersama oleh buku-terbaru & katalog-pencarian.
-    Include sekali saja di layout utama.
-    Diaktifkan via: window.bukaDetailBuku(id)
---}}
 <div id="modal-buku"
-     class="fixed inset-0 z-[999] flex items-center justify-center p-4 sm:p-6"
+     class="fixed inset-0 z-999 flex items-center justify-center p-4 sm:p-6"
      style="display: none !important;">
 
     {{-- Backdrop --}}
