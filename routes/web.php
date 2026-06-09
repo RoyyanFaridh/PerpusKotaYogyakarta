@@ -32,7 +32,7 @@ Route::get('/admin/login',  [AdminAuthController::class, 'showLoginForm'])->name
 Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('auth.login.post')->middleware('throttle:5,1');
 Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('auth.logout');
 
-Route::prefix('admin')->name('admin.')->middleware(['gtmetrix', 'auth'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
