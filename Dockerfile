@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     curl \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_pgsql mbstring tokenizer xml ctype bcmath curl fileinfo gd zip \
+    && docker-php-ext-install pdo pdo_pgsql mbstring xml ctype bcmath curl fileinfo gd zip \
     && apt-get clean
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -22,9 +22,10 @@ COPY . .
 
 RUN composer install --no-dev --optimize-autoloader
 RUN chmod -R 775 storage bootstrap/cache
-RUN php artisan config:cache
-RUN php artisan route:cache
-RUN php artisan view:cache
 
 EXPOSE 8080
-CMD php artisan migrate --force && php -S 0.0.0.0:$PORT -t public
+CMD php artisan migrate --force \
+    && php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache \
+    && php -S 0.0.0.0:$PORT -t public
