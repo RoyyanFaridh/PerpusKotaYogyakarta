@@ -186,7 +186,7 @@
                 </button>
                 <div x-show="open" x-collapse>
                     <div class="overflow-x-auto">
-                        <table class="w-full min-w-[600px] text-sm">
+                        <table class="w-full min-w-150 text-sm">
                             <thead>
                                 <tr class="border-b border-neutral-100 bg-neutral-50/50">
                                     <th class="text-left text-xs font-medium text-neutral-500 px-5 py-2.5">Judul</th>

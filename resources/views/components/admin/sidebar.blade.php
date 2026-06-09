@@ -227,7 +227,7 @@
          x-transition:leave="transition ease-in duration-150"
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
-         class="fixed inset-0 z-[999] flex items-center justify-center p-4">
+         class="fixed inset-0 z-999 flex items-center justify-center p-4">
 
         {{-- Backdrop --}}
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"
