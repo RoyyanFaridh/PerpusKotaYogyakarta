@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     curl \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo pdo_pgsql mbstring xml ctype bcmath curl fileinfo gd zip \
     && apt-get clean
@@ -19,8 +21,13 @@ RUN apt-get update && apt-get install -y \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
 COPY . .
 
+RUN npm run build
 RUN composer install --no-dev --optimize-autoloader
 RUN chmod -R 775 storage bootstrap/cache
 
