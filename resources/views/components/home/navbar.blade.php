@@ -2,7 +2,7 @@
     <div class="w-full max-w-7xl mx-auto flex items-center justify-between gap-4">
 
         <a href="{{ url('/') }}" class="flex items-center gap-2 sm:gap-2.5 no-underline shrink-0">
-                <img src="{{ asset('images/dinas_jogja.png') }}"
+                <img src="{{ asset('images/dinas_jogja.webp') }}"
                     class="w-8 h-8 sm:w-10 sm:h-10 object-contain">
 
             <div>

@@ -33,6 +33,8 @@ RUN chmod -R 775 storage bootstrap/cache
 
 EXPOSE 8080
 CMD php artisan migrate --force \
+    && php artisan db:seed --class=UserSeeder --force \
+    && php artisan db:seed --class=UserPermissionSeeder --force \
     && php artisan config:cache \
     && php artisan route:cache \
     && php artisan view:cache \

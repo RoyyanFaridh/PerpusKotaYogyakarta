@@ -3,14 +3,8 @@
     <div class="hero-glow absolute w-[clamp(300px,70vw,860px)] h-[clamp(300px,70vw,860px)] rounded-full pointer-events-none"
          style="background: radial-gradient(circle, rgba(4,68,141,0.10) 0%, transparent 68%);">
     </div>
-{{-- 
-    <div class="animate-fade-up-1 flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5">
-        <img src="{{ asset('images/RYB.png') }}"
-            alt="Rotate Your Book"
-            class="h-60 sm:h-70 w-auto object-contain opacity-70">
-    </div> --}}
 
-    <img src="{{ asset('images/judul-hero.png') }}"
+    <img src="{{ asset('images/judul-hero.webp') }}"
         alt="Tukar Bacaan, Luaskan Wawasan"
         class="animate-fade-up-2 w-auto max-w-full object-contain mb-4 sm:mb-5"
         style="max-width: clamp(320px, 90vw, 1000px);">
