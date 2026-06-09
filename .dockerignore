@@ -3,5 +3,4 @@ node_modules
 vendor
 .env
 .env.*
-public/build
 storage/*.key
