@@ -16,7 +16,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'superadmin'     => \App\Http\Middleware\IsSuperAdmin::class,
             'has.permission' => \App\Http\Middleware\HasPermission::class,
-            'gtmetrix'       => \App\Http\Middleware\GtmetrixBypass::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
