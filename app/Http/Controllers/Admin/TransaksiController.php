@@ -239,12 +239,8 @@ class TransaksiController extends Controller
     {
         $lokasiId = $this->getLokasiId($request->integer('lokasi_id') ?: null);
 
-        if (! $lokasiId) {
-            return response()->json(['message' => 'Lokasi tidak ditemukan untuk user ini.'], 422);
-        }
-
         $pakets = Paket::aktif()
-            ->where('lokasi_id', $lokasiId)
+            ->when($lokasiId, fn($q) => $q->where('lokasi_id', $lokasiId))
             ->with('lokasi')
             ->get();
 
