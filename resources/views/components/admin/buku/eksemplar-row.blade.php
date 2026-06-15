@@ -96,6 +96,18 @@ $catClass = $categoryColorMap[$buku->kategori ?? ''] ?? 'bg-neutral-100 text-neu
                 <span>Edit</span>
             </button>
             <button type="button"
+                onclick="bukaModalRelokasi({{ json_encode([
+                    'buku_id'      => $buku->id,
+                    'eksemplar_id' => $eksemplar->id,
+                    'judul'        => $buku->judul,
+                    'paket_nama'   => $eksemplar->paket?->nama ?? 'Tanpa Paket',
+                    'stok'         => $eksemplar->stok,
+                ]) }})"
+                class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50 transition-colors">
+                <x-icons.move/>
+                <span>Pindah</span>
+            </button>
+            <button type="button"
                 onclick="bukaModalHapusBuku(
                     '{{ route('admin.buku.destroy', $buku) }}',
                     '{{ addslashes($buku->judul) }}'

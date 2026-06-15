@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\Admin\BukuController;
 use App\Http\Controllers\Admin\BukuEksemplarController;
+use App\Http\Controllers\Admin\BukuRelokasiController;
 use App\Http\Controllers\Admin\PaketPemindahanController;
 use App\Http\Controllers\Admin\TransaksiController;
 use App\Http\Controllers\Admin\MemberController;
@@ -59,21 +60,25 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     // Buku
     Route::prefix('buku')->name('buku.')->group(function () {
         Route::get('/',            [BukuController::class, 'index'])->name('index');
-        Route::get('/export',        [BukuController::class, 'export'])->name('export');
-        Route::get('/export-publik', [BukuController::class, 'export'])->name('export.publik');
+        Route::get('/export',      [BukuController::class, 'export'])->name('export');
+        Route::get('/export-publik',[BukuController::class, 'export'])->name('export.publik');
         Route::get('/create',      [BukuController::class, 'create'])->name('create')->middleware('has.permission:buku.create');
         Route::post('/',           [BukuController::class, 'store'])->name('store')->middleware('has.permission:buku.create');
-        Route::get('/{buku}',      [BukuController::class, 'show'])->name('show');
-        Route::get('/{buku}/edit', [BukuController::class, 'edit'])->name('edit')->middleware('has.permission:buku.edit');
-        Route::put('/{buku}',      [BukuController::class, 'update'])->name('update')->middleware('has.permission:buku.edit');
-        Route::delete('/{buku}',   [BukuController::class, 'destroy'])->name('destroy')->middleware('has.permission:buku.delete');
-        Route::patch('/{buku}/toggle-visibility', [BukuController::class, 'toggleVisibility'])->name('toggle-visibility')->middleware('has.permission:buku.edit');
+
+        Route::get('/{buku}',                    [BukuController::class, 'show'])->name('show');
+        Route::get('/{buku}/edit',               [BukuController::class, 'edit'])->name('edit')->middleware('has.permission:buku.edit');
+        Route::put('/{buku}',                    [BukuController::class, 'update'])->name('update')->middleware('has.permission:buku.edit');
+        Route::delete('/{buku}',                 [BukuController::class, 'destroy'])->name('destroy')->middleware('has.permission:buku.delete');
+        Route::patch('/{buku}/toggle-visibility',[BukuController::class, 'toggleVisibility'])->name('toggle-visibility')->middleware('has.permission:buku.edit');
 
         // Eksemplar
         Route::get('/{buku}/eksemplar',               [BukuEksemplarController::class, 'index'])->name('eksemplar.index');
         Route::post('/{buku}/eksemplar',              [BukuEksemplarController::class, 'store'])->name('eksemplar.store')->middleware('has.permission:buku.edit');
         Route::patch('/{buku}/eksemplar/{eksemplar}', [BukuEksemplarController::class, 'update'])->name('eksemplar.update')->middleware('has.permission:buku.edit');
         Route::delete('/{buku}/eksemplar/{eksemplar}',[BukuEksemplarController::class, 'destroy'])->name('eksemplar.destroy')->middleware('has.permission:buku.delete');
+
+        // Relokasi
+        Route::post('/{buku}/relokasi', [BukuRelokasiController::class, 'relokasi'])->name('relokasi')->middleware('has.permission:buku.edit');
     });
 
     // Transaksi

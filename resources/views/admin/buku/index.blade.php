@@ -214,6 +214,7 @@
 @include('admin.buku.create')
 @include('admin.buku.edit')
 @include('admin.buku.destroy')
+@include('admin.buku.relokasi')
 @include('admin.paket.create')
 
 @push('scripts')
