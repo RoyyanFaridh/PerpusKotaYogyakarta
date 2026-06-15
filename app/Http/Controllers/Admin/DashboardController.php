@@ -43,8 +43,8 @@ class DashboardController extends Controller
         $aktivitas        = $this->getAktivitasTerkini();
         $transaksiTerbaru = Transaksi::with([
                 'member',
-                'bukuDiserahkan.buku',
-                'bukuDiterima.buku',
+                'bukuMasuk.buku',
+                'bukuKeluar.buku',
             ])
             ->latest()
             ->limit(15)
@@ -67,13 +67,13 @@ class DashboardController extends Controller
     {
         $items = collect();
 
-        Transaksi::with(['member', 'bukuDiserahkan.buku'])
+        Transaksi::with(['member', 'bukuMasuk.buku'])
             ->latest()
             ->limit(20)
             ->get()
             ->each(function ($t) use (&$items) {
                 $nama  = $t->member?->nama ?? 'Member';
-                $judul = $t->bukuDiserahkan?->buku?->judul ?? 'Buku';
+                $judul = $t->bukuMasuk?->buku?->judul ?? 'Buku';
 
                 $items->push([
                     'tipe'      => 'transaksi_pending',
@@ -120,7 +120,7 @@ class DashboardController extends Controller
         ];
 
         // Data transaksi bulan ini per kategori
-        $dataTransaksi = Transaksi::join('buku_eksemplars', 'transaksis.buku_diterima_id', '=', 'buku_eksemplars.id')
+        $dataTransaksi = Transaksi::join('buku_eksemplars', 'transaksis.buku_keluar_id', '=', 'buku_eksemplars.id')
             ->join('bukus', 'buku_eksemplars.buku_id', '=', 'bukus.id')
             ->whereMonth('transaksis.created_at', now()->month)
             ->whereYear('transaksis.created_at', now()->year)

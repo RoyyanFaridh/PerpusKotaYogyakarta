@@ -114,8 +114,8 @@ class BukuService
 
             $terlibatTransaksi = BukuEksemplar::where('buku_id', $id)
                 ->where(function ($q) {
-                    $q->whereHas('transaksiDiserahkan')
-                      ->orWhereHas('transaksiDiterima');
+                    $q->whereHas('transaksiMasuk')
+                      ->orWhereHas('transaksiKeluar');
                 })
                 ->exists();
 
@@ -258,7 +258,6 @@ class BukuService
         ]);
         $sheet->getRowDimension(4)->setRowHeight(8);
 
-        // Headers — publik tidak include kolom Tampil
         $headers = $publikOnly
             ? ['No', 'Judul', 'Pengarang', 'Penerbit', 'ISBN', 'Kategori', 'Tahun', 'Stok', 'Lokasi']
             : ['No', 'Judul', 'Pengarang', 'Penerbit', 'ISBN', 'Kategori', 'Tahun', 'Stok', 'Lokasi', 'Tampil'];
@@ -283,7 +282,6 @@ class BukuService
             $lokasi    = $paket?->lokasi?->nama_lokasi ?? '-';
             $tampil    = $buku->is_visible ? 'Tampil' : 'Tersembunyi';
 
-            // ISBN sebagai numeric string agar tidak scientific notation
             $isbnValue = $buku->isbn ? (string) preg_replace('/[^0-9]/', '', $buku->isbn) : '-';
 
             $rowData = [
@@ -315,13 +313,11 @@ class BukuService
             $sheet->getStyle("G{$row}:{$lastCol}{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $sheet->getRowDimension($row)->setRowHeight(18);
 
-            // Format ISBN kolom E sebagai integer tanpa desimal
             $sheet->getStyle("E{$row}")->getNumberFormat()->setFormatCode('0');
 
             $row++;
         }
 
-        // Column widths — J (Tampil) hanya untuk admin
         $colWidths = ['A' => 5, 'B' => 36, 'C' => 22, 'D' => 26, 'E' => 16, 'F' => 22, 'G' => 8, 'H' => 10, 'I' => 26];
         if (! $publikOnly) {
             $colWidths['J'] = 14;

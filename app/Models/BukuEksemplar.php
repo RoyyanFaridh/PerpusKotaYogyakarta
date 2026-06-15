@@ -32,14 +32,14 @@ class BukuEksemplar extends Model implements Auditable
         return $this->belongsTo(Paket::class);
     }
 
-    public function transaksiDiserahkan()
+    public function transaksiMasuk()
     {
-        return $this->hasMany(Transaksi::class, 'buku_diserahkan_id');
+        return $this->hasMany(Transaksi::class, 'buku_masuk_id');
     }
 
-    public function transaksiDiterima()
+    public function transaksiKeluar()
     {
-        return $this->hasMany(Transaksi::class, 'buku_diterima_id');
+        return $this->hasMany(Transaksi::class, 'buku_keluar_id');
     }
 
     // Scopes

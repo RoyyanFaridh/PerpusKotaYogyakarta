@@ -24,8 +24,8 @@
 
         <div class="px-6 sm:px-8 py-6 min-h-96">
             @include('admin.transaksi._step-member',     ['prefix' => 'edit'])
-            @include('admin.transaksi._step-diserahkan', ['prefix' => 'edit'])
-            @include('admin.transaksi._step-diterima',   ['prefix' => 'edit'])
+            @include('admin.transaksi._step-masuk', ['prefix' => 'edit'])
+            @include('admin.transaksi._step-keluar',   ['prefix' => 'edit'])
             @include('admin.transaksi._step-konfirmasi', ['prefix' => 'edit'])
         </div>
 

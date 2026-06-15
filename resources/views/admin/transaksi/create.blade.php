@@ -28,8 +28,8 @@
             <input type="hidden" id="create_memberId"/>
 
             @include('admin.transaksi._step-member',     ['prefix' => 'create'])
-            @include('admin.transaksi._step-diserahkan', ['prefix' => 'create'])
-            @include('admin.transaksi._step-diterima',   ['prefix' => 'create'])
+            @include('admin.transaksi._step-masuk', ['prefix' => 'create'])
+            @include('admin.transaksi._step-keluar',   ['prefix' => 'create'])
             @include('admin.transaksi._step-konfirmasi', ['prefix' => 'create'])
         </div>
 

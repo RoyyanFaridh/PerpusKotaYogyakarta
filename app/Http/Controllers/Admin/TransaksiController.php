@@ -46,16 +46,16 @@ class TransaksiController extends Controller
         $transaksi = Transaksi::with([
                 'member',
                 'paket.lokasi',
-                'bukuDiserahkan.buku',
-                'bukuDiterima.buku',
+                'bukuMasuk.buku',
+                'bukuKeluar.buku',
             ])
             ->when($filters['search'] ?? null, function ($q, $search) {
                 $q->where(function ($q) use ($search) {
                     $q->whereHas('member', fn($m) =>
                             $m->where('nama', 'ilike', "%{$search}%")
                               ->orWhere('no_telp', 'ilike', "%{$search}%"))
-                      ->orWhereHas('bukuDiserahkan.buku', fn($b) => $b->where('judul', 'ilike', "%{$search}%"))
-                      ->orWhereHas('bukuDiterima.buku',   fn($b) => $b->where('judul', 'ilike', "%{$search}%"));
+                      ->orWhereHas('bukuMasuk.buku', fn($b) => $b->where('judul', 'ilike', "%{$search}%"))
+                      ->orWhereHas('bukuKeluar.buku',   fn($b) => $b->where('judul', 'ilike', "%{$search}%"));
                 });
             })
             ->when($filters['tanggal'] ?? null, function ($q, $tanggal) {
@@ -97,11 +97,11 @@ class TransaksiController extends Controller
         $request->validate([
             'member.nama'               => 'required|string|max:255',
             'member.no_telp'            => 'required|string|max:15',
-            'buku_diserahkan.judul'     => 'required|string|max:255',
-            'buku_diserahkan.pengarang' => 'required|string|max:255',
-            'buku_diterima_id'          => 'required|exists:buku_eksemplars,id',
-            'paket_diserahkan_id'       => 'required|exists:pakets,id',
-            'paket_diterima_id'         => 'required|exists:pakets,id',
+            'buku_masuk.judul'     => 'required|string|max:255',
+            'buku_masuk.pengarang' => 'required|string|max:255',
+            'buku_keluar_id'          => 'required|exists:buku_eksemplars,id',
+            'paket_masuk_id'       => 'required|exists:pakets,id',
+            'paket_keluar_id'         => 'required|exists:pakets,id',
         ]);
 
         try {
@@ -130,7 +130,7 @@ class TransaksiController extends Controller
         $request->validate([
             'member.nama'      => 'required|string|max:255',
             'member.no_telp'   => 'required|string|max:15',
-            'buku_diterima_id' => 'required|exists:buku_eksemplars,id',
+            'buku_keluar_id' => 'required|exists:buku_eksemplars,id',
         ]);
 
         try {
@@ -163,8 +163,8 @@ class TransaksiController extends Controller
         $transaksi = Transaksi::with([
                 'member',
                 'paket.lokasi',
-                'bukuDiserahkan.buku',
-                'bukuDiterima.buku',
+                'bukuMasuk.buku',
+                'bukuKeluar.buku',
                 'user',
             ])
             ->findOrFail($id);
@@ -195,16 +195,9 @@ class TransaksiController extends Controller
     public function cariBukuIsbn(Request $request)
     {
         $request->validate(['isbn' => 'required|string']);
-
-        // Superadmin bisa kirim lokasi_id eksplisit via query string
         $lokasiId = $this->getLokasiId($request->integer('lokasi_id') ?: null);
 
-        if (! $lokasiId) {
-            return response()->json(['message' => 'Lokasi tidak ditemukan untuk user ini.'], 422);
-        }
-
         $buku = $this->service->cariBukuByIsbn($request->isbn, $lokasiId);
-
         return response()->json($buku);
     }
 
@@ -212,12 +205,7 @@ class TransaksiController extends Controller
     {
         $lokasiId = $this->getLokasiId($request->integer('lokasi_id') ?: null);
 
-        if (! $lokasiId) {
-            return response()->json(['message' => 'Lokasi tidak ditemukan untuk user ini.'], 422);
-        }
-
         $hasil = $this->service->cariBukuByJudul($request->keyword ?? '', $lokasiId);
-
         return response()->json($hasil);
     }
 
@@ -225,15 +213,9 @@ class TransaksiController extends Controller
     {
         $lokasiId = $this->getLokasiId($request->integer('lokasi_id') ?: null);
 
-        if (! $lokasiId) {
-            return response()->json(['message' => 'Lokasi tidak ditemukan untuk user ini.'], 422);
-        }
-
         $eksemplars = $this->service->bukuByLokasi($lokasiId);
-
         return response()->json($eksemplars);
     }
-    
 
     public function paketAktif(Request $request)
     {
@@ -256,6 +238,21 @@ class TransaksiController extends Controller
                     'tahun_terbit', 'tempat_terbit', 'isbn']);
 
         return response()->json($buku);
+    }
+    public function cariBukuMasukJudul(Request $request)
+    {
+        $keyword = $request->input('keyword', '');
+
+        $hasil = \App\Models\Buku::where(function ($q) use ($keyword) {
+                $lower = mb_strtolower($keyword);
+                $q->whereRaw('LOWER(judul) LIKE ?', ['%' . $lower . '%'])
+                ->orWhereRaw('LOWER(pengarang) LIKE ?', ['%' . $lower . '%'])
+                ->orWhereRaw('LOWER(COALESCE(isbn, \'\')) LIKE ?', ['%' . $lower . '%']);
+            })
+            ->limit(8)
+            ->get(['judul', 'pengarang', 'penerbit', 'kategori', 'tahun_terbit', 'tempat_terbit', 'isbn', 'deskripsi']);
+
+        return response()->json($hasil);
     }
 
     public function export()

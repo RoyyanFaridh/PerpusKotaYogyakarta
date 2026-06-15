@@ -132,8 +132,8 @@
                     <tr class="border-b border-neutral-100 bg-neutral-50">
                         <th class="text-center text-xs font-semibold text-neutral-500 px-2 py-3">ID</th>
                         <th class="text-left   text-xs font-semibold text-neutral-500 px-4 py-3">Member</th>
-                        <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Buku Diserahkan</th>
-                        <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Buku Diterima</th>
+                        <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Buku Masuk</th>
+                        <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Buku Keluar</th>
                         <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Tanggal</th>
                         <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Aksi</th>
                     </tr>
@@ -144,7 +144,7 @@
                             $txnId = '#TXN-' . str_pad($item->id, 4, '0', STR_PAD_LEFT);
                         @endphp
                         <tr class="hover:bg-neutral-50 transition-colors table-row-data"
-                            data-search="{{ strtolower($item->member?->nama ?? '') }} {{ strtolower($item->bukuDiserahkan?->buku?->judul ?? '') }} {{ strtolower($item->bukuDiterima?->buku?->judul ?? '') }}">
+                            data-search="{{ strtolower($item->member?->nama ?? '') }} {{ strtolower($item->bukuMasuk?->buku?->judul ?? '') }} {{ strtolower($item->bukuKeluar?->buku?->judul ?? '') }}">
 
                             <td class="px-2 py-3.5 text-center">
                                 <span class="text-xs font-mono font-medium text-neutral-500">{{ $txnId }}</span>
@@ -163,13 +163,13 @@
                             </td>
 
                             <td class="px-4 py-3.5 max-w-40 text-center">
-                                <p class="text-sm font-medium text-neutral-700 truncate">{{ $item->bukuDiserahkan?->buku?->judul ?? '-' }}</p>
-                                <p class="text-xs text-neutral-400 mt-0.5">{{ $item->bukuDiserahkan?->buku?->pengarang ?? '' }}</p>
+                                <p class="text-sm font-medium text-neutral-700 truncate">{{ $item->bukuMasuk?->buku?->judul ?? '-' }}</p>
+                                <p class="text-xs text-neutral-400 mt-0.5">{{ $item->bukuMasuk?->buku?->pengarang ?? '' }}</p>
                             </td>
 
                             <td class="px-4 py-3.5 max-w-40 text-center">
-                                <p class="text-sm font-medium text-neutral-700 truncate">{{ $item->bukuDiterima?->buku?->judul ?? '-' }}</p>
-                                <p class="text-xs text-neutral-400 mt-0.5">{{ $item->bukuDiterima?->buku?->pengarang ?? '' }}</p>
+                                <p class="text-sm font-medium text-neutral-700 truncate">{{ $item->bukuKeluar?->buku?->judul ?? '-' }}</p>
+                                <p class="text-xs text-neutral-400 mt-0.5">{{ $item->bukuKeluar?->buku?->pengarang ?? '' }}</p>
                             </td>
 
                             <td class="px-4 py-3.5 whitespace-nowrap text-center">

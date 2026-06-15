@@ -89,6 +89,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::get('/cari-member',       [TransaksiController::class, 'cariMember'])->name('cari-member');
         Route::post('/simpan-member',    [TransaksiController::class, 'simpanMember'])->name('simpan-member');
         Route::get('/cari-buku-isbn',    [TransaksiController::class, 'cariBukuIsbn'])->name('cari-buku-isbn');
+        Route::get('/cari-buku-masuk-judul', [TransaksiController::class, 'cariBukuMasukJudul'])->name('cari-buku-masuk-judul');
         Route::get('/cari-buku-judul',   [TransaksiController::class, 'cariBukuJudul'])->name('cari-buku-judul');
         Route::get('/buku-by-paket',     [TransaksiController::class, 'bukuByPaket'])->name('buku-by-paket');
         Route::get('/paket-aktif',       [TransaksiController::class, 'paketAktif'])->name('paket-aktif');

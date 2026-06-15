@@ -90,7 +90,7 @@ class BukuEksemplarController extends Controller
         $eksemplar = BukuEksemplar::where('buku_id', $bukuId)
             ->findOrFail($eksemplarId);
 
-        if ($eksemplar->transaksiDiserahkan()->exists() || $eksemplar->transaksiDiterima()->exists()) {
+        if ($eksemplar->transaksiMasuk()->exists() || $eksemplar->transaksiKeluar()->exists()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Eksemplar tidak bisa dihapus karena terlibat dalam transaksi.',

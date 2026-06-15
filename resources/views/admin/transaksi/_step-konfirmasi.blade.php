@@ -29,10 +29,10 @@
                          stroke-linejoin="round" aria-hidden="true">
                         <path d="M5 12h14"/><path d="M12 5l7 7-7 7"/>
                     </svg>
-                    <p class="text-xs font-medium text-neutral-400">Buku Diserahkan</p>
+                    <p class="text-xs font-medium text-neutral-400">Buku Masuk</p>
                 </div>
                 <p class="text-sm font-semibold text-neutral-800 leading-snug"
-                   id="{{ $prefix }}_konfirmasiBukuDiserahkan"></p>
+                   id="{{ $prefix }}_konfirmasiBukuMasuk"></p>
             </div>
             <div class="p-4 rounded-xl border border-success-200 bg-success-50">
                 <div class="flex items-center gap-1.5 mb-2">
@@ -41,10 +41,10 @@
                          stroke-linejoin="round" aria-hidden="true">
                         <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
                     </svg>
-                    <p class="text-xs font-medium text-success-600">Buku Diterima</p>
+                    <p class="text-xs font-medium text-success-600">Buku Keluar</p>
                 </div>
                 <p class="text-sm font-semibold text-success-800 leading-snug"
-                   id="{{ $prefix }}_konfirmasiBukuDiterima"></p>
+                   id="{{ $prefix }}_konfirmasiBukuKeluar"></p>
                 <p class="text-xs text-warning-600 mt-1.5">Stok akan berkurang 1</p>
             </div>
         </div>

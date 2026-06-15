@@ -1,5 +1,5 @@
 <div class="flex items-center px-6 sm:px-8 py-4 gap-1.5 border-b border-neutral-100">
-    @foreach (['Member', 'Buku Diserahkan', 'Buku Diterima', 'Konfirmasi'] as $i => $label)
+    @foreach (['Member', 'Buku Masuk', 'Buku Keluar', 'Konfirmasi'] as $i => $label)
         <div class="flex items-center gap-1.5 {{ $i < 3 ? 'flex-1' : '' }}">
             <div class="w-5 h-5 rounded-full flex items-center justify-center text-[0.6rem] font-bold shrink-0 transition-all
                     {{ $i === 0 ? 'bg-primary text-white' : 'bg-neutral-100 text-neutral-400' }}"
