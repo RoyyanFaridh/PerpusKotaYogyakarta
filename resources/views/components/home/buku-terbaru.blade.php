@@ -50,9 +50,9 @@
                 </p>
                 <div class="flex flex-col gap-1 mt-auto pt-2 border-t border-primary-50">
                     <div class="flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full {{ $buku->stok > 0 ? 'bg-emerald-400' : 'bg-red-400' }}"></span>
-                        <span class="text-[0.7rem] font-medium {{ $buku->stok > 0 ? 'text-emerald-600' : 'text-red-500' }}">
-                            {{ $buku->stok > 0 ? "Stok {$buku->stok}" : 'Habis' }}
+                        <span class="w-2 h-2 rounded-full {{ $buku->stok_aktif > 0 ? 'bg-emerald-400' : 'bg-red-400' }}"></span>
+                        <span class="text-[0.7rem] font-medium {{ $buku->stok_aktif > 0 ? 'text-emerald-600' : 'text-red-500' }}">
+                            {{ $buku->stok_aktif > 0 ? "Stok {$buku->stok_aktif}" : 'Habis' }}
                         </span>
                     </div>
                     @if ($buku->lokasi)

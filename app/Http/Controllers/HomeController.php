@@ -33,6 +33,8 @@ class HomeController extends Controller
 
         return view('welcome', [
             'totalBuku'    => Buku::visible()->tersedia()->count(),
+            'totalEksemplar' => \App\Models\BukuEksemplar::whereHas('paket', fn($p) => $p->where('is_aktif', true))
+                        ->sum('stok'),
             'totalAnggota' => Member::count(),
             'totalTukar'   => Transaksi::count(),
             'kegiatan'     => $sorted,
@@ -68,8 +70,10 @@ class HomeController extends Controller
         $paginated = $query->paginate(12);
 
         $paginated->getCollection()->transform(function ($buku) {
-            $lokasis = $buku->eksemplars
-                ->filter(fn($e) => $e->paket?->is_aktif && $e->stok > 0)
+            $eksemplarsAktif = $buku->eksemplars
+                ->filter(fn($e) => $e->paket?->is_aktif && $e->stok > 0);
+
+            $lokasis = $eksemplarsAktif
                 ->map(fn($e) => $e->paket?->lokasi?->nama_lokasi)
                 ->filter()
                 ->unique()
@@ -82,7 +86,7 @@ class HomeController extends Controller
                 'kategori'     => $buku->kategori,
                 'tahun_terbit' => $buku->tahun_terbit,
                 'resume'       => $buku->resume,
-                'stok'         => $buku->stok,
+                'stok'         => $eksemplarsAktif->sum('stok'),
                 'lokasis'      => $lokasis,
                 'cover_url'    => $buku->cover ? Storage::url($buku->cover) : null,
             ];

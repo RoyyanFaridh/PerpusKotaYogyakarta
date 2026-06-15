@@ -54,10 +54,12 @@ class Buku extends Model implements Auditable
 
     public function scopeCari(Builder $query, string $keyword): Builder
     {
-        return $query->where(function ($q) use ($keyword) {
-            $q->where('judul',     'like', "%{$keyword}%")
-              ->orWhere('pengarang', 'like', "%{$keyword}%")
-              ->orWhere('isbn',      'like', "%{$keyword}%");
+        $lower = strtolower($keyword);
+
+        return $query->where(function ($q) use ($lower) {
+            $q->whereRaw('LOWER(judul)     LIKE ?', ["%{$lower}%"])
+            ->orWhereRaw('LOWER(pengarang) LIKE ?', ["%{$lower}%"])
+            ->orWhereRaw('LOWER(isbn)      LIKE ?', ["%{$lower}%"]);
         });
     }
 
@@ -68,6 +70,19 @@ class Buku extends Model implements Auditable
         }
 
         return $this->eksemplars()->sum('stok');
+    }
+
+    public function getStokAktifAttribute(): int
+    {
+        if ($this->relationLoaded('eksemplars')) {
+            return $this->eksemplars
+                ->filter(fn($e) => $e->paket?->is_aktif)
+                ->sum('stok');
+        }
+
+        return $this->eksemplars()
+            ->whereHas('paket', fn($p) => $p->where('is_aktif', true))
+            ->sum('stok');
     }
 
     public function getIsTersediaAttribute(): bool
