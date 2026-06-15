@@ -18,7 +18,7 @@
                 </div>
                 <div>
                     <h2 class="text-base font-semibold text-neutral-800">Pindah Eksemplar</h2>
-                    <p id="relokasi-subtitle" class="text-xs text-neutral-400 mt-0.5 truncate max-w-[220px]"></p>
+                    <p id="relokasi-subtitle" class="text-xs text-neutral-400 mt-0.5 truncate max-w-55"></p>
                 </div>
             </div>
             <button type="button" onclick="tutupModalRelokasi()"

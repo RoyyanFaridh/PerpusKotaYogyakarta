@@ -120,7 +120,7 @@ class DashboardController extends Controller
         ];
 
         // Data transaksi bulan ini per kategori
-        $dataTransaksi = Transaksi::join('buku_eksemplars', 'transaksis.buku_keluar_id', '=', 'buku_eksemplars.id')
+        $dataTransaksi = Transaksi::join('buku_eksemplars', 'transaksis.buku_diserahkan_id', '=', 'buku_eksemplars.id')
             ->join('bukus', 'buku_eksemplars.buku_id', '=', 'bukus.id')
             ->whereMonth('transaksis.created_at', now()->month)
             ->whereYear('transaksis.created_at', now()->year)
