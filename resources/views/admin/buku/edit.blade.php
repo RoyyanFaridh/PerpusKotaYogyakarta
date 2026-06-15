@@ -32,6 +32,45 @@
 
             <input type="hidden" id="edit_eksemplar_id" name="eksemplar_id"/>
 
+            {{-- Cover — drag & drop --}}
+            <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-medium text-neutral-700">Cover Buku</label>
+                <div id="edit-cover-dropzone"
+                     class="relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-neutral-200 bg-neutral-50 transition-colors cursor-pointer hover:border-primary-300 hover:bg-primary-50"
+                     style="min-height: 140px;"
+                     onclick="document.getElementById('cover-input-edit').click()">
+
+                    {{-- Preview --}}
+                    <div id="preview-cover-edit"
+                         class="hidden absolute inset-0 rounded-xl overflow-hidden">
+                        <img id="preview-cover-edit-img" src="" class="w-full h-full object-cover"/>
+                        <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                            <span class="text-white text-xs font-medium">Ganti Cover</span>
+                        </div>
+                    </div>
+
+                    {{-- Placeholder --}}
+                    <div id="edit-cover-placeholder" class="flex flex-col items-center gap-2 py-6 px-4 text-center">
+                        <div class="w-10 h-10 rounded-lg bg-neutral-100 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-neutral-400" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="17 8 12 3 7 8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-neutral-600">Tarik file ke sini</p>
+                            <p class="text-xs text-neutral-400 mt-0.5">atau klik untuk pilih file · JPG, PNG, WebP</p>
+                        </div>
+                    </div>
+
+                    <input type="file" name="cover" id="cover-input-edit" accept="image/*"
+                           class="hidden"/>
+                </div>
+                <p class="text-[0.7rem] text-neutral-400">Kosongkan jika tidak ingin mengubah cover.</p>
+            </div>
+
             {{-- Judul --}}
             <div class="flex flex-col gap-1.5">
                 <label for="edit_judul" class="text-xs font-medium text-neutral-700">Judul <span class="text-danger-500">*</span></label>
@@ -98,42 +137,6 @@
                 </div>
             </div>
 
-            {{-- Paket --}}
-            <div class="flex flex-col gap-1.5">
-                <div class="flex items-center justify-between">
-                    <label for="edit_paket_id" class="text-xs font-medium text-neutral-700">Paket</label>
-                    <button type="button" onclick="bukaPaketDariEditBuku()"
-                            class="text-[0.68rem] font-medium text-primary-600 hover:text-primary-700 transition-colors">
-                        + Buat Paket Baru
-                    </button>
-                </div>
-                <select id="edit_paket_id" name="paket_id"
-                        class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
-                    <option value="">Tanpa paket</option>
-                    @foreach ($pakets as $paket)
-                        <option value="{{ $paket->id }}">
-                            {{ $paket->nama }}
-                            @if ($paket->lokasi)
-                                — {{ $paket->lokasi->nama_lokasi }}
-                            @endif
-                        </option>
-                    @endforeach
-                </select>
-                <p class="text-[0.68rem] text-neutral-400">Lokasi dan visibilitas buku mengikuti paket yang dipilih.</p>
-            </div>
-
-            {{-- Info visibilitas --}}
-            <div class="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-primary-50 border border-primary-100">
-                <svg class="w-4 h-4 text-primary-500 shrink-0" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
-                    <line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
-                <p class="text-xs text-primary-700">
-                    Buku otomatis tampil ke publik jika paketnya aktif, dan tersembunyi jika paket nonaktif.
-                </p>
-            </div>
-
             {{-- Resume --}}
             <div class="flex flex-col gap-1.5">
                 <label for="edit_resume" class="text-xs font-medium text-neutral-700">Resume</label>
@@ -146,25 +149,6 @@
                 <label for="edit_deskripsi" class="text-xs font-medium text-neutral-700">Deskripsi</label>
                 <textarea id="edit_deskripsi" name="deskripsi" rows="3" placeholder="Deskripsi lengkap buku"
                           class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition resize-none"></textarea>
-            </div>
-
-            {{-- Cover --}}
-            <div class="flex flex-col gap-1.5">
-                <label class="text-xs font-medium text-neutral-700">Cover Buku</label>
-                <div class="flex items-start gap-4">
-                    <div id="preview-cover-edit"
-                         class="w-16 h-24 rounded-lg border border-neutral-200 bg-neutral-50 flex items-center justify-center overflow-hidden shrink-0">
-                        <svg class="w-5 h-5 text-neutral-300" viewBox="0 0 24 24" fill="none"
-                             stroke="currentColor" stroke-width="1.5">
-                            <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
-                        </svg>
-                    </div>
-                    <div class="flex flex-col gap-1.5 flex-1 justify-center">
-                        <input type="file" name="cover" id="cover-input-edit" accept="image/*"
-                               class="text-xs text-neutral-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 cursor-pointer transition">
-                        <p class="text-[0.7rem] text-neutral-400">Kosongkan jika tidak ingin mengubah cover.</p>
-                    </div>
-                </div>
             </div>
 
         </form>
@@ -202,26 +186,27 @@
         document.getElementById('edit_stok').value          = data.stok          ?? 0;
         document.getElementById('edit_kategori').value      = data.kategori      ?? '';
         document.getElementById('edit_deskripsi').value     = data.deskripsi     ?? '';
-        document.getElementById('edit_paket_id').value      = data.paket_id      ?? '';
 
-        const preview = document.getElementById('preview-cover-edit');
-        if (data.cover) {
-            preview.innerHTML = `<img src="/storage/${data.cover}" class="w-full h-full object-cover">`;
-        } else {
-            preview.innerHTML = `<svg class="w-5 h-5 text-neutral-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>`;
-        }
-
+        // Reset cover input
         document.getElementById('cover-input-edit').value = '';
+
+        const preview    = document.getElementById('preview-cover-edit');
+        const previewImg = document.getElementById('preview-cover-edit-img');
+        const placeholder = document.getElementById('edit-cover-placeholder');
+
+        if (data.cover) {
+            previewImg.src = `/storage/${data.cover}`;
+            preview.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+        } else {
+            preview.classList.add('hidden');
+            placeholder.classList.remove('hidden');
+        }
 
         const el = document.getElementById('modalEditBuku');
         el.classList.remove('hidden');
         el.classList.add('flex');
         document.body.style.overflow = 'hidden';
-    }
-
-    function bukaPaketDariEditBuku() {
-        tutupModalEditBuku();
-        bukaModalTambahPaket('edit_buku');
     }
 
     function tutupModalEditBuku() {
@@ -231,18 +216,54 @@
         document.body.style.overflow = '';
     }
 
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') tutupModalEditBuku();
-    });
+    function handleEditCoverFile(file) {
+        if (!file || !file.type.startsWith('image/')) return;
 
-    document.getElementById('cover-input-edit')?.addEventListener('change', function () {
-        const file = this.files[0];
-        if (!file) return;
         const reader = new FileReader();
         reader.onload = e => {
-            document.getElementById('preview-cover-edit').innerHTML =
-                `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+            const preview    = document.getElementById('preview-cover-edit');
+            const previewImg = document.getElementById('preview-cover-edit-img');
+            const placeholder = document.getElementById('edit-cover-placeholder');
+
+            previewImg.src = e.target.result;
+            preview.classList.remove('hidden');
+            placeholder.classList.add('hidden');
         };
         reader.readAsDataURL(file);
+    }
+
+    // File input change
+    document.getElementById('cover-input-edit')?.addEventListener('change', function () {
+        if (this.files[0]) handleEditCoverFile(this.files[0]);
+    });
+
+    // Drag & drop
+    const dropzone = document.getElementById('edit-cover-dropzone');
+
+    dropzone?.addEventListener('dragover', e => {
+        e.preventDefault();
+        dropzone.classList.add('border-primary-400', 'bg-primary-50');
+    });
+
+    dropzone?.addEventListener('dragleave', () => {
+        dropzone.classList.remove('border-primary-400', 'bg-primary-50');
+    });
+
+    dropzone?.addEventListener('drop', e => {
+        e.preventDefault();
+        dropzone.classList.remove('border-primary-400', 'bg-primary-50');
+
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            // Inject ke input supaya ikut tersubmit
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            document.getElementById('cover-input-edit').files = dt.files;
+            handleEditCoverFile(file);
+        }
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') tutupModalEditBuku();
     });
 </script>

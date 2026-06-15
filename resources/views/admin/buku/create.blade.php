@@ -29,6 +29,41 @@
               class="px-6 sm:px-8 py-6 flex flex-col gap-4 max-h-[75vh] overflow-y-auto custom-scroll">
             @csrf
 
+            {{-- Cover — drag & drop --}}
+            <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-medium text-neutral-700">Cover Buku</label>
+                <div id="tambah-cover-dropzone"
+                     class="relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-neutral-200 bg-neutral-50 transition-colors cursor-pointer hover:border-primary-300 hover:bg-primary-50"
+                     style="min-height: 140px;"
+                     onclick="document.getElementById('cover-input-tambah').click()">
+
+                    <div id="preview-cover-tambah"
+                         class="hidden absolute inset-0 rounded-xl overflow-hidden">
+                        <img id="preview-cover-tambah-img" src="" class="w-full h-full object-cover"/>
+                        <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                            <span class="text-white text-xs font-medium">Ganti Cover</span>
+                        </div>
+                    </div>
+
+                    <div id="tambah-cover-placeholder" class="flex flex-col items-center gap-2 py-6 px-4 text-center">
+                        <div class="w-10 h-10 rounded-lg bg-neutral-100 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-neutral-400" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="17 8 12 3 7 8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-neutral-600">Tarik file ke sini</p>
+                            <p class="text-xs text-neutral-400 mt-0.5">atau klik untuk pilih file · JPG, PNG, WebP</p>
+                        </div>
+                    </div>
+
+                    <input type="file" name="cover" id="cover-input-tambah" accept="image/*" class="hidden"/>
+                </div>
+            </div>
+
             {{-- Judul & Pengarang --}}
             <div class="grid grid-cols-2 gap-3">
                 <div class="flex flex-col gap-1.5">
@@ -96,10 +131,10 @@
                 </div>
             </div>
 
-            {{-- Paket --}}
+            {{-- Paket (wajib) --}}
             <div class="flex flex-col gap-1.5">
                 <div class="flex items-center justify-between">
-                    <label class="text-xs font-medium text-neutral-700">Paket</label>
+                    <label class="text-xs font-medium text-neutral-700">Paket <span class="text-danger-500">*</span></label>
                     <button type="button" onclick="bukaPaketDariTambahBuku()"
                             class="text-[0.68rem] font-medium text-primary-600 hover:text-primary-700 transition-colors">
                         + Buat Paket Baru
@@ -107,7 +142,7 @@
                 </div>
                 <select name="paket_id" id="tambah_paket_id"
                         class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
-                    <option value="">Tanpa paket</option>
+                    <option value="">-- Pilih Paket --</option>
                     @foreach ($pakets as $paket)
                         <option value="{{ $paket->id }}">
                             {{ $paket->nama }}
@@ -117,11 +152,12 @@
                         </option>
                     @endforeach
                 </select>
+                <p id="err_paket" class="hidden text-[0.68rem] text-danger-500">Paket wajib dipilih.</p>
                 <p class="text-[0.68rem] text-neutral-400">Lokasi buku mengikuti paket yang dipilih.</p>
             </div>
 
             {{-- Visibility --}}
-            <div id="tambah_visibility_wrapper" class="flex items-center gap-2.5">
+            <div class="flex items-center gap-2.5">
                 <input type="hidden" name="is_visible" value="0"/>
                 <input type="checkbox" name="is_visible" id="tambah_is_visible" value="1"
                        class="w-4 h-4 rounded border-neutral-300 text-primary-600 focus:ring-primary-300"/>
@@ -142,24 +178,6 @@
                 <label class="text-xs font-medium text-neutral-700">Deskripsi</label>
                 <textarea name="deskripsi" rows="3" placeholder="Deskripsi lengkap buku..."
                           class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition resize-none"></textarea>
-            </div>
-
-            {{-- Cover --}}
-            <div class="flex flex-col gap-1.5">
-                <label class="text-xs font-medium text-neutral-700">Cover Buku</label>
-                <div class="flex items-start gap-4">
-                    <div id="preview-cover-tambah"
-                         class="w-16 h-24 rounded-lg border border-neutral-200 bg-neutral-50 flex items-center justify-center overflow-hidden shrink-0">
-                        <svg class="w-5 h-5 text-neutral-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
-                        </svg>
-                    </div>
-                    <div class="flex flex-col gap-1.5 flex-1 justify-center">
-                        <input type="file" name="cover" id="cover-input-tambah" accept="image/*"
-                               class="text-xs text-neutral-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 cursor-pointer transition">
-                        <p class="text-[0.7rem] text-neutral-400">JPG, PNG, WEBP. Maks 2MB.</p>
-                    </div>
-                </div>
             </div>
 
         </form>
@@ -203,15 +221,12 @@
         bukaModalTambahPaket('tambah_buku');
     }
 
-    document.getElementById('tambah_paket_id')?.addEventListener('change', function () {
-        const wrapper = document.getElementById('tambah_visibility_wrapper');
-        wrapper.classList.toggle('hidden', !!this.value);
-    });
-
     function resetErrorTambahBuku() {
-        ['judul', 'pengarang', 'stok'].forEach(field => {
+        ['judul', 'pengarang', 'stok', 'paket'].forEach(field => {
             document.getElementById('err_' + field)?.classList.add('hidden');
-            document.getElementById('tambah_' + field)?.classList.remove(
+        });
+        ['tambah_judul', 'tambah_pengarang', 'tambah_stok', 'tambah_paket_id'].forEach(id => {
+            document.getElementById(id)?.classList.remove(
                 'border-danger-400', 'focus:ring-danger-200', 'focus:border-danger-400'
             );
         });
@@ -236,28 +251,60 @@
         const judul     = document.getElementById('tambah_judul').value.trim();
         const pengarang = document.getElementById('tambah_pengarang').value.trim();
         const stok      = document.getElementById('tambah_stok').value;
+        const paket     = document.getElementById('tambah_paket_id').value;
 
         setError('tambah_judul',     'err_judul',     !judul);
         setError('tambah_pengarang', 'err_pengarang', !pengarang);
         setError('tambah_stok',      'err_stok',      stok === '');
+        setError('tambah_paket_id',  'err_paket',     !paket);
 
-        if (!judul || !pengarang || stok === '') return;
+        if (!judul || !pengarang || stok === '' || !paket) return;
 
         document.getElementById('formTambahBuku').submit();
     }
 
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') tutupModalBuku();
-    });
-
-    document.getElementById('cover-input-tambah')?.addEventListener('change', function () {
-        const file = this.files[0];
-        if (!file) return;
+    function handleTambahCoverFile(file) {
+        if (!file || !file.type.startsWith('image/')) return;
         const reader = new FileReader();
         reader.onload = e => {
-            document.getElementById('preview-cover-tambah').innerHTML =
-                `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+            const preview     = document.getElementById('preview-cover-tambah');
+            const previewImg  = document.getElementById('preview-cover-tambah-img');
+            const placeholder = document.getElementById('tambah-cover-placeholder');
+            previewImg.src = e.target.result;
+            preview.classList.remove('hidden');
+            placeholder.classList.add('hidden');
         };
         reader.readAsDataURL(file);
+    }
+
+    document.getElementById('cover-input-tambah')?.addEventListener('change', function () {
+        if (this.files[0]) handleTambahCoverFile(this.files[0]);
+    });
+
+    const tambahDropzone = document.getElementById('tambah-cover-dropzone');
+
+    tambahDropzone?.addEventListener('dragover', e => {
+        e.preventDefault();
+        tambahDropzone.classList.add('border-primary-400', 'bg-primary-50');
+    });
+
+    tambahDropzone?.addEventListener('dragleave', () => {
+        tambahDropzone.classList.remove('border-primary-400', 'bg-primary-50');
+    });
+
+    tambahDropzone?.addEventListener('drop', e => {
+        e.preventDefault();
+        tambahDropzone.classList.remove('border-primary-400', 'bg-primary-50');
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            document.getElementById('cover-input-tambah').files = dt.files;
+            handleTambahCoverFile(file);
+        }
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') tutupModalBuku();
     });
 </script>
