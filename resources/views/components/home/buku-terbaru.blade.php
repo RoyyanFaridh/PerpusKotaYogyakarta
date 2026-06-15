@@ -55,13 +55,21 @@
                             {{ $buku->stok_aktif > 0 ? "Stok {$buku->stok_aktif}" : 'Habis' }}
                         </span>
                     </div>
-                    @if ($buku->lokasi)
+                    @php
+                        $lokasiAktif = $buku->eksemplars
+                            ->filter(fn($e) => $e->paket?->is_aktif && $e->stok > 0)
+                            ->map(fn($e) => $e->paket?->lokasi?->nama_lokasi)
+                            ->filter()
+                            ->unique()
+                            ->values();
+                    @endphp
+                    @if ($lokasiAktif->isNotEmpty())
                     <div class="flex items-center gap-1 text-[0.65rem] text-neutral-400">
                         <svg class="w-3 h-3 stroke-current fill-none shrink-0" viewBox="0 0 24 24" stroke-width="2">
                             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
                             <circle cx="12" cy="9" r="2.5"/>
                         </svg>
-                        <span>{{ $buku->lokasi->nama_lokasi }}</span>
+                        <span>{{ $lokasiAktif->join(', ') }}</span>
                     </div>
                     @endif
                 </div>
