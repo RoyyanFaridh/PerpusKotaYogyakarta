@@ -63,8 +63,10 @@ class CatalogController extends Controller
         return response()->json([
             'total' => $buku->count(),
             'data'  => $buku->map(function ($b) {
-                $lokasis = $b->eksemplars
-                    ->filter(fn($e) => $e->paket?->is_aktif && $e->stok > 0)
+                $eksemplarsAktif = $b->eksemplars
+                    ->filter(fn($e) => $e->paket?->is_aktif && $e->stok > 0);
+
+                $lokasis = $eksemplarsAktif
                     ->map(fn($e) => $e->paket?->lokasi?->nama_lokasi)
                     ->filter()
                     ->unique()
@@ -77,7 +79,7 @@ class CatalogController extends Controller
                     'kategori'     => $b->kategori,
                     'tahun_terbit' => $b->tahun_terbit,
                     'resume'       => $b->resume,
-                    'stok'         => $b->stok,
+                    'stok'         => $eksemplarsAktif->sum('stok'),
                     'lokasis'      => $lokasis,
                     'cover_url'    => $b->cover ? Storage::url($b->cover) : null,
                 ];
