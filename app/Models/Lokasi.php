@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
+use App\Models\UserLokasi;
 
 class Lokasi extends Model implements Auditable
 {
@@ -18,21 +19,30 @@ class Lokasi extends Model implements Auditable
         'nama_lokasi',
         'alamat',
         'no_telp',
-        'user_id',
         'tampil_di_search',
         'aktif',
     ];
 
-    protected $casts = [
-        'tampil_di_search' => 'boolean',
-        'aktif'            => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'tampil_di_search' => 'boolean',
+            'aktif'            => 'boolean',
+        ];
+    }
 
     // Relationships
 
-    public function user()
+    // Semua histori penugasan di lokasi ini
+    public function userLokasis()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(UserLokasi::class);
+    }
+
+    // Admin yang sedang aktif di lokasi ini
+    public function adminAktif()
+    {
+        return $this->hasMany(UserLokasi::class)->whereNull('unassigned_at');
     }
 
     public function pakets()

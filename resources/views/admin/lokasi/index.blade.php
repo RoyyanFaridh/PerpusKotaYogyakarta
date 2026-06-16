@@ -29,7 +29,6 @@
                         <th class="text-left   text-xs font-medium text-neutral-400 px-5 py-3">Nama Lokasi</th>
                         <th class="text-left   text-xs font-medium text-neutral-400 px-5 py-3">Alamat</th>
                         <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">No. Telepon</th>
-                        <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Penanggung Jawab</th>
                         <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Tanggal</th>
                         <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Aksi</th>
                     </tr>
@@ -46,15 +45,6 @@
                             <td class="px-5 py-3.5 text-xs text-neutral-500 font-mono text-center">
                                 {{ $lokasi->no_telp ?? '-' }}
                             </td>
-                            <td class="px-5 py-3.5 text-center">
-                                @if ($lokasi->user)
-                                    <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-50 text-primary-700">
-                                        {{ $lokasi->user->nama }}
-                                    </span>
-                                @else
-                                    <span class="text-xs text-neutral-400">-</span>
-                                @endif
-                            </td>
                             <td class="px-5 py-3.5 text-xs text-neutral-400 text-center">
                                 {{ $lokasi->created_at->format('d M Y') }}
                             </td>
@@ -66,7 +56,6 @@
                                             'nama_lokasi' => $lokasi->nama_lokasi,
                                             'alamat'      => $lokasi->alamat,
                                             'no_telp'     => $lokasi->no_telp,
-                                            'user_id'     => $lokasi->user_id,
                                         ]) }})"
                                         class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50 transition-colors">
                                         <x-icons.edit/>

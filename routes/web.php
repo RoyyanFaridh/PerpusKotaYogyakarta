@@ -113,22 +113,23 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::post('/{paket}/pemindahan',      [PaketPemindahanController::class, 'store'])->name('pemindahan.store')->middleware('has.permission:buku.edit');
     });
 
-    // Pengaturan
     Route::prefix('pengaturan')->name('pengaturan.')->group(function () {
         Route::get('/profil-saya', [PengaturanController::class, 'profilPage'])->name('profil.page');
-        Route::put('/password',    [PengaturanController::class, 'updatePassword'])->name('password');
-        Route::put('/profil',      [PengaturanController::class, 'updateProfil'])->name('profil');
+        Route::put('/profil', [PengaturanController::class, 'updateProfil'])->name('profil');
+        Route::put('/password', [PengaturanController::class, 'updatePassword'])->name('password');
+
     });
 
     Route::prefix('pengaturan')->name('pengaturan.')->middleware('superadmin')->group(function () {
-        Route::get('/',                         [PengaturanController::class, 'index'])->name('index');
-        Route::get('/backup',                   [PengaturanController::class, 'backup'])->name('backup');
-        Route::get('/user/create',              [PengaturanController::class, 'createUser'])->name('create');
-        Route::post('/user',                    [PengaturanController::class, 'storeUser'])->name('user');
-        Route::get('/user/{user}/edit',         [PengaturanController::class, 'editUser'])->name('edit');
-        Route::put('/user/{user}',              [PengaturanController::class, 'updateUser'])->name('user.update');
+        Route::get('/', [PengaturanController::class, 'index'])->name('index');
+        Route::post('/user',             [PengaturanController::class, 'storeUser'])->name('user.store');
+        Route::put('/user/{user}',       [PengaturanController::class, 'updateUser'])->name('user.update');
+        Route::delete('/user/{user}',    [PengaturanController::class, 'destroyUser'])->name('user.destroy');
+        // Permissions
         Route::post('/user/{user}/permissions', [PengaturanController::class, 'updatePermissions'])->name('user.permissions');
-        Route::get('/user/{user}/destroy',      [PengaturanController::class, 'confirmDestroyUser'])->name('destroy');
-        Route::delete('/user/{user}',           [PengaturanController::class, 'destroyUser'])->name('user.destroy');
+        // Penugasan Lokasi
+        Route::post('/user/{user}/lokasi',                      [PengaturanController::class, 'assignLokasi'])->name('user.lokasi.assign');
+        Route::delete('/user/{user}/lokasi/{userLokasi}',       [PengaturanController::class, 'unassignLokasi'])->name('user.lokasi.unassign');
+        Route::get('/user/{user}/lokasi/histori',               [PengaturanController::class, 'historiLokasi'])->name('user.lokasi.histori');
     });
 });

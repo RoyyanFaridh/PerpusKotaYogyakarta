@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('permission');
             $table->timestamps();
 
-            $table->unique(['user_id', 'permission']); 
+            $table->unique(['user_id', 'permission']);
         });
     }
 

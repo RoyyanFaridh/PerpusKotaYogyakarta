@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\UserPermission;
 use OwenIt\Auditing\Contracts\Auditable;
+use App\Models\UserLokasi;
 
 class User extends Authenticatable implements Auditable
 {
@@ -17,9 +18,9 @@ class User extends Authenticatable implements Auditable
         'nama',
         'email',
         'no_hp',
-        'lokasi_id',
         'password',
         'role',
+        'is_active',
     ];
 
     protected $hidden = [
@@ -27,19 +28,29 @@ class User extends Authenticatable implements Auditable
         'remember_token',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'password' => 'hashed',
+            'is_active' => 'boolean',
+        ];
+    }
+
     protected $auditExclude = [
         'password',
         'remember_token',
     ];
 
-    public function permissions()
+    // Semua histori penugasan
+    public function userLokasis()
     {
-        return $this->hasMany(UserPermission::class);
+        return $this->hasMany(UserLokasi::class);
     }
 
-    public function lokasi()
+    // Penugasan aktif saat ini
+    public function penugasanAktif()
     {
-        return $this->belongsTo(Lokasi::class);
+        return $this->hasOne(UserLokasi::class)->whereNull('unassigned_at');
     }
 
     public function members()
@@ -55,6 +66,11 @@ class User extends Authenticatable implements Auditable
     public function transaksis()
     {
         return $this->hasMany(Transaksi::class);
+    }
+
+    public function permissions()
+    {
+        return $this->hasMany(UserPermission::class);
     }
 
     public function isSuperAdmin(): bool

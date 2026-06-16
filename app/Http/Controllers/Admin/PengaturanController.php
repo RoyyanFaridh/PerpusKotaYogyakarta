@@ -3,25 +3,50 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Lokasi;
 use App\Models\User;
+use App\Models\UserLokasi;
 use App\Models\UserPermission;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\View\View;
 
 class PengaturanController extends Controller
 {
-    public function index()
-    {
-        $users          = User::with('permissions')->orderBy('nama')->get();
-        $allPermissions = UserPermission::allPermissions();
-        $lastBackup     = null;
+    // ─────────────────────────────────────────────
+    // INDEX
+    // ─────────────────────────────────────────────
 
-        return view('admin.pengaturan.index', compact('users', 'allPermissions', 'lastBackup'));
+    public function index(): View
+    {
+        $users = User::with(['permissions', 'penugasanAktif.lokasi'])->orderBy('nama')->get();
+        $allPermissions = UserPermission::allPermissions();
+        $lokasis        = Lokasi::where('aktif', true)->orderBy('nama_lokasi')->get();
+
+        return view('admin.pengaturan.index', compact('users', 'allPermissions', 'lokasis'));
     }
 
-    public function updateProfil(Request $request)
+    // ─────────────────────────────────────────────
+    // PROFIL (Admin Lokasi — bukan Superadmin)
+    // ─────────────────────────────────────────────
+
+    public function profilPage(): View|RedirectResponse
+    {
+        /** @var User $user */
+        $user = Auth::user();
+
+        if ($user->isSuperAdmin()) {
+            return redirect()->route('admin.pengaturan.index');
+        }
+
+        return view('admin.pengaturan.profil');
+    }
+
+    public function updateProfil(Request $request): RedirectResponse
     {
         /** @var User $user */
         $user = Auth::user();
@@ -42,7 +67,11 @@ class PengaturanController extends Controller
                          ->with('success', 'Profil berhasil diperbarui.');
     }
 
-    public function updatePassword(Request $request)
+    // ─────────────────────────────────────────────
+    // PASSWORD (akun sendiri)
+    // ─────────────────────────────────────────────
+
+    public function updatePassword(Request $request): RedirectResponse
     {
         $request->validate([
             'current_password' => ['required'],
@@ -51,13 +80,12 @@ class PengaturanController extends Controller
             'current_password.required' => 'Password saat ini wajib diisi.',
             'password.required'         => 'Password baru wajib diisi.',
             'password.confirmed'        => 'Konfirmasi password tidak cocok.',
-            'password.min'              => 'Password minimal 8 karakter.',
         ]);
 
         /** @var User $user */
         $user = Auth::user();
 
-        if (!Hash::check($request->current_password, $user->password)) {
+        if (! Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => 'Password saat ini tidak sesuai.']);
         }
 
@@ -67,13 +95,21 @@ class PengaturanController extends Controller
                          ->with('success', 'Password berhasil diubah.');
     }
 
-    public function createUser()
+    // ─────────────────────────────────────────────
+    // MANAJEMEN USER
+    // (route harus dilindungi middleware superadmin)
+    // ─────────────────────────────────────────────
+
+    public function createUser(): View
     {
         return view('admin.pengaturan.create');
     }
 
-    public function storeUser(Request $request)
+    public function storeUser(Request $request): RedirectResponse
     {
+        /** @var User $authUser */
+        $authUser = Auth::user();
+
         $validated = $request->validate([
             'new_name'     => ['required', 'string', 'max:255'],
             'new_email'    => ['nullable', 'email', 'unique:users,email'],
@@ -84,9 +120,12 @@ class PengaturanController extends Controller
             'new_email.email'       => 'Format email tidak valid.',
             'new_email.unique'      => 'Email sudah digunakan.',
             'new_password.required' => 'Password wajib diisi.',
-            'new_password.min'      => 'Password minimal 8 karakter.',
             'new_role.required'     => 'Role wajib dipilih.',
         ]);
+
+        if ($validated['new_role'] === 'superadmin' && ! $authUser->isSuperAdmin()) {
+            abort(403, 'Tidak diizinkan membuat akun superadmin.');
+        }
 
         User::create([
             'nama'     => $validated['new_name'],
@@ -99,13 +138,20 @@ class PengaturanController extends Controller
                          ->with('success', 'Akun baru berhasil dibuat.');
     }
 
-    public function editUser(User $user)
+    public function editUser(User $user): View
     {
         return view('admin.pengaturan.edit', compact('user'));
     }
 
-    public function updateUser(Request $request, User $user)
+    public function updateUser(Request $request, User $user): RedirectResponse
     {
+        /** @var User $authUser */
+        $authUser = Auth::user();
+
+        if ($user->isSuperAdmin() && ! $authUser->isSuperAdmin()) {
+            abort(403, 'Tidak diizinkan mengedit akun superadmin.');
+        }
+
         $validated = $request->validate([
             'nama'     => ['required', 'string', 'max:255'],
             'email'    => ['nullable', 'email', 'max:255', 'unique:users,email,' . $user->id],
@@ -117,17 +163,22 @@ class PengaturanController extends Controller
             'email.email'        => 'Format email tidak valid.',
             'email.unique'       => 'Email sudah digunakan.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
-            'password.min'       => 'Password minimal 8 karakter.',
         ]);
+
+        $newRole = $validated['role'] ?? $user->role;
+
+        if ($newRole === 'superadmin' && ! $authUser->isSuperAdmin()) {
+            abort(403, 'Tidak diizinkan mengubah role ke superadmin.');
+        }
 
         $user->fill([
             'nama'  => $validated['nama'],
             'email' => $validated['email'] ?? null,
             'no_hp' => $validated['no_hp'] ?? null,
-            'role'  => $validated['role'] ?? $user->role,
+            'role'  => $newRole,
         ]);
 
-        if (!empty($validated['password'])) {
+        if (! empty($validated['password'])) {
             $user->password = Hash::make($validated['password']);
         }
 
@@ -137,7 +188,44 @@ class PengaturanController extends Controller
                          ->with('success', 'User berhasil diperbarui.');
     }
 
-    public function updatePermissions(Request $request, User $user)
+    // ─────────────────────────────────────────────
+    // HAPUS USER
+    // ─────────────────────────────────────────────
+
+    public function confirmDestroyUser(User $user): View|RedirectResponse
+    {
+        if ($user->id === Auth::id()) {
+            return redirect()->route('admin.pengaturan.index')
+                             ->with('error', 'Tidak dapat menghapus akun sendiri.');
+        }
+
+        return view('admin.pengaturan.destroy', compact('user'));
+    }
+
+    public function destroyUser(User $user): RedirectResponse
+    {
+        /** @var User $authUser */
+        $authUser = Auth::user();
+
+        if ($user->id === $authUser->id) {
+            return back()->with('error', 'Tidak dapat menghapus akun sendiri.');
+        }
+
+        if ($user->isSuperAdmin() && ! $authUser->isSuperAdmin()) {
+            return back()->with('error', 'Tidak dapat menghapus akun superadmin.');
+        }
+
+        $user->delete();
+
+        return redirect()->route('admin.pengaturan.index')
+                         ->with('success', 'User berhasil dihapus.');
+    }
+
+    // ─────────────────────────────────────────────
+    // PERMISSIONS
+    // ─────────────────────────────────────────────
+
+    public function updatePermissions(Request $request, User $user): RedirectResponse
     {
         if ($user->isSuperAdmin()) {
             return back()->with('error', 'Superadmin memiliki semua akses secara otomatis.');
@@ -155,78 +243,99 @@ class PengaturanController extends Controller
             ->values()
             ->toArray();
 
-        $user->permissions()->delete();
+        DB::transaction(function () use ($user, $incoming) {
+            $user->permissions()->delete();
 
-        foreach ($incoming as $permission) {
-            UserPermission::create([
-                'user_id'    => $user->id,
-                'permission' => $permission,
-            ]);
-        }
+            foreach ($incoming as $permission) {
+                UserPermission::create([
+                    'user_id'    => $user->id,
+                    'permission' => $permission,
+                ]);
+            }
+        });
 
         return redirect()->route('admin.pengaturan.index')
                          ->with('success', "Permission {$user->nama} berhasil diperbarui.");
     }
 
-    public function confirmDestroyUser(User $user)
-    {
-        if ($user->id === Auth::id()) {
-            return redirect()->route('admin.pengaturan.index')
-                             ->with('error', 'Tidak dapat menghapus akun sendiri.');
-        }
+    // ─────────────────────────────────────────────
+    // PENUGASAN LOKASI
+    // Hanya superadmin yang boleh mengakses.
+    // Satu admin bisa ditugaskan ke beberapa lokasi
+    // (tergantung jumlah komputer di lapangan).
+    // ─────────────────────────────────────────────
 
-        return view('admin.pengaturan.destroy', compact('user'));
+    /**
+     * Tampilkan histori penugasan untuk satu user.
+     */
+    public function historiLokasi(User $user): \Illuminate\Http\JsonResponse
+    {
+        $histori = $user->userLokasis()
+                        ->with(['lokasi', 'assignedBy'])
+                        ->latest('assigned_at')
+                        ->get()
+                        ->map(fn(UserLokasi $ul) => [
+                            'id'              => $ul->id,
+                            'lokasi_nama'     => $ul->lokasi?->nama_lokasi,
+                            'assigned_at'     => $ul->assigned_at?->timezone('Asia/Jakarta')->format('d M Y, H:i'),
+                            'unassigned_at'   => $ul->unassigned_at?->timezone('Asia/Jakarta')->format('d M Y, H:i'),
+                            'assigned_by_nama'=> $ul->assignedBy?->nama,
+                        ]);
+ 
+        return response()->json(['histori' => $histori]);
     }
 
-    public function destroyUser(User $user)
+    /**
+     * Assign admin ke lokasi.
+     * Guard: tidak bisa assign ke lokasi yang sudah aktif untuk user yang sama.
+     */
+    public function assignLokasi(Request $request, User $user): RedirectResponse
     {
-        if ($user->id === Auth::id()) {
-            return back()->with('error', 'Tidak dapat menghapus akun sendiri.');
+        if ($user->isSuperAdmin()) {
+            return back()->with('error', 'Superadmin tidak perlu ditugaskan ke lokasi.');
         }
 
-        $user->delete();
+        if ($user->penugasanAktif()->exists()) {
+            return back()->with('error', 'Admin sudah memiliki penugasan aktif. Nonaktifkan dulu sebelum menugaskan ke lokasi baru.');
+        }
+
+        $validated = $request->validate([
+            'lokasi_id' => ['required', 'exists:lokasis,id'],
+        ], [
+            'lokasi_id.required' => 'Lokasi wajib dipilih.',
+            'lokasi_id.exists'   => 'Lokasi tidak ditemukan.',
+        ]);
+
+        UserLokasi::create([
+            'user_id'     => $user->id,
+            'lokasi_id'   => $validated['lokasi_id'],
+            'assigned_by' => Auth::id(),
+            'assigned_at' => now(),
+        ]);
 
         return redirect()->route('admin.pengaturan.index')
-                         ->with('success', 'User berhasil dihapus.');
+                        ->with('success', "Penugasan {$user->nama} berhasil ditambahkan.");
     }
 
-    public function backup()
+    /**
+     * Unassign admin dari satu penugasan aktif.
+     * Meng-set unassigned_at — record tetap tersimpan sebagai histori.
+     */
+    public function unassignLokasi(User $user, UserLokasi $userLokasi): RedirectResponse
     {
-        $dbName = config('database.connections.mysql.database');
-        $dbUser = config('database.connections.mysql.username');
-        $dbPass = config('database.connections.mysql.password');
-        $dbHost = config('database.connections.mysql.host');
-
-        $filename = 'backup_' . $dbName . '_' . now()->format('Ymd_His') . '.sql';
-        $filePath = storage_path('app/' . $filename);
-
-        $command = sprintf(
-            'mysqldump --host=%s --user=%s --password=%s %s > %s',
-            escapeshellarg($dbHost),
-            escapeshellarg($dbUser),
-            escapeshellarg($dbPass),
-            escapeshellarg($dbName),
-            escapeshellarg($filePath)
-        );
-
-        exec($command, $output, $returnCode);
-
-        if ($returnCode !== 0 || !file_exists($filePath)) {
-            return back()->with('error', 'Backup gagal. Pastikan mysqldump tersedia di server.');
+        // Pastikan userLokasi ini memang milik $user (mencegah IDOR).
+        if ($userLokasi->user_id !== $user->id) {
+            abort(403, 'Penugasan tidak ditemukan untuk user ini.');
         }
 
-        return response()->download($filePath, $filename)->deleteFileAfterSend(true);
-    }
-
-    public function profilPage()
-    {
-        /** @var User $user */
-        $user = Auth::user();
-
-        if ($user->isSuperAdmin()) {
-            return redirect()->route('admin.pengaturan.index');
+        // Pastikan penugasan masih aktif.
+        if ($userLokasi->unassigned_at !== null) {
+            return back()->with('error', 'Penugasan ini sudah tidak aktif.');
         }
 
-        return view('admin.pengaturan.profil');
+        $userLokasi->update(['unassigned_at' => now()]);
+
+        return redirect()->route('admin.pengaturan.index')
+                         ->with('success', "Penugasan {$user->nama} berhasil dinonaktifkan.");
     }
 }

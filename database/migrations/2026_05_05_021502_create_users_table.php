@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('no_hp', 15)->nullable();
             $table->string('password');
             $table->enum('role', ['superadmin', 'admin'])->default('admin');
+            $table->boolean('is_active')->default(true);
             $table->rememberToken();
             $table->timestamps();
         });

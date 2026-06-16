@@ -58,22 +58,6 @@
                        maxlength="15" placeholder="Contoh: 0274123456"
                        class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 placeholder-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition"/>
             </div>
-
-            {{-- Penanggung Jawab --}}
-            <div class="flex flex-col gap-1.5">
-                <label for="edit_user_id_lokasi" class="text-xs font-medium text-neutral-700">
-                    Penanggung Jawab <span class="text-danger-500">*</span>
-                </label>
-                <select id="edit_user_id_lokasi" name="user_id"
-                        class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-neutral-200 text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
-                    <option value="">Pilih penanggung jawab</option>
-                    @foreach ($users as $user)
-                        <option value="{{ $user->id }}">{{ $user->nama }}</option>
-                    @endforeach
-                </select>
-                <p id="edit_err_user_id" class="hidden text-[0.68rem] text-danger-500">Penanggung jawab wajib dipilih.</p>
-            </div>
-
         </form>
 
         {{-- Footer --}}

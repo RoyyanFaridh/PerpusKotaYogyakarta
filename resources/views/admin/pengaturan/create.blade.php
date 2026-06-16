@@ -24,7 +24,7 @@
         </div>
 
         {{-- Form --}}
-        <form id="formTambahUser" method="POST" action="{{ route('admin.pengaturan.user') }}"
+        <form id="formTambahUser" method="POST" action="{{ route('admin.pengaturan.user.store') }}"
               class="px-6 sm:px-8 py-6 flex flex-col gap-4">
             @csrf
 

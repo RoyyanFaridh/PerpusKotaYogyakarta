@@ -64,26 +64,6 @@
                     <p class="text-[0.68rem] text-danger-500">{{ $message }}</p>
                 @enderror
             </div>
-
-            {{-- Penanggung Jawab --}}
-            <div class="flex flex-col gap-1.5">
-                <label for="lokasi_user_id" class="text-xs font-medium text-neutral-700">
-                    Penanggung Jawab <span class="text-danger-500">*</span>
-                </label>
-                <select id="lokasi_user_id" name="user_id"
-                        class="w-full text-sm px-3.5 py-2.5 rounded-lg border {{ $errors->has('user_id') ? 'border-danger-400 bg-danger-50' : 'border-neutral-200' }} text-neutral-800 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition bg-white">
-                    <option value="">Pilih penanggung jawab</option>
-                    @foreach ($users as $user)
-                        <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
-                            {{ $user->nama }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('user_id')
-                    <p class="text-[0.68rem] text-danger-500">{{ $message }}</p>
-                @enderror
-            </div>
-
         </form>
 
         {{-- Footer --}}
