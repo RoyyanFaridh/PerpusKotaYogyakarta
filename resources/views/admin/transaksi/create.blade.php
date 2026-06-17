@@ -22,7 +22,7 @@
         @include('admin.transaksi._step-indicator', ['prefix' => 'create'])
 
         {{-- Body --}}
-        <div class="px-6 sm:px-8 py-6 min-h-96">
+        <div class="px-6 sm:px-8 py-6 overflow-y-auto max-h-[55vh]">
             <input type="hidden" id="create_paketId"   value="{{ $paketUser?->id ?? '' }}"/>
             <input type="hidden" id="create_paketNama" value="{{ $paketUser?->nama ?? '' }}"/>
             <input type="hidden" id="create_memberId"/>

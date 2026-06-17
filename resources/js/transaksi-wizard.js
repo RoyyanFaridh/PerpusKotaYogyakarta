@@ -133,14 +133,18 @@ function submitLokasiDanLanjut() {
 
 // ─── Paket ─────────────────────────────────────────────────────────────────
 
-function loadPaketAktif(prefix, selectedId = null) {
+function loadPaketAktif(prefix, selectedId = null, lokasiId = null) {
     const sel = pEl(prefix, 'paketMasukId');
     if (!sel) return;
 
     sel.innerHTML = '<option value="">Memuat paket...</option>';
     sel.disabled  = true;
 
-    apiFetch('/admin/transaksi/paket-aktif')
+    const url = lokasiId
+        ? `/admin/transaksi/paket-aktif?lokasi_id=${lokasiId}`
+        : '/admin/transaksi/paket-aktif';
+
+    apiFetch(url)
         .then(data => {
             if (!data.length) {
                 sel.innerHTML = '<option value="">Tidak ada paket aktif</option>';
@@ -174,7 +178,6 @@ function openModal() {
 
     resetCreate();
     showModal('modalCreate');
-    loadPaketAktif('create');
 
     const lokasiStep = perluStepLokasi();
     state.create.lokasiStep = lokasiStep;
@@ -441,7 +444,13 @@ function goToStep(prefix, step) {
     el(`${prefix}BtnSimpan`)?.classList.toggle('hidden', !isLast);
 
     if (isLast) fillKonfirmasi(prefix);
-    if (step === 4) loadBukuPaket(prefix); // step buku keluar selalu step 4 (absolut)
+    if (step === 4) loadBukuPaket(prefix);
+    if (step === 3) {
+        const lokasiId = prefix === 'create'
+            ? (parseInt(pEl('create', 'lokasiId')?.value) || window.LokasiData.activeLokasiId)
+            : window.LokasiData.activeLokasiId;
+        loadPaketAktif(prefix, null, lokasiId);
+    }
 
     state[prefix].step = step;
 }

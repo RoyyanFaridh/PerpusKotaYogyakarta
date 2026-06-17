@@ -19,28 +19,44 @@
     </script>
     @vite('resources/js/transaksi-wizard.js')
     <script>
-    (function () {
+        (function initFilters() {
         const searchInput   = document.getElementById('searchInput');
-        const selectTanggal = document.getElementById('filterTanggal');
+        const filterTanggal = document.getElementById('filterTanggal');
+        const filterLokasi  = document.getElementById('filterLokasi');
+
+        if (!searchInput && !filterTanggal && !filterLokasi) return;
 
         function applyFilters() {
-            const params = new URLSearchParams();
-            const q = searchInput?.value.trim();
-            if (q) params.set('search', q);
-            if (selectTanggal?.value) params.set('tanggal', selectTanggal.value);
-            window.location.href = `${window.location.pathname}?${params.toString()}`;
+            const params = new URLSearchParams(window.location.search);
+
+            const search = searchInput?.value.trim();
+            search ? params.set('search', search) : params.delete('search');
+
+            const tanggal = filterTanggal?.value;
+            tanggal ? params.set('tanggal', tanggal) : params.delete('tanggal');
+
+            const lokasi = filterLokasi?.value;
+            lokasi ? params.set('lokasi', lokasi) : params.delete('lokasi');
+
+            params.delete('page');
+
+            window.location.href = '?' + params.toString();
         }
 
-        let debounce;
-        searchInput?.addEventListener('input', function () {
-            clearTimeout(debounce);
-            debounce = setTimeout(applyFilters, 400);
-        });
-        selectTanggal?.addEventListener('change', applyFilters);
-
+        // Sync state select dengan URL saat load
         const params = new URLSearchParams(window.location.search);
-        if (searchInput && params.get('search'))    searchInput.value   = params.get('search');
-        if (selectTanggal && params.get('tanggal')) selectTanggal.value = params.get('tanggal');
+        if (searchInput  && params.get('search'))  searchInput.value   = params.get('search');
+        if (filterTanggal && params.get('tanggal')) filterTanggal.value = params.get('tanggal');
+        if (filterLokasi  && params.get('lokasi'))  filterLokasi.value  = params.get('lokasi');
+
+        let searchTimer;
+        searchInput?.addEventListener('input', () => {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(applyFilters, 400);
+        });
+
+        filterTanggal?.addEventListener('change', applyFilters);
+        filterLokasi?.addEventListener('change', applyFilters);
     })();
     </script>
 @endpush

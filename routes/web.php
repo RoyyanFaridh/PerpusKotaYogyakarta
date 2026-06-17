@@ -17,7 +17,6 @@ use App\Http\Controllers\Admin\KegiatanController;
 use App\Http\Controllers\Admin\PaketController;
 use App\Http\Controllers\Api\BukuApiController;
 
-
 Route::get('/detail-buku/{buku}', [BukuApiController::class, 'show']);
 
 Route::get('/', [HomeController::class, 'index']);
@@ -33,7 +32,8 @@ Route::get('/admin/login',  [AdminAuthController::class, 'showLoginForm'])->name
 Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('auth.login.post')->middleware('throttle:5,1');
 Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('auth.logout');
 
-Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+// 'active' — block user yang is_active = false, force logout di request berikutnya
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'active'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -114,27 +114,21 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::post('/{paket}/pemindahan', [PaketPemindahanController::class, 'store'])->name('pemindahan.store')->middleware('has.permission:buku.edit');
     });
 
-    // Pengaturan — semua user terauth
+    // Pengaturan — Admin
     Route::prefix('pengaturan')->name('pengaturan.')->group(function () {
         Route::get('/profil-saya', [PengaturanController::class, 'profilPage'])->name('profil.page');
         Route::put('/profil',      [PengaturanController::class, 'updateProfil'])->name('profil');
         Route::put('/password',    [PengaturanController::class, 'updatePassword'])->name('password');
     });
 
-    // Pengaturan — superadmin only
+    // Pengaturan — Superadmin
     Route::prefix('pengaturan')->name('pengaturan.')->middleware('superadmin')->group(function () {
         Route::get('/', [PengaturanController::class, 'index'])->name('index');
-
-        // User CRUD
         Route::post('/user',         [PengaturanController::class, 'storeUser'])->name('user.store');
         Route::put('/user/{user}',   [PengaturanController::class, 'updateUser'])->name('user.update');
-
         Route::patch('/user/{user}/toggle-aktif', [PengaturanController::class, 'toggleAktifUser'])->name('user.toggle-aktif');
-
-        // Permissions
         Route::post('/user/{user}/permissions', [PengaturanController::class, 'updatePermissions'])->name('user.permissions');
-
-        Route::get('/user/{user}/lokasi/histori',          [PengaturanController::class, 'historiLokasi'])->name('user.lokasi.histori');
-        Route::post('/user/{user}/lokasi/sync',            [PengaturanController::class, 'syncLokasi'])->name('user.lokasi.sync');
+        Route::get('/user/{user}/lokasi/histori', [PengaturanController::class, 'historiLokasi'])->name('user.lokasi.histori');
+        Route::post('/user/{user}/lokasi/sync',   [PengaturanController::class, 'syncLokasi'])->name('user.lokasi.sync');
     });
 });

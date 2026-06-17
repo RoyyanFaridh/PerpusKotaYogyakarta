@@ -27,6 +27,13 @@ class AdminAuthController extends Controller
         ];
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            if (! Auth::user()->is_active) {
+                Auth::logout();
+                return back()
+                    ->withErrors(['login' => 'Akun Anda telah dinonaktifkan. Hubungi superadmin.'])
+                    ->onlyInput('login');
+            }
+
             $request->session()->regenerate();
             return redirect()->intended(route('admin.dashboard'));
         }
