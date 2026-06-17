@@ -41,7 +41,7 @@ class TransaksiController extends Controller
 
     public function index(Request $request)
     {
-        $filters = $request->only(['search', 'tanggal']);
+        $filters = $request->only(['search', 'tanggal', 'lokasi']);
 
         $transaksi = Transaksi::with([
                 'member',
@@ -53,17 +53,18 @@ class TransaksiController extends Controller
                 $q->where(function ($q) use ($search) {
                     $q->whereHas('member', fn($m) =>
                             $m->where('nama', 'ilike', "%{$search}%")
-                              ->orWhere('no_telp', 'ilike', "%{$search}%"))
-                      ->orWhereHas('bukuMasuk.buku', fn($b) => $b->where('judul', 'ilike', "%{$search}%"))
-                      ->orWhereHas('bukuKeluar.buku',   fn($b) => $b->where('judul', 'ilike', "%{$search}%"));
+                            ->orWhere('no_telp', 'ilike', "%{$search}%"))
+                    ->orWhereHas('bukuMasuk.buku', fn($b) => $b->where('judul', 'ilike', "%{$search}%"))
+                    ->orWhereHas('bukuKeluar.buku',   fn($b) => $b->where('judul', 'ilike', "%{$search}%"));
                 });
             })
+            ->when($filters['lokasi'] ?? null, fn($q, $lokasi) => $q->where('lokasi_snapshot', $lokasi))
             ->when($filters['tanggal'] ?? null, function ($q, $tanggal) {
                 match ($tanggal) {
                     'hari_ini'   => $q->whereDate('tanggal_tukar', today()),
                     'minggu_ini' => $q->whereBetween('tanggal_tukar', [now()->startOfWeek(), now()->endOfWeek()]),
                     'bulan_ini'  => $q->whereMonth('tanggal_tukar', now()->month)
-                                      ->whereYear('tanggal_tukar', now()->year),
+                                    ->whereYear('tanggal_tukar', now()->year),
                     default      => null,
                 };
             })
@@ -82,6 +83,13 @@ class TransaksiController extends Controller
             ? Paket::aktif()->where('lokasi_id', $lokasiId)->first()
             : null;
 
+        $lokasiList = Transaksi::where('lokasi_snapshot', '!=', null)
+            ->distinct()
+            ->orderBy('lokasi_snapshot')
+            ->pluck('lokasi_snapshot')
+            ->filter()
+            ->values();
+
         return view('admin.transaksi.index', compact(
             'transaksi',
             'transaksiHariIni',
@@ -89,6 +97,7 @@ class TransaksiController extends Controller
             'transaksiBulanIni',
             'paketAktif',
             'paketUser',
+            'lokasiList',
         ));
     }
 
@@ -255,9 +264,9 @@ class TransaksiController extends Controller
         return response()->json($hasil);
     }
 
-    public function export()
+    public function export(Request $request)
     {
-        $filename = 'transaksi-' . now()->format('Y-m-d') . '.xlsx';
-        return Excel::download(new TransaksiExport, $filename);
+        $lokasiFilter = $request->query('lokasi');
+        (new TransaksiExport($lokasiFilter))->download('transaksi');
     }
 }

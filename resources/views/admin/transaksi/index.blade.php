@@ -55,9 +55,12 @@
                 </div>
             </div>
             <div class="flex items-center gap-2 shrink-0">
-                <a href="{{ route('admin.transaksi.export') }}"
-                title="Export Excel"
-                class="flex items-center gap-1.5 px-2.5 py-2 sm:px-3.5 rounded-lg text-xs font-medium text-neutral-600 border border-neutral-200 hover:bg-neutral-50 transition-colors">
+                @php
+                    $lokasiParams = $paketUser ? '?lokasi=' . urlencode($paketUser->lokasi?->nama_lokasi ?? '') : '';
+                @endphp
+                <a href="{{ route('admin.transaksi.export') }}{{ $lokasiParams }}"
+                    title="Export Excel"
+                    class="flex items-center gap-1.5 px-2.5 py-2 sm:px-3.5 rounded-lg text-xs font-medium text-neutral-600 border border-neutral-200 hover:bg-neutral-50 transition-colors">
                     <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
                     </svg>
@@ -110,6 +113,13 @@
                 <option value="minggu_ini">Minggu Ini</option>
                 <option value="bulan_ini">Bulan Ini</option>
             </select>
+            <select id="filterLokasi"
+                    class="px-3 py-2 text-sm text-neutral-600 bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition shrink-0">
+                <option value="">Semua Lokasi</option>
+                @foreach ($lokasiList as $lokasi)
+                    <option value="{{ $lokasi }}">{{ $lokasi }}</option>
+                @endforeach
+            </select>
         </div>
     </div>
 
@@ -130,6 +140,7 @@
             <table class="w-full text-sm">
                 <thead>
                     <tr class="border-b border-neutral-100 bg-neutral-50">
+                        <th class="text-center text-xs font-semibold text-neutral-500 px-2 py-3 w-12">No.</th>
                         <th class="text-center text-xs font-semibold text-neutral-500 px-2 py-3">ID</th>
                         <th class="text-left   text-xs font-semibold text-neutral-500 px-4 py-3">Member</th>
                         <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Buku Masuk</th>
@@ -142,9 +153,14 @@
                     @forelse ($transaksi as $item)
                         @php
                             $txnId = '#TXN-' . str_pad($item->id, 4, '0', STR_PAD_LEFT);
+                            $nomor = ($transaksi->perPage() * ($transaksi->currentPage() - 1)) + $loop->iteration;
                         @endphp
                         <tr class="hover:bg-neutral-50 transition-colors table-row-data"
                             data-search="{{ strtolower($item->member?->nama ?? '') }} {{ strtolower($item->bukuMasuk?->buku?->judul ?? '') }} {{ strtolower($item->bukuKeluar?->buku?->judul ?? '') }}">
+
+                            <td class="px-2 py-3.5 text-center">
+                                <span class="text-xs font-mono font-medium text-neutral-500">{{ $nomor }}</span>
+                            </td>
 
                             <td class="px-2 py-3.5 text-center">
                                 <span class="text-xs font-mono font-medium text-neutral-500">{{ $txnId }}</span>
