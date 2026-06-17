@@ -42,6 +42,7 @@
                 <thead>
                     <tr class="border-b border-neutral-100 bg-neutral-50">
                         <th class="text-left   text-xs font-medium text-neutral-400 px-5 py-3">Nama</th>
+                        <th class="text-left text-xs font-medium text-neutral-400 px-5 py-3">Username</th>
                         <th class="text-left   text-xs font-medium text-neutral-400 px-5 py-3">Email</th>
                         <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Role</th>
                         <th class="text-center text-xs font-medium text-neutral-400 px-5 py-3">Lokasi Aktif</th>
@@ -63,8 +64,12 @@
                                 </div>
                             </td>
 
+                            {{-- Username --}}
+                            <td class="px-5 py-3.5 text-xs text-neutral-600">{{ $user->username ?? '-' }}</td>
+
                             {{-- Email --}}
                             <td class="px-5 py-3.5 text-xs text-neutral-600">{{ $user->email ?? '-' }}</td>
+
 
                             {{-- Role --}}
                             <td class="px-5 py-3.5 text-center">
@@ -163,7 +168,7 @@
                         {{-- Accordion Permission --}}
                         @if (!$user->isSuperAdmin() && auth()->user()->isSuperAdmin())
                             <tr id="permission-row-{{ $user->id }}" class="hidden">
-                                <td colspan="6" class="px-5 pb-4 pt-1">
+                                <td colspan="7" class="px-5 pb-4 pt-1">
                                     <div class="rounded-2xl border border-neutral-100 bg-neutral-50 overflow-hidden">
                                         <div class="px-5 py-3.5 border-b border-neutral-100 flex items-center justify-between bg-white">
                                             <div class="flex items-center gap-2">
@@ -221,7 +226,7 @@
 
                     @empty
                         <tr>
-                            <td colspan="6" class="px-5 py-12 text-center text-sm text-neutral-400">Belum ada user terdaftar.</td>
+                            <td colspan="7" class="px-5 py-12 text-center text-sm text-neutral-400">Belum ada user terdaftar.</td>
                         </tr>
                     @endforelse
                 </tbody>

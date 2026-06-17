@@ -15,10 +15,16 @@ class AdminAuthController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email'    => ['required', 'email'],
+        $request->validate([
+            'login'    => ['required', 'string'],
             'password' => ['required'],
         ]);
+
+        $loginField  = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        $credentials = [
+            $loginField => $request->login,
+            'password'  => $request->password,
+        ];
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
@@ -26,8 +32,8 @@ class AdminAuthController extends Controller
         }
 
         return back()
-            ->withErrors(['email' => 'Email atau password salah.'])
-            ->onlyInput('email');
+            ->withErrors(['login' => 'Email/username atau password salah.'])
+            ->onlyInput('login');
     }
 
     public function logout(Request $request)

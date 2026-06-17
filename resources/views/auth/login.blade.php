@@ -93,25 +93,25 @@
                 <form action="{{ route('auth.login.post') }}" method="POST" class="space-y-5">
                     @csrf
 
-                    {{-- Email --}}
+                    {{-- Email / Username --}}
                     <div class="flex flex-col gap-1.5">
-                        <label for="email" class="text-sm font-medium text-neutral-600">
-                            Email
+                        <label for="login" class="text-sm font-medium text-neutral-600">
+                            Email atau Username
                         </label>
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-300">
                                 <svg class="w-4 h-4 stroke-current fill-none" viewBox="0 0 24 24"
-                                     stroke-width="2" stroke-linecap="round" aria-hidden="true">
-                                    <rect x="2" y="4" width="20" height="16" rx="3"/>
-                                    <path d="M2 7l10 7 10-7"/>
+                                    stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
                                 </svg>
                             </span>
                             <input
-                                id="email" type="email" name="email"
-                                value="{{ old('email') }}"
-                                required autocomplete="email"
-                                placeholder="admin@sipetuk.id"
-                                class="w-full pl-10 pr-4 py-2.5 rounded-lg border text-sm text-primary-900 placeholder-neutral-300 transition-colors focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200 {{ $errors->has('email') ? 'border-danger-400 bg-danger-50' : 'border-neutral-200 bg-white' }}"
+                                id="login" type="text" name="login"
+                                value="{{ old('login') }}"
+                                required autocomplete="username"
+                                placeholder="admin@sipetuk.id atau username"
+                                class="w-full pl-10 pr-4 py-2.5 rounded-lg border text-sm text-primary-900 placeholder-neutral-300 transition-colors focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200 {{ $errors->has('login') ? 'border-danger-400 bg-danger-50' : 'border-neutral-200 bg-white' }}"
                             >
                         </div>
                     </div>

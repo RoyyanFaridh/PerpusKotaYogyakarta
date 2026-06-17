@@ -13,6 +13,7 @@ class UserSeeder extends Seeder
         $users = [
             [
                 'nama'     => 'Admin Perpustakaan',
+                'username' => 'admin',           // ← tambahkan
                 'email'    => 'admin@perpus.com',
                 'no_hp'    => '081234567890',
                 'password' => Hash::make('password'),
@@ -20,12 +21,14 @@ class UserSeeder extends Seeder
             ],
             [
                 'nama'     => 'Petugas Satu',
+                'username' => 'petugas1',        // ← tambahkan
                 'email'    => 'petugas1@perpus.com',
                 'password' => Hash::make('password'),
                 'role'     => 'admin',
             ],
             [
                 'nama'     => 'Petugas Dua',
+                'username' => 'petugas2',        // ← tambahkan
                 'email'    => 'petugas2@perpus.com',
                 'password' => Hash::make('password'),
                 'role'     => 'admin',
