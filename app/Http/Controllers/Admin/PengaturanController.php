@@ -23,7 +23,10 @@ class PengaturanController extends Controller
 
     public function index(): View
     {
-        $users = User::with(['permissions', 'penugasanAktif.lokasi'])->orderBy('nama')->get();
+        $users = User::with(['permissions', 'penugasanAktif.lokasi'])
+                     ->orderBy('nama')
+                     ->get();
+
         $allPermissions = UserPermission::allPermissions();
         $lokasis        = Lokasi::where('aktif', true)->orderBy('nama_lokasi')->get();
 
@@ -31,7 +34,7 @@ class PengaturanController extends Controller
     }
 
     // ─────────────────────────────────────────────
-    // PROFIL (Admin Lokasi — bukan Superadmin)
+    // PROFIL
     // ─────────────────────────────────────────────
 
     public function profilPage(): View|RedirectResponse
@@ -68,7 +71,7 @@ class PengaturanController extends Controller
     }
 
     // ─────────────────────────────────────────────
-    // PASSWORD (akun sendiri)
+    // PASSWORD
     // ─────────────────────────────────────────────
 
     public function updatePassword(Request $request): RedirectResponse
@@ -97,7 +100,6 @@ class PengaturanController extends Controller
 
     // ─────────────────────────────────────────────
     // MANAJEMEN USER
-    // (route harus dilindungi middleware superadmin)
     // ─────────────────────────────────────────────
 
     public function createUser(): View
@@ -189,36 +191,29 @@ class PengaturanController extends Controller
     }
 
     // ─────────────────────────────────────────────
-    // HAPUS USER
+    // NONAKTIFKAN / AKTIFKAN USER
+    // Tidak hard delete — histori transaksi tetap terjaga.
     // ─────────────────────────────────────────────
 
-    public function confirmDestroyUser(User $user): View|RedirectResponse
-    {
-        if ($user->id === Auth::id()) {
-            return redirect()->route('admin.pengaturan.index')
-                             ->with('error', 'Tidak dapat menghapus akun sendiri.');
-        }
-
-        return view('admin.pengaturan.destroy', compact('user'));
-    }
-
-    public function destroyUser(User $user): RedirectResponse
+    public function toggleAktifUser(User $user): RedirectResponse
     {
         /** @var User $authUser */
         $authUser = Auth::user();
 
         if ($user->id === $authUser->id) {
-            return back()->with('error', 'Tidak dapat menghapus akun sendiri.');
+            return back()->with('error', 'Tidak dapat menonaktifkan akun sendiri.');
         }
 
         if ($user->isSuperAdmin() && ! $authUser->isSuperAdmin()) {
-            return back()->with('error', 'Tidak dapat menghapus akun superadmin.');
+            return back()->with('error', 'Tidak dapat mengubah status akun superadmin.');
         }
 
-        $user->delete();
+        $user->update(['is_active' => ! $user->is_active]);
+
+        $status = $user->is_active ? 'diaktifkan' : 'dinonaktifkan';
 
         return redirect()->route('admin.pengaturan.index')
-                         ->with('success', 'User berhasil dihapus.');
+                         ->with('success', "Akun {$user->nama} berhasil {$status}.");
     }
 
     // ─────────────────────────────────────────────
@@ -260,14 +255,8 @@ class PengaturanController extends Controller
 
     // ─────────────────────────────────────────────
     // PENUGASAN LOKASI
-    // Hanya superadmin yang boleh mengakses.
-    // Satu admin bisa ditugaskan ke beberapa lokasi
-    // (tergantung jumlah komputer di lapangan).
     // ─────────────────────────────────────────────
 
-    /**
-     * Tampilkan histori penugasan untuk satu user.
-     */
     public function historiLokasi(User $user): \Illuminate\Http\JsonResponse
     {
         $histori = $user->userLokasis()
@@ -275,28 +264,21 @@ class PengaturanController extends Controller
                         ->latest('assigned_at')
                         ->get()
                         ->map(fn(UserLokasi $ul) => [
-                            'id'              => $ul->id,
-                            'lokasi_nama'     => $ul->lokasi?->nama_lokasi,
-                            'assigned_at'     => $ul->assigned_at?->timezone('Asia/Jakarta')->format('d M Y, H:i'),
-                            'unassigned_at'   => $ul->unassigned_at?->timezone('Asia/Jakarta')->format('d M Y, H:i'),
-                            'assigned_by_nama'=> $ul->assignedBy?->nama,
+                            'id'               => $ul->id,
+                            'lokasi_nama'      => $ul->lokasi?->nama_lokasi,
+                            'assigned_at'      => $ul->assigned_at?->timezone('Asia/Jakarta')->format('d M Y, H:i'),
+                            'unassigned_at'    => $ul->unassigned_at?->timezone('Asia/Jakarta')->format('d M Y, H:i'),
+                            'assigned_by_nama' => $ul->assignedBy?->nama,
+                            'aktif'            => $ul->unassigned_at === null,
                         ]);
- 
+
         return response()->json(['histori' => $histori]);
     }
 
-    /**
-     * Assign admin ke lokasi.
-     * Guard: tidak bisa assign ke lokasi yang sudah aktif untuk user yang sama.
-     */
     public function assignLokasi(Request $request, User $user): RedirectResponse
     {
         if ($user->isSuperAdmin()) {
             return back()->with('error', 'Superadmin tidak perlu ditugaskan ke lokasi.');
-        }
-
-        if ($user->penugasanAktif()->exists()) {
-            return back()->with('error', 'Admin sudah memiliki penugasan aktif. Nonaktifkan dulu sebelum menugaskan ke lokasi baru.');
         }
 
         $validated = $request->validate([
@@ -306,6 +288,16 @@ class PengaturanController extends Controller
             'lokasi_id.exists'   => 'Lokasi tidak ditemukan.',
         ]);
 
+        // Guard: tidak bisa assign ke lokasi yang sama kalau masih aktif
+        $sudahAktifDiLokasi = UserLokasi::where('user_id', $user->id)
+            ->where('lokasi_id', $validated['lokasi_id'])
+            ->whereNull('unassigned_at')
+            ->exists();
+
+        if ($sudahAktifDiLokasi) {
+            return back()->with('error', 'Admin sudah aktif di lokasi ini.');
+        }
+
         UserLokasi::create([
             'user_id'     => $user->id,
             'lokasi_id'   => $validated['lokasi_id'],
@@ -314,21 +306,15 @@ class PengaturanController extends Controller
         ]);
 
         return redirect()->route('admin.pengaturan.index')
-                        ->with('success', "Penugasan {$user->nama} berhasil ditambahkan.");
+                         ->with('success', "Penugasan {$user->nama} berhasil ditambahkan.");
     }
 
-    /**
-     * Unassign admin dari satu penugasan aktif.
-     * Meng-set unassigned_at — record tetap tersimpan sebagai histori.
-     */
     public function unassignLokasi(User $user, UserLokasi $userLokasi): RedirectResponse
     {
-        // Pastikan userLokasi ini memang milik $user (mencegah IDOR).
         if ($userLokasi->user_id !== $user->id) {
             abort(403, 'Penugasan tidak ditemukan untuk user ini.');
         }
 
-        // Pastikan penugasan masih aktif.
         if ($userLokasi->unassigned_at !== null) {
             return back()->with('error', 'Penugasan ini sudah tidak aktif.');
         }
@@ -337,5 +323,42 @@ class PengaturanController extends Controller
 
         return redirect()->route('admin.pengaturan.index')
                          ->with('success', "Penugasan {$user->nama} berhasil dinonaktifkan.");
+    }
+
+    public function syncLokasi(Request $request, User $user): RedirectResponse
+    {
+        if ($user->isSuperAdmin()) {
+            return back()->with('error', 'Superadmin tidak perlu ditugaskan ke lokasi.');
+        }
+
+        $request->validate([
+            'lokasi_ids'   => ['nullable', 'array'],
+            'lokasi_ids.*' => ['exists:lokasis,id'],
+        ]);
+
+        $lokasiIds = collect($request->lokasi_ids ?? []);
+
+        DB::transaction(function () use ($user, $lokasiIds) {
+            // Unassign lokasi yang diuncheck (masih aktif tapi tidak ada di request)
+            $user->penugasanAktif()
+                ->whereNotIn('lokasi_id', $lokasiIds)
+                ->update(['unassigned_at' => now()]);
+
+            // Assign lokasi baru yang belum aktif
+            $sudahAktif = $user->penugasanAktif()
+                            ->pluck('lokasi_id');
+
+            $lokasiIds->diff($sudahAktif)->each(function ($lokasiId) use ($user) {
+                UserLokasi::create([
+                    'user_id'     => $user->id,
+                    'lokasi_id'   => $lokasiId,
+                    'assigned_by' => Auth::id(),
+                    'assigned_at' => now(),
+                ]);
+            });
+        });
+
+        return redirect()->route('admin.pengaturan.index')
+                        ->with('success', "Penugasan {$user->nama} berhasil diperbarui.");
     }
 }

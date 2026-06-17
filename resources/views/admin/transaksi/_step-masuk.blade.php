@@ -1,4 +1,4 @@
-<div class="step-content-{{ $prefix }} hidden" data-step="2">
+<div class="step-content-{{ $prefix }} hidden" data-step="{{ 2 + ($offset ?? 0) }}">
 
     {{-- Paket Tujuan --}}
     <div class="mb-5">

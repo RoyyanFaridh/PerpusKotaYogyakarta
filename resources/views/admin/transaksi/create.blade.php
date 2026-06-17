@@ -26,11 +26,13 @@
             <input type="hidden" id="create_paketId"   value="{{ $paketUser?->id ?? '' }}"/>
             <input type="hidden" id="create_paketNama" value="{{ $paketUser?->nama ?? '' }}"/>
             <input type="hidden" id="create_memberId"/>
+            <input type="hidden" id="create_lokasiId"/>
 
-            @include('admin.transaksi._step-member',     ['prefix' => 'create'])
-            @include('admin.transaksi._step-masuk', ['prefix' => 'create'])
-            @include('admin.transaksi._step-keluar',   ['prefix' => 'create'])
-            @include('admin.transaksi._step-konfirmasi', ['prefix' => 'create'])
+            @include('admin.transaksi._step-lokasi',     ['prefix' => 'create'])
+            @include('admin.transaksi._step-member',     ['prefix' => 'create', 'offset' => 1])
+            @include('admin.transaksi._step-masuk',      ['prefix' => 'create', 'offset' => 1])
+            @include('admin.transaksi._step-keluar',     ['prefix' => 'create', 'offset' => 1])
+            @include('admin.transaksi._step-konfirmasi', ['prefix' => 'create', 'offset' => 1])
         </div>
 
         <div class="flex items-center justify-between px-6 sm:px-8 py-4 border-t border-neutral-100 bg-neutral-50">

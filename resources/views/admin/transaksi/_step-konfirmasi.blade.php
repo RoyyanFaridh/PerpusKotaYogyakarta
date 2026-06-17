@@ -1,6 +1,5 @@
-<div class="step-content-{{ $prefix }} hidden" data-step="4">
+<div class="step-content-{{ $prefix }} hidden" data-step="{{ 4 + ($offset ?? 0) }}">
     <div class="space-y-4">
-
         <div class="grid grid-cols-2 gap-4">
             <div class="p-4 rounded-xl border border-neutral-200 bg-neutral-50">
                 <p class="text-xs font-medium text-neutral-400 mb-2">Member</p>

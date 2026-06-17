@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Lokasi;
 use App\Models\Paket;
 use App\Models\Transaksi;
 use App\Services\TransaksiService;
@@ -20,21 +21,69 @@ class TransaksiController extends Controller
     }
 
     /**
-     * Resolve lokasi_id dari user yang sedang login.
+     * Resolve lokasi_id aktif untuk user yang sedang login.
      *
-     * - Admin      : lokasi yang punya user_id = Auth::id()
-     * - Superadmin : tidak punya lokasi tetap → return null
+     * Priority:
+     * 1. $fallbackFromRequest  — eksplisit dari request (superadmin / step lokasi wizard)
+     * 2. session active_lokasi_id — dipilih user saat step lokasi
+     * 3. penugasanAktif pertama — kalau admin hanya punya 1 lokasi aktif
      *
-     * Superadmin perlu kirim lokasi_id secara eksplisit via request
-     * untuk endpoint yang butuh konteks lokasi.
+     * Return null kalau tidak ada konteks lokasi sama sekali.
      */
     private function getLokasiId(?int $fallbackFromRequest = null): ?int
     {
-        if (Auth::user()->role === 'superadmin') {
+        if ($fallbackFromRequest) {
             return $fallbackFromRequest;
         }
 
-        return Auth::user()->penugasanAktif?->lokasi_id;
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if ($user->isSuperAdmin()) {
+            return session('active_lokasi_id');
+        }
+
+        $penugasanAktif = $user->penugasanAktif;
+
+        // Admin hanya punya 1 lokasi aktif — pakai langsung
+        if ($penugasanAktif->count() === 1) {
+            return $penugasanAktif->first()->lokasi_id;
+        }
+
+        // Admin punya 2+ lokasi aktif — butuh session
+        return session('active_lokasi_id');
+    }
+
+    /**
+     * Set lokasi aktif ke session.
+     * Dipanggil dari step lokasi di wizard transaksi.
+     */
+    public function setLokasiAktif(Request $request)
+    {
+        $request->validate([
+            'lokasi_id' => ['required', 'exists:lokasis,id'],
+        ]);
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        // Validasi: admin hanya boleh set lokasi yang memang ditugaskan ke dia
+        if (!$user->isSuperAdmin()) {
+            $valid = $user->penugasanAktif()
+                          ->where('lokasi_id', $request->lokasi_id)
+                          ->exists();
+
+            if (!$valid) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Lokasi tidak valid untuk akun ini.',
+                ], 403);
+            }
+        }
+
+        session(['active_lokasi_id' => (int) $request->lokasi_id]);
+
+        return response()->json(['success' => true]);
     }
 
     public function index(Request $request)
@@ -52,8 +101,8 @@ class TransaksiController extends Controller
                     $q->whereHas('member', fn($m) =>
                             $m->where('nama', 'ilike', "%{$search}%")
                             ->orWhere('no_telp', 'ilike', "%{$search}%"))
-                    ->orWhereHas('bukuMasuk.buku', fn($b) => $b->where('judul', 'ilike', "%{$search}%"))
-                    ->orWhereHas('bukuKeluar.buku',   fn($b) => $b->where('judul', 'ilike', "%{$search}%"));
+                      ->orWhereHas('bukuMasuk.buku', fn($b) => $b->where('judul', 'ilike', "%{$search}%"))
+                      ->orWhereHas('bukuKeluar.buku', fn($b) => $b->where('judul', 'ilike', "%{$search}%"));
                 });
             })
             ->when($filters['lokasi'] ?? null, fn($q, $lokasi) => $q->where('lokasi_snapshot', $lokasi))
@@ -62,12 +111,12 @@ class TransaksiController extends Controller
                     'hari_ini'   => $q->whereDate('tanggal_tukar', today()),
                     'minggu_ini' => $q->whereBetween('tanggal_tukar', [now()->startOfWeek(), now()->endOfWeek()]),
                     'bulan_ini'  => $q->whereMonth('tanggal_tukar', now()->month)
-                                    ->whereYear('tanggal_tukar', now()->year),
+                                      ->whereYear('tanggal_tukar', now()->year),
                     default      => null,
                 };
             })
             ->latest()
-            ->paginate(15)
+            ->paginate(10)
             ->withQueryString();
 
         $transaksiHariIni   = Transaksi::whereDate('created_at', today())->count();
@@ -81,12 +130,23 @@ class TransaksiController extends Controller
             ? Paket::aktif()->where('lokasi_id', $lokasiId)->first()
             : null;
 
-        $lokasiList = Transaksi::where('lokasi_snapshot', '!=', null)
+        $lokasiList = Transaksi::whereNotNull('lokasi_snapshot')
             ->distinct()
             ->orderBy('lokasi_snapshot')
             ->pluck('lokasi_snapshot')
             ->filter()
             ->values();
+
+        // Untuk step lokasi di wizard — lokasi yang bisa dipilih user ini
+        /** @var \App\Models\User $authUser */
+        $authUser = Auth::user();
+        $lokasiPilihan = $authUser->isSuperAdmin()
+            ? Lokasi::aktif()->orderBy('nama_lokasi')->get()
+            : Lokasi::whereIn('id',
+                $authUser->penugasanAktif()->pluck('lokasi_id')
+              )->orderBy('nama_lokasi')->get();
+
+        $activeLokasiId = $this->getLokasiId();
 
         return view('admin.transaksi.index', compact(
             'transaksi',
@@ -96,25 +156,30 @@ class TransaksiController extends Controller
             'paketAktif',
             'paketUser',
             'lokasiList',
+            'lokasiPilihan',
+            'activeLokasiId',
         ));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'member.nama'               => 'required|string|max:255',
-            'member.no_telp'            => 'required|string|max:15',
-            'buku_masuk.judul'     => 'required|string|max:255',
+            'member.nama'        => 'required|string|max:255',
+            'member.no_telp'     => 'required|string|max:15',
+            'buku_masuk.judul'   => 'required|string|max:255',
             'buku_masuk.pengarang' => 'required|string|max:255',
-            'buku_keluar_id'          => 'required|exists:buku_eksemplars,id',
-            'paket_masuk_id'       => 'required|exists:pakets,id',
-            'paket_keluar_id'         => 'required|exists:pakets,id',
+            'buku_keluar_id'     => 'required|exists:buku_eksemplars,id',
+            'paket_masuk_id'     => 'required|exists:pakets,id',
+            'paket_keluar_id'    => 'required|exists:pakets,id',
         ]);
 
         try {
             $this->service->simpan(array_merge(
                 $request->all(),
-                ['user_id' => Auth::id()]
+                [
+                    'user_id'   => Auth::id(),
+                    'lokasi_id' => $this->getLokasiId(),
+                ]
             ));
 
             return response()->json(['success' => true, 'message' => 'Transaksi berhasil disimpan.']);
@@ -135,8 +200,8 @@ class TransaksiController extends Controller
     public function update(Request $request, int $id)
     {
         $request->validate([
-            'member.nama'      => 'required|string|max:255',
-            'member.no_telp'   => 'required|string|max:15',
+            'member.nama'    => 'required|string|max:255',
+            'member.no_telp' => 'required|string|max:15',
             'buku_keluar_id' => 'required|exists:buku_eksemplars,id',
         ]);
 
@@ -178,7 +243,7 @@ class TransaksiController extends Controller
 
         return response()->json([
             ...$transaksi->toArray(),
-            'lokasi' => $transaksi->lokasi_snapshot, // ← ganti dari paket->lokasi ke snapshot
+            'lokasi' => $transaksi->lokasi_snapshot,
         ]);
     }
 
@@ -241,11 +306,12 @@ class TransaksiController extends Controller
         $request->validate(['isbn' => 'required|string']);
 
         $buku = \App\Models\Buku::where('isbn', $request->isbn)
-            ->first(['judul', 'pengarang', 'penerbit', 'kategori', 
-                    'tahun_terbit', 'tempat_terbit', 'isbn']);
+            ->first(['judul', 'pengarang', 'penerbit', 'kategori',
+                     'tahun_terbit', 'tempat_terbit', 'isbn']);
 
         return response()->json($buku);
     }
+
     public function cariBukuMasukJudul(Request $request)
     {
         $keyword = $request->input('keyword', '');
@@ -253,11 +319,12 @@ class TransaksiController extends Controller
         $hasil = \App\Models\Buku::where(function ($q) use ($keyword) {
                 $lower = mb_strtolower($keyword);
                 $q->whereRaw('LOWER(judul) LIKE ?', ['%' . $lower . '%'])
-                ->orWhereRaw('LOWER(pengarang) LIKE ?', ['%' . $lower . '%'])
-                ->orWhereRaw('LOWER(COALESCE(isbn, \'\')) LIKE ?', ['%' . $lower . '%']);
+                  ->orWhereRaw('LOWER(pengarang) LIKE ?', ['%' . $lower . '%'])
+                  ->orWhereRaw('LOWER(COALESCE(isbn, \'\')) LIKE ?', ['%' . $lower . '%']);
             })
             ->limit(8)
-            ->get(['judul', 'pengarang', 'penerbit', 'kategori', 'tahun_terbit', 'tempat_terbit', 'isbn', 'deskripsi']);
+            ->get(['judul', 'pengarang', 'penerbit', 'kategori',
+                   'tahun_terbit', 'tempat_terbit', 'isbn', 'deskripsi']);
 
         return response()->json($hasil);
     }

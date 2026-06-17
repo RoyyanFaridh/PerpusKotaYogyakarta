@@ -1,4 +1,4 @@
-<div class="step-content-{{ $prefix }}" data-step="1">
+<div class="step-content-{{ $prefix }}" data-step="{{ 1 + ($offset ?? 0) }}">
 
     <div class="mb-4">
         <label class="block text-sm font-medium text-neutral-600 mb-1.5">Cari Member</label>

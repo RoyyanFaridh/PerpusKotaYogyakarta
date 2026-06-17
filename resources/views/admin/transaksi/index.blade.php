@@ -7,6 +7,13 @@
     <script>
         window.Routes = {
             transaksiStore: "{{ route('admin.transaksi.store') }}",
+            setLokasi:      "{{ route('admin.transaksi.set-lokasi') }}",
+        };
+        window.LokasiData = {
+            lokasiPilihan:   @json($lokasiPilihan),
+            activeLokasiId:  @json($activeLokasiId),
+            jumlahPenugasan: {{ $lokasiPilihan->count() }},
+            isSuperAdmin:    @json(auth()->user()->isSuperAdmin()),
         };
         const csrf = document.querySelector('meta[name="csrf-token"]')?.content ?? '{{ csrf_token() }}';
     </script>

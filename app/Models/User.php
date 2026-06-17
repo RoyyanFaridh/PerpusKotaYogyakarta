@@ -48,10 +48,10 @@ class User extends Authenticatable implements Auditable
         return $this->hasMany(UserLokasi::class);
     }
 
-    // Penugasan aktif saat ini
+    // Penugasan aktif saat ini (bisa lebih dari satu lokasi)
     public function penugasanAktif()
     {
-        return $this->hasOne(UserLokasi::class)->whereNull('unassigned_at');
+        return $this->hasMany(UserLokasi::class)->whereNull('unassigned_at');
     }
 
     public function members()
