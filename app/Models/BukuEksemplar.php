@@ -54,6 +54,18 @@ class BukuEksemplar extends Model implements Auditable
         return $query->whereHas('paket', fn($p) => $p->where('is_aktif', true));
     }
 
+    // Static Methods
+
+    public static function totalStokAktif(): int
+    {
+        return static::tersedia()
+            ->diPaketAktif()
+            ->whereHas('buku', fn($b) => $b->where('is_visible', true))
+            ->sum('stok');
+    }
+
+    // Attributes
+
     public function getIsTersediaAttribute(): bool
     {
         return $this->stok > 0;

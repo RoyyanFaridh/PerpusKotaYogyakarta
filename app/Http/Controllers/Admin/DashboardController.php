@@ -26,10 +26,7 @@ class DashboardController extends Controller
 
         $jumlahBuku = Buku::where('is_visible', true)->count();
 
-        $jumlahStok = BukuEksemplar::where('stok', '>', 0)
-            ->whereHas('paket', fn($p) => $p->where('is_aktif', true))
-            ->whereHas('buku', fn($b) => $b->where('is_visible', true))
-            ->sum('stok');
+        $jumlahStok = BukuEksemplar::totalStokAktif();
 
         $memberBulanIni = Member::whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)

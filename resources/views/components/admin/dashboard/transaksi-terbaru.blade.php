@@ -35,8 +35,8 @@
                 <tr class="border-b border-neutral-100 bg-neutral-50">
                     <th class="text-left text-xs font-medium text-neutral-500 px-5 py-3 whitespace-nowrap">ID</th>
                     <th class="text-left text-xs font-medium text-neutral-500 px-5 py-3 whitespace-nowrap">Member</th>
-                    <th class="text-left text-xs font-medium text-neutral-500 px-5 py-3 whitespace-nowrap">Diserahkan</th>
-                    <th class="text-left text-xs font-medium text-neutral-500 px-5 py-3 whitespace-nowrap">Diterima</th>
+                    <th class="text-left text-xs font-medium text-neutral-500 px-5 py-3 whitespace-nowrap">Buku Masuk</th>
+                    <th class="text-left text-xs font-medium text-neutral-500 px-5 py-3 whitespace-nowrap">Buku Keluar</th>
                     <th class="text-left text-xs font-medium text-neutral-500 px-5 py-3 whitespace-nowrap">Tanggal</th>
                 </tr>
             </thead>
@@ -68,16 +68,16 @@
                             </div>
                         </td>
 
-                        {{-- Diserahkan --}}
+                        {{-- Buku Masuk --}}
                         <td class="px-5 py-3.5 min-w-0 max-w-40">
-                            <p class="text-xs font-medium text-neutral-700 truncate">{{ $t->bukuDiserahkan?->buku?->judul ?? '-' }}</p>
-                            <p class="text-xs text-neutral-500 mt-0.5 truncate">{{ $t->bukuDiserahkan?->buku?->pengarang ?? '' }}</p>
+                            <p class="text-xs font-medium text-neutral-700 truncate">{{ $t->bukuMasuk?->buku?->judul ?? '-' }}</p>
+                            <p class="text-xs text-neutral-500 mt-0.5 truncate">{{ $t->bukuMasuk?->buku?->pengarang ?? '' }}</p>
                         </td>
 
-                        {{-- Diterima --}}
+                        {{-- Buku Keluar --}}
                         <td class="px-5 py-3.5 min-w-0 max-w-40">
-                            <p class="text-xs font-medium text-neutral-700 truncate">{{ $t->bukuDiterima?->buku?->judul ?? '-' }}</p>
-                            <p class="text-xs text-neutral-500 mt-0.5 truncate">{{ $t->bukuDiterima?->buku?->pengarang ?? '' }}</p>
+                            <p class="text-xs font-medium text-neutral-700 truncate">{{ $t->bukuKeluar?->buku?->judul ?? '-' }}</p>
+                            <p class="text-xs text-neutral-500 mt-0.5 truncate">{{ $t->bukuKeluar?->buku?->pengarang ?? '' }}</p>
                         </td>
 
                         {{-- Tanggal --}}

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Buku;
 use App\Models\Kegiatan;
+use App\Models\BukuEksemplar;
 use App\Models\Lokasi;
 use App\Models\Member;
 use App\Models\Transaksi;
@@ -33,8 +34,7 @@ class HomeController extends Controller
 
         return view('welcome', [
             'totalBuku'    => Buku::visible()->tersedia()->count(),
-            'totalEksemplar' => \App\Models\BukuEksemplar::whereHas('paket', fn($p) => $p->where('is_aktif', true))
-                        ->sum('stok'),
+            'totalEksemplar' => BukuEksemplar::totalStokAktif(),
             'totalAnggota' => Member::count(),
             'totalTukar'   => Transaksi::count(),
             'kegiatan'     => $sorted,
