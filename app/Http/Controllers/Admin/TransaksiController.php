@@ -3,14 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Lokasi;
 use App\Models\Paket;
 use App\Models\Transaksi;
 use App\Services\TransaksiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Exports\TransaksiExport;
-use Maatwebsite\Excel\Facades\Excel;
 
 class TransaksiController extends Controller
 {
