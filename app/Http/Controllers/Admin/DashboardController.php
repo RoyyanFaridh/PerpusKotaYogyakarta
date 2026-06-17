@@ -24,11 +24,13 @@ class DashboardController extends Controller
             ? round((($transaksiBulanIni - $transaksiBulanLalu) / $transaksiBulanLalu) * 100)
             : 0;
 
-        $bukuTersedia = BukuEksemplar::where('stok', '>', 0)
+        $jumlahBuku = Buku::where('is_visible', true)->count();
+
+        $jumlahStok = BukuEksemplar::where('stok', '>', 0)
             ->whereHas('paket', fn($p) => $p->where('is_aktif', true))
             ->whereHas('buku', fn($b) => $b->where('is_visible', true))
             ->sum('stok');
-        $bukuMingguIni   = Buku::whereBetween('created_at', [now()->startOfWeek(), now()])->count();
+
         $memberBulanIni = Member::whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->count();
@@ -53,8 +55,8 @@ class DashboardController extends Controller
         return view('admin.dashboard', compact(
             'transaksiBulanIni',
             'selisihTransaksi',
-            'bukuTersedia',
-            'bukuMingguIni',
+            'jumlahBuku',
+            'jumlahStok',
             'memberBulanIni',
             'selisihMember',
             'kategoris',

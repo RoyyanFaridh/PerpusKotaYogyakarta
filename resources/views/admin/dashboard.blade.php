@@ -7,7 +7,7 @@
     <div class="flex flex-col gap-6">
 
         {{-- Stat Cards --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             <x-admin.dashboard.stat-card
                 label="Transaksi Bulan Ini"
                 :value="$transaksiBulanIni"
@@ -18,19 +18,28 @@
                 :href="route('admin.transaksi.index')"
             />
             <x-admin.dashboard.stat-card
-                label="Buku Tersedia"
-                :value="$bukuTersedia"
+                label="Jumlah Buku"
+                :value="$jumlahBuku"
                 icon="book"
                 color="success"
-                :badge="'+' . $bukuMingguIni . ' minggu ini'"
-                caption="Buku tukar yang sudah diterima"
+                badge="Total judul buku"
+                caption="Total judul buku"
+                :href="route('admin.buku.index')"
+            />
+            <x-admin.dashboard.stat-card
+                label="Jumlah Stok"
+                :value="$jumlahStok"
+                icon="book"
+                color="warning"
+                badge="Total stok tersedia"
+                caption="Stok buku"
                 :href="route('admin.buku.index')"
             />
             <x-admin.dashboard.stat-card
                 label="Member Bulan Ini"
                 :value="$memberBulanIni"
                 icon="users"
-                color="warning"
+                color="danger"
                 :badge="($selisihMember >= 0 ? '+' : '') . $selisihMember . ' dari bulan lalu'"
                 caption="Total member yang bergabung"
                 :href="route('admin.member.index')"
