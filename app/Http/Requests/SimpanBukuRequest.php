@@ -28,7 +28,7 @@ class SimpanBukuRequest extends FormRequest
             'tahun_terbit'  => 'nullable|integer|min:1900|max:' . date('Y'),
             'tempat_terbit' => 'nullable|string|max:255',
             'resume'        => 'nullable|string',
-            'cover'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'cover'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:1024',
             'kategori'      => 'nullable|string|max:255',
             'deskripsi'     => 'nullable|string',
             'is_visible'    => 'boolean',
@@ -52,7 +52,7 @@ class SimpanBukuRequest extends FormRequest
             'paket_id.exists'      => 'Paket tidak ditemukan',
             'cover.image'          => 'Cover harus berupa gambar',
             'cover.mimes'          => 'Format cover harus jpg, jpeg, png, atau webp',
-            'cover.max'            => 'Ukuran cover maksimal 2MB',
+            'cover.max'            => 'Ukuran cover maksimal 1MB',
         ];
     }
 
