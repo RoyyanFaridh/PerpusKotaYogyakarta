@@ -22,6 +22,7 @@ class Transaksi extends Model implements Auditable
         'user_id',
         'catatan_petugas',
         'tanggal_tukar',
+        'lokasi_snapshot',
     ];
 
     protected $casts = [

@@ -171,7 +171,7 @@ class TransaksiController extends Controller
 
         return response()->json([
             ...$transaksi->toArray(),
-            'lokasi' => $transaksi->paket?->lokasi,
+            'lokasi' => $transaksi->lokasi_snapshot, // ← ganti dari paket->lokasi ke snapshot
         ]);
     }
 

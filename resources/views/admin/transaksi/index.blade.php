@@ -134,7 +134,7 @@
                         <th class="text-left   text-xs font-semibold text-neutral-500 px-4 py-3">Member</th>
                         <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Buku Masuk</th>
                         <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Buku Keluar</th>
-                        <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Tanggal</th>
+                        <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Tanggal & Lokasi</th>
                         <th class="text-center text-xs font-semibold text-neutral-500 px-4 py-3">Aksi</th>
                     </tr>
                 </thead>
@@ -172,9 +172,9 @@
                                 <p class="text-xs text-neutral-400 mt-0.5">{{ $item->bukuKeluar?->buku?->pengarang ?? '' }}</p>
                             </td>
 
-                            <td class="px-4 py-3.5 whitespace-nowrap text-center">
-                                <p class="text-sm font-medium text-neutral-700">{{ $item->tanggal_tukar?->format('d M Y') ?? '-' }}</p>
-                                <p class="text-xs text-neutral-400 mt-0.5">{{ $item->tanggal_tukar?->diffForHumans() ?? '' }}</p>
+                            <td class="px-4 py-3.5 text-center">
+                                <p class="text-sm font-medium text-neutral-700">{{ $item->lokasi_snapshot ?? '-' }}</p>
+                                <p class="text-xs text-neutral-400 mt-0.5">{{ $item->tanggal_tukar?->format('d M Y') ?? '-' }}</p>
                             </td>
 
                             <td class="px-4 py-3.5">

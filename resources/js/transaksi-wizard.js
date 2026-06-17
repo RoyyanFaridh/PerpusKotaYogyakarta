@@ -7,8 +7,6 @@ const el      = (id)      => document.getElementById(id);
 const pEl     = (pfx, id) => el(`${pfx}_${id}`);
 const pVal    = (pfx, id) => pEl(pfx, id)?.value ?? '';
 
-// ─── API ───────────────────────────────────────────────────────────────────
-
 function apiFetch(url, options = {}) {
     return fetch(url, {
         headers: {
@@ -23,8 +21,6 @@ function apiFetch(url, options = {}) {
         return r.json();
     });
 }
-
-// ─── UI Helpers ────────────────────────────────────────────────────────────
 
 function setBtn(id, disabled, text) {
     const btn = el(id);
@@ -42,8 +38,6 @@ function hideModal(id) {
     el(id)?.classList.add('hidden');
     el(id)?.classList.remove('flex');
 }
-
-// ─── Paket Aktif ──────────────────────────────────────────────────────────
 
 function loadPaketAktif(prefix, selectedId = null) {
     const sel = pEl(prefix, 'paketMasukId');
@@ -154,8 +148,6 @@ function handleSimpanError(prefix, data) {
     }
 }
 
-// ─── Edit ──────────────────────────────────────────────────────────────────
-
 function openEditTransaksi(id) {
     state.edit.id = id;
 
@@ -170,7 +162,6 @@ function openEditTransaksi(id) {
             pEl('edit', 'memberAlamat').value = m.alamat ?? '';
             pEl('edit', 'memberEmail').value  = m.email  ?? '';
 
-            // Isi input cari masuk dengan judul supaya user tahu buku mana
             const judulLama = b.buku?.judul ?? '';
             const cariMasukEl = pEl('edit', 'cariMasuk');
             if (cariMasukEl) cariMasukEl.value = judulLama;
@@ -223,8 +214,6 @@ function updateTransaksi() {
         .finally(() => setBtn('editBtnSimpan', false, 'Simpan Perubahan'));
 }
 
-// ─── Payload ───────────────────────────────────────────────────────────────
-
 function buildPayload(prefix) {
     const bukuKeluarIdEl = pEl(prefix, 'bukuKeluarId');
 
@@ -252,8 +241,6 @@ function buildPayload(prefix) {
         catatan_petugas: pVal(prefix, 'catatanPetugas'),
     };
 }
-
-// ─── Step navigation ───────────────────────────────────────────────────────
 
 const TOTAL_STEPS = 4;
 
@@ -335,8 +322,6 @@ function validateStep(prefix, step) {
     return true;
 }
 
-// ─── Konfirmasi ────────────────────────────────────────────────────────────
-
 function fillKonfirmasi(prefix) {
     const set = (id, text) => {
         const e = pEl(prefix, id);
@@ -355,8 +340,6 @@ function fillKonfirmasi(prefix) {
     set('konfirmasiLokasi',     pEl(prefix, 'bukuKeluarLokasi')?.textContent ?? '-');
     set('konfirmasiCatatan',    pVal(prefix, 'catatanPetugas') || '-');
 }
-
-// ─── Buku Masuk — live search ──────────────────────────────────────────────
 
 function cariMasukByInput(prefix, input) {
     const info    = pEl(prefix, 'cariMasukInfo');
@@ -453,8 +436,6 @@ function isiBukuMasuk(prefix, data) {
     pEl(prefix, 'isbnMasuk').value         = data.isbn          ?? '';
 }
 
-// ─── Buku Keluar ──────────────────────────────────────────────────────────
-
 function setBukuKeluar(prefix, buku) {
     const idEl = pEl(prefix, 'bukuKeluarId');
     if (idEl) {
@@ -503,8 +484,6 @@ function resetBukuKeluar(prefix) {
     pEl(prefix, 'bukuKeluarResult')?.classList.add('hidden');
     pEl(prefix, 'bukuKeluarEmpty')?.classList.remove('hidden');
 }
-
-// ─── Buku Keluar — live search ────────────────────────────────────────────
 
 function cariBukuKeluar(prefix) {
     const input = pEl(prefix, 'cariBukuKeluar')?.value.trim();
@@ -628,8 +607,6 @@ function pilihBukuKeluar(prefix, buku) {
     if (input) input.value = '';
 }
 
-// ─── Member ────────────────────────────────────────────────────────────────
-
 function pilihMember(prefix, m) {
     pEl(prefix, 'memberId').value     = m.id;
     pEl(prefix, 'memberNama').value   = m.nama;
@@ -639,8 +616,6 @@ function pilihMember(prefix, m) {
     pEl(prefix, 'cariMemberResults')?.classList.add('hidden');
     pEl(prefix, 'cariMemberInput').value = '';
 }
-
-// ─── Modal Hapus ───────────────────────────────────────────────────────────
 
 function bukaModalHapusTransaksi(action, label) {
     document.getElementById('formHapusTransaksi').action    = action;

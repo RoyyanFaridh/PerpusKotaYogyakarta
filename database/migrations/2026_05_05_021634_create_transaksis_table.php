@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->text('catatan_petugas')->nullable();
             $table->timestamp('tanggal_tukar')->useCurrent();
+            $table->string('lokasi_snapshot')->nullable();
             $table->timestamps();
         });
     }

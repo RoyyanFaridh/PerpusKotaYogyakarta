@@ -15,7 +15,6 @@ class TransaksiExport implements FromCollection, WithHeadings, WithMapping, With
     {
         return Transaksi::with([
                 'member',
-                'paket.lokasi',
                 'bukuMasuk.buku',
                 'bukuKeluar.buku',
             ])
@@ -50,7 +49,7 @@ class TransaksiExport implements FromCollection, WithHeadings, WithMapping, With
             $row->bukuKeluar?->buku?->judul               ?? '-',
             $row->bukuKeluar?->buku?->pengarang           ?? '-',
             $row->paket?->nama                              ?? '-',
-            $row->paket?->lokasi?->nama_lokasi              ?? '-',
+            $row->lokasi_snapshot                   ?? '-',
             $row->tanggal_tukar?->format('d M Y')           ?? '-',
         ];
     }

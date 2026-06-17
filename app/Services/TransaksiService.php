@@ -119,7 +119,7 @@ class TransaksiService
                 ]);
             }
 
-            $eksemplarKeluar = BukuEksemplar::with('paket')
+            $eksemplarKeluar = BukuEksemplar::with('paket.lokasi')
                 ->lockForUpdate()
                 ->findOrFail($data['buku_keluar_id']);
 
@@ -134,13 +134,14 @@ class TransaksiService
             $eksemplarKeluar->kurangiStok();
 
             return Transaksi::create([
-                'member_id'       => $member->id,
-                'paket_id'        => $paketKeluarId,
-                'buku_masuk_id'   => $eksemplarMasuk->id,
-                'buku_keluar_id'  => $eksemplarKeluar->id,
-                'user_id'         => $data['user_id'],
-                'catatan_petugas' => $data['catatan_petugas'] ?? null,
-                'tanggal_tukar'   => now(),
+                'member_id'        => $member->id,
+                'paket_id'         => $paketKeluarId,
+                'buku_masuk_id'    => $eksemplarMasuk->id,
+                'buku_keluar_id'   => $eksemplarKeluar->id,
+                'user_id'          => $data['user_id'],
+                'catatan_petugas'  => $data['catatan_petugas'] ?? null,
+                'tanggal_tukar'    => now(),
+                'lokasi_snapshot' => $eksemplarKeluar->paket?->lokasi?->nama_lokasi,
             ]);
         });
     }
