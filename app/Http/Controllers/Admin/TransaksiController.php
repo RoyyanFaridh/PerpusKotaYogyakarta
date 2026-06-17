@@ -36,7 +36,7 @@ class TransaksiController extends Controller
             return $fallbackFromRequest;
         }
 
-        return Lokasi::where('user_id', Auth::id())->value('id');
+        return Auth::user()->penugasanAktif?->lokasi_id;
     }
 
     public function index(Request $request)
