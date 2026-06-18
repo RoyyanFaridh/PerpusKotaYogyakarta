@@ -216,8 +216,8 @@ class BukuService
 
         if (! empty($filters['visibility'])) {
             match ($filters['visibility']) {
-                'visible' => $query->where('is_visible', true),
-                'hidden'  => $query->where('is_visible', false),
+                'visible' => $query->visible(),
+                'hidden'  => $query->whereDoesntHave('eksemplars.paket', fn($p) => $p->where('is_aktif', true)),
                 default   => null,
             };
         }

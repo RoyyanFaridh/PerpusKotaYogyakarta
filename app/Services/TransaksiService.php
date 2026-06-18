@@ -110,7 +110,7 @@ class TransaksiService
                             'tempat_terbit' => $data['buku_masuk']['tempat_terbit'] ?? null,
                             'kategori'      => $data['buku_masuk']['kategori']      ?? null,
                             'deskripsi'     => $data['buku_masuk']['deskripsi']     ?? null,
-                            'is_visible'    => false,
+                            'is_visible'    => true,
                             'user_id'       => $data['user_id'],
                         ]
                     )
@@ -122,7 +122,7 @@ class TransaksiService
                         'tempat_terbit' => $data['buku_masuk']['tempat_terbit'] ?? null,
                         'kategori'      => $data['buku_masuk']['kategori']      ?? null,
                         'deskripsi'     => $data['buku_masuk']['deskripsi']     ?? null,
-                        'is_visible'    => false,
+                        'is_visible'    => true,
                         'user_id'       => $data['user_id'],
                     ]);
 

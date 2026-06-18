@@ -60,7 +60,6 @@ class BukuEksemplar extends Model implements Auditable
     {
         return static::tersedia()
             ->diPaketAktif()
-            ->whereHas('buku', fn($b) => $b->where('is_visible', true))
             ->sum('stok');
     }
 
