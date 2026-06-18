@@ -41,6 +41,16 @@ class KegiatanController extends Controller
             'lokasi_id' => 'nullable|exists:lokasis,id',
         ]);
 
+        $exists = Kegiatan::where('nama_kegiatan', $validated['nama_kegiatan'])
+            ->where('tanggal_mulai', $validated['tanggal_mulai'])
+            ->where('jam_pelaksanaan', $validated['jam_pelaksanaan'])
+            ->exists();
+
+        if ($exists) {
+            return redirect()->route('admin.kegiatan.index')
+                ->with('error', 'Kegiatan dengan data yang sama sudah ada.');
+        }
+
         $kegiatan = Kegiatan::create($validated);
 
         if (!empty($validated['paket_ids'])) {
