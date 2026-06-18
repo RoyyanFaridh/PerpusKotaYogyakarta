@@ -42,14 +42,14 @@ class KegiatanController extends Controller
         ]);
 
         $exists = Kegiatan::where('nama_kegiatan', $validated['nama_kegiatan'])
-            ->where('tanggal_mulai', $validated['tanggal_mulai'])
-            ->where('jam_pelaksanaan', $validated['jam_pelaksanaan'])
-            ->exists();
+        ->where('tanggal_mulai', $validated['tanggal_mulai'])
+        ->where('jam_pelaksanaan', $validated['jam_pelaksanaan'])
+        ->exists();
 
-        if ($exists) {
-            return redirect()->route('admin.kegiatan.index')
-                ->with('error', 'Kegiatan dengan data yang sama sudah ada.');
-        }
+    if ($exists) {
+        return redirect()->route('admin.kegiatan.index')
+            ->with('error', 'Kegiatan dengan data yang sama sudah ada.');
+    }
 
         $kegiatan = Kegiatan::create($validated);
 
@@ -73,8 +73,12 @@ class KegiatanController extends Controller
             'deskripsi'       => $kegiatan->deskripsi,
             'tanggal_mulai'   => $kegiatan->tanggal_mulai?->format('Y-m-d'),
             'tanggal_selesai' => $kegiatan->tanggal_selesai?->format('Y-m-d'),
-            'jam_pelaksanaan' => $kegiatan->jam_pelaksanaan,
-            'jam_selesai'     => $kegiatan->jam_selesai,
+            'jam_pelaksanaan' => $kegiatan->jam_pelaksanaan 
+                                ? \Carbon\Carbon::parse($kegiatan->jam_pelaksanaan)->format('H:i') 
+                                : null,
+            'jam_selesai'     => $kegiatan->jam_selesai 
+                                ? \Carbon\Carbon::parse($kegiatan->jam_selesai)->format('H:i') 
+                                : null,
             'lokasi_id'       => $kegiatan->lokasi_id, // tambah ini
             'paket_ids'       => $kegiatan->pakets->pluck('id'),
         ]);
