@@ -215,11 +215,13 @@ class BukuService
         }
 
         if (! empty($filters['visibility'])) {
-            match ($filters['visibility']) {
-                'visible' => $query->visible(),
-                'hidden'  => $query->whereDoesntHave('eksemplars.paket', fn($p) => $p->where('is_aktif', true)),
-                default   => null,
-            };
+            if (empty($filters['paket_ids'])) {
+                match ($filters['visibility']) {
+                    'visible' => $query->where('is_visible', true),
+                    'hidden'  => $query->where('is_visible', false),
+                    default   => null,
+                };
+            }
         }
 
         return $query;
@@ -299,6 +301,10 @@ class BukuService
         $row = 6;
         foreach ($bukus as $i => $buku) {
             // Fix bug: filter eksemplar sesuai paket_ids kalau ada
+            $stok = $filterPaketIds
+                ? $buku->eksemplars->whereIn('paket_id', $filterPaketIds)->sum('stok')
+                : $buku->eksemplars->sum('stok');
+            
             $eksemplar = $filterPaketIds
                 ? $buku->eksemplars->whereIn('paket_id', $filterPaketIds)->first()
                 : $buku->eksemplars->first();
@@ -314,7 +320,7 @@ class BukuService
                 $isbnValue,
                 $buku->kategori     ?? '-',
                 $buku->tahun_terbit ?? '-',
-                $eksemplar?->stok   ?? 0,
+                $stok,  
             ];
 
             if (!$isKegiatanExport) {
