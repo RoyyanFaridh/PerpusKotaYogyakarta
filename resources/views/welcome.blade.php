@@ -281,7 +281,14 @@
         }
 
         // ── Search triggers ───────────────────────────────────────────────
-        searchBtn.addEventListener('click', () => triggerSearch());
+        searchBtn.addEventListener('click', () => {
+            const q = searchInput.value.trim();
+            if (!q && !activeKategori && !activeLokasi) {
+                doSearch('', '', '');  // kosong semua → tampilkan semua buku
+            } else {
+                triggerSearch();
+            }
+        });
 
         searchInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') triggerSearch();
