@@ -36,17 +36,32 @@
             @csrf
             @method('PUT')
 
-            <div class="flex flex-col gap-1.5">
-                <label class="text-sm font-medium text-neutral-600">
-                    Nama <span class="text-danger-500">*</span>
-                </label>
-                <input type="text" name="nama" id="edit_nama_{{ $user->id }}"
-                       value="{{ old('nama', $user->nama) }}"
-                       class="w-full text-sm px-3.5 py-2 rounded-lg border {{ $errors->has('nama') ? 'border-danger-400 bg-danger-50' : 'border-neutral-200' }} text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition">
-                <p id="edit_err_nama_{{ $user->id }}"
-                   class="{{ $errors->has('nama') ? '' : 'hidden' }} text-xs text-danger-500">
-                    {{ $errors->first('nama') ?: 'Nama wajib diisi.' }}
-                </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-sm font-medium text-neutral-600">
+                        Nama <span class="text-danger-500">*</span>
+                    </label>
+                    <input type="text" name="nama" id="edit_nama_{{ $user->id }}"
+                        value="{{ old('nama', $user->nama) }}"
+                        class="w-full text-sm px-3.5 py-2 rounded-lg border {{ $errors->has('nama') ? 'border-danger-400 bg-danger-50' : 'border-neutral-200' }} text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition">
+                    <p id="edit_err_nama_{{ $user->id }}"
+                    class="{{ $errors->has('nama') ? '' : 'hidden' }} text-xs text-danger-500">
+                        {{ $errors->first('nama') ?: 'Nama wajib diisi.' }}
+                    </p>
+                </div>
+
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-sm font-medium text-neutral-600">
+                        Username <span class="text-danger-500">*</span>
+                    </label>
+                    <input type="text" name="username" id="edit_username_{{ $user->id }}"
+                        value="{{ old('username', $user->username) }}" placeholder="contoh.username"
+                        class="w-full text-sm px-3.5 py-2 rounded-lg border {{ $errors->has('username') ? 'border-danger-400 bg-danger-50' : 'border-neutral-200' }} text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition">
+                    <p id="edit_err_username_{{ $user->id }}"
+                    class="{{ $errors->has('username') ? '' : 'hidden' }} text-xs text-danger-500">
+                        {{ $errors->first('username') ?: 'Username wajib diisi.' }}
+                    </p>
+                </div>
             </div>
 
             <div class="flex flex-col gap-1.5">
@@ -173,24 +188,27 @@
 
     function submitEditUser(id) {
         const nama     = document.getElementById('edit_nama_' + id)?.value.trim();
+        const username = document.getElementById('edit_username_' + id)?.value.trim();
         const email    = document.getElementById('edit_email_' + id)?.value.trim();
         const no_hp    = document.getElementById('edit_no_hp_' + id)?.value.trim();
         const password = document.getElementById('edit_password_' + id)?.value;
         const confirm  = document.getElementById('edit_password_confirmation_' + id)?.value;
 
         const errNama     = !nama;
+        const errUsername = !username || !/^[a-zA-Z0-9_-]{3,}$/.test(username);
         const errEmail    = !email;
         const errNoHp     = !no_hp;
         const errPassword = password !== '' && password.length < 8;
         const errConfirm  = password !== '' && password !== confirm;
 
         setErrorEdit(id, 'edit_nama',                  'edit_err_nama',                  errNama,     'Nama wajib diisi.');
+        setErrorEdit(id, 'edit_username',              'edit_err_username',              errUsername, username ? 'Username hanya huruf, angka, tanda hubung, underscore (min. 3 karakter).' : 'Username wajib diisi.');
         setErrorEdit(id, 'edit_email',                 'edit_err_email',                 errEmail,    'Email wajib diisi.');
         setErrorEdit(id, 'edit_no_hp',                 'edit_err_no_hp',                 errNoHp,     'Nomor HP wajib diisi.');
         setErrorEdit(id, 'edit_password',              'edit_err_password',              errPassword, 'Password minimal 8 karakter.');
         setErrorEdit(id, 'edit_password_confirmation', 'edit_err_password_confirmation', errConfirm,  'Konfirmasi password tidak cocok.');
 
-        if (errNama || errEmail || errNoHp || errPassword || errConfirm) return;
+        if (errNama || errUsername || errEmail || errNoHp || errPassword || errConfirm) return;
 
         document.getElementById('formEditUser-' + id).submit();
     }
@@ -205,7 +223,7 @@
         }
     });
 
-    @if ($errors->hasAny(['nama', 'email', 'no_hp', 'role', 'password']))
+    @if ($errors->hasAny(['nama', 'username', 'email', 'no_hp', 'role', 'password']))
         document.addEventListener('DOMContentLoaded', () => bukaModalEditUser({{ $user->id }}));
     @endif
 </script>

@@ -56,7 +56,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'active'])->group(fu
     Route::get('/kegiatan/{kegiatan}/edit',   [KegiatanController::class, 'edit'])->name('kegiatan.edit')->middleware('has.permission:kegiatan.edit');
     Route::put('/kegiatan/{kegiatan}',    [KegiatanController::class, 'update'])->name('kegiatan.update')->middleware('has.permission:kegiatan.edit');
     Route::delete('/kegiatan/{kegiatan}', [KegiatanController::class, 'destroy'])->name('kegiatan.destroy')->middleware('has.permission:kegiatan.delete');
-    Route::get('/kegiatan/{kegiatan}/export-buku', [KegiatanController::class, 'exportBuku'])->name('kegiatan.export-buku')->middleware('has.permission:kegiatan.edit');
 
     // Buku
     Route::prefix('buku')->name('buku.')->group(function () {

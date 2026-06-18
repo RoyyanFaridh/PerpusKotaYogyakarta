@@ -114,11 +114,15 @@ class PengaturanController extends Controller
 
         $validated = $request->validate([
             'new_name'     => ['required', 'string', 'max:255'],
+            'new_username' => ['required', 'string', 'max:255', 'alpha_dash', 'unique:users,username'],
             'new_email'    => ['nullable', 'email', 'unique:users,email'],
             'new_password' => ['required', Password::min(8)],
             'new_role'     => ['required', 'in:superadmin,admin'],
         ], [
             'new_name.required'     => 'Nama wajib diisi.',
+            'new_username.required' => 'Username wajib diisi.',
+            'new_username.alpha_dash' => 'Username hanya boleh huruf, angka, tanda hubung, dan underscore.',
+            'new_username.unique'   => 'Username sudah digunakan.',
             'new_email.email'       => 'Format email tidak valid.',
             'new_email.unique'      => 'Email sudah digunakan.',
             'new_password.required' => 'Password wajib diisi.',
@@ -131,6 +135,7 @@ class PengaturanController extends Controller
 
         User::create([
             'nama'     => $validated['new_name'],
+            'username' => $validated['new_username'],
             'email'    => $validated['new_email'] ?? null,
             'password' => Hash::make($validated['new_password']),
             'role'     => $validated['new_role'],
@@ -156,12 +161,16 @@ class PengaturanController extends Controller
 
         $validated = $request->validate([
             'nama'     => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:255', 'alpha_dash', 'unique:users,username,' . $user->id],
             'email'    => ['nullable', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'no_hp'    => ['nullable', 'string', 'max:15'],
             'role'     => ['sometimes', 'in:superadmin,admin'],
             'password' => ['nullable', 'confirmed', Password::min(8)],
         ], [
             'nama.required'      => 'Nama wajib diisi.',
+            'username.required'  => 'Username wajib diisi.',
+            'username.alpha_dash'=> 'Username hanya boleh huruf, angka, tanda hubung, dan underscore.',
+            'username.unique'    => 'Username sudah digunakan.',
             'email.email'        => 'Format email tidak valid.',
             'email.unique'       => 'Email sudah digunakan.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
@@ -174,10 +183,11 @@ class PengaturanController extends Controller
         }
 
         $user->fill([
-            'nama'  => $validated['nama'],
-            'email' => $validated['email'] ?? null,
-            'no_hp' => $validated['no_hp'] ?? null,
-            'role'  => $newRole,
+            'nama'     => $validated['nama'],
+            'username' => $validated['username'],
+            'email'    => $validated['email'] ?? null,
+            'no_hp'    => $validated['no_hp'] ?? null,
+            'role'     => $newRole,
         ]);
 
         if (! empty($validated['password'])) {
@@ -189,11 +199,6 @@ class PengaturanController extends Controller
         return redirect()->route('admin.pengaturan.index')
                          ->with('success', 'User berhasil diperbarui.');
     }
-
-    // ─────────────────────────────────────────────
-    // NONAKTIFKAN / AKTIFKAN USER
-    // Tidak hard delete — histori transaksi tetap terjaga.
-    // ─────────────────────────────────────────────
 
     public function toggleAktifUser(User $user): RedirectResponse
     {
@@ -215,10 +220,6 @@ class PengaturanController extends Controller
         return redirect()->route('admin.pengaturan.index')
                          ->with('success', "Akun {$user->nama} berhasil {$status}.");
     }
-
-    // ─────────────────────────────────────────────
-    // PERMISSIONS
-    // ─────────────────────────────────────────────
 
     public function updatePermissions(Request $request, User $user): RedirectResponse
     {

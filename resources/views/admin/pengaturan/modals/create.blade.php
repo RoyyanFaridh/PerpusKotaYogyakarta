@@ -28,16 +28,30 @@
               class="px-6 sm:px-8 py-6 flex flex-col gap-4">
             @csrf
 
-            <div class="flex flex-col gap-1.5">
-                <label class="text-sm font-medium text-neutral-600">
-                    Nama <span class="text-danger-500">*</span>
-                </label>
-                <input type="text" name="new_name" id="tambah_new_name"
-                       value="{{ old('new_name') }}" placeholder="Nama lengkap"
-                       class="w-full text-sm px-3.5 py-2 rounded-lg border {{ $errors->has('new_name') ? 'border-danger-400 bg-danger-50' : 'border-neutral-200' }} text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition">
-                <p id="tambah_err_new_name" class="hidden text-xs text-danger-500">
-                    {{ $errors->first('new_name') ?: 'Nama wajib diisi.' }}
-                </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-sm font-medium text-neutral-600">
+                        Nama <span class="text-danger-500">*</span>
+                    </label>
+                    <input type="text" name="new_name" id="tambah_new_name"
+                        value="{{ old('new_name') }}" placeholder="Nama lengkap"
+                        class="w-full text-sm px-3.5 py-2 rounded-lg border {{ $errors->has('new_name') ? 'border-danger-400 bg-danger-50' : 'border-neutral-200' }} text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition">
+                    <p id="tambah_err_new_name" class="hidden text-xs text-danger-500">
+                        {{ $errors->first('new_name') ?: 'Nama wajib diisi.' }}
+                    </p>
+                </div>
+
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-sm font-medium text-neutral-600">
+                        Username <span class="text-danger-500">*</span>
+                    </label>
+                    <input type="text" name="new_username" id="tambah_new_username"
+                        value="{{ old('new_username') }}" placeholder="username"
+                        class="w-full text-sm px-3.5 py-2 rounded-lg border {{ $errors->has('new_username') ? 'border-danger-400 bg-danger-50' : 'border-neutral-200' }} text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition">
+                    <p id="tambah_err_new_username" class="hidden text-xs text-danger-500">
+                        {{ $errors->first('new_username') ?: 'Username wajib diisi.' }}
+                    </p>
+                </div>
             </div>
 
             <div class="flex flex-col gap-1.5">
@@ -128,18 +142,21 @@
 
     function submitTambahUser() {
         const nama     = document.getElementById('tambah_new_name').value.trim();
+        const username = document.getElementById('tambah_new_username').value.trim();
         const email    = document.getElementById('tambah_new_email').value.trim();
         const password = document.getElementById('tambah_new_password').value;
 
         const errNama     = !nama;
+        const errUsername = !username || !/^[a-zA-Z0-9._]{3,}$/.test(username);
         const errEmail    = !email;
         const errPassword = !password || password.length < 8;
 
         setErrorTambahUser('tambah_new_name',     'tambah_err_new_name',     errNama,     'Nama wajib diisi.');
+        setErrorTambahUser('tambah_new_username', 'tambah_err_new_username', errUsername, username ? 'Username hanya huruf, angka, titik, underscore (min. 3 karakter).' : 'Username wajib diisi.');
         setErrorTambahUser('tambah_new_email',    'tambah_err_new_email',    errEmail,    'Email wajib diisi.');
         setErrorTambahUser('tambah_new_password', 'tambah_err_new_password', errPassword, password && password.length < 8 ? 'Password minimal 8 karakter.' : 'Password wajib diisi.');
 
-        if (errNama || errEmail || errPassword) return;
+        if (errNama || errUsername || errEmail || errPassword) return;
 
         document.getElementById('formTambahUser').submit();
     }

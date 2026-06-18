@@ -178,11 +178,19 @@ class BukuService
             9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
         ];
 
-        $namaFile = isset($filters['nama_kegiatan'])
-            ? 'Katalog Buku_' . $filters['nama_kegiatan'] . '_' . $bulan[now()->month] . ' ' . now()->year
-            : ($publikOnly
-                ? 'Katalog Buku Tukar_' . $bulan[now()->month] . ' ' . now()->year
-                : 'Data Buku_' . $bulan[now()->month] . ' ' . now()->year);
+        $namaFile = $publikOnly
+            ? 'Katalog Buku Tukar_' . $bulan[now()->month] . ' ' . now()->year
+            : 'Data Buku_' . $bulan[now()->month] . ' ' . now()->year;
+
+        if (! empty($filters['paket'])) {
+            $namaPaket = $filters['paket'] === 'tanpa_paket'
+                ? 'Tanpa Paket'
+                : (Paket::find($filters['paket'])?->nama ?? null);
+
+            if ($namaPaket) {
+                $namaFile .= ' - ' . $namaPaket;
+            }
+        }
 
         $this->streamExcel($bukus, $this->buildExportFilterDesc($filters), $namaFile, $publikOnly, $filters);
     }
@@ -207,21 +215,12 @@ class BukuService
             }
         }
 
-        // Tambah ini — untuk export kegiatan (multiple paket)
-        if (! empty($filters['paket_ids']) && is_array($filters['paket_ids'])) {
-            $query->whereHas('eksemplars', fn($e) =>
-                $e->whereIn('paket_id', $filters['paket_ids'])
-            );
-        }
-
         if (! empty($filters['visibility'])) {
-            if (empty($filters['paket_ids'])) {
-                match ($filters['visibility']) {
-                    'visible' => $query->where('is_visible', true),
-                    'hidden'  => $query->where('is_visible', false),
-                    default   => null,
-                };
-            }
+            match ($filters['visibility']) {
+                'visible' => $query->where('is_visible', true),
+                'hidden'  => $query->where('is_visible', false),
+                default   => null,
+            };
         }
 
         return $query;
@@ -237,13 +236,6 @@ class BukuService
                 ? 'Paket: Tanpa Paket'
                 : 'Paket: ' . (Paket::find($v)?->nama ?? $v);
         }
-        // Tambah ini
-        if (! empty($filters['paket_ids'])) {
-            $namaPackets = Paket::whereIn('id', $filters['paket_ids'])
-                ->pluck('nama')
-                ->join(', ');
-            $parts[] = 'Paket: ' . $namaPackets;
-        }
         if ($v = $filters['visibility'] ?? null) {
             $parts[] = 'Visibilitas: ' . ($v === 'visible' ? 'Tampil' : 'Tersembunyi');
         }
@@ -256,13 +248,7 @@ class BukuService
         $sheet       = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Data Buku');
 
-        $filterPaketIds = $filters['paket_ids'] ?? null;
-        $isKegiatanExport = !empty($filterPaketIds);
-
-        // Export kegiatan: tanpa kolom Lokasi → lastCol H
-        // Export publik biasa: dengan Lokasi → lastCol I
-        // Export admin: dengan Lokasi + Tampil → lastCol J
-        $lastCol = $isKegiatanExport ? 'H' : ($publikOnly ? 'I' : 'J');
+        $lastCol = $publikOnly ? 'I' : 'J';
 
         $sheet->setCellValue('A1', 'Data Buku Perpustakaan');
         $sheet->setCellValue('A2', $filterDesc ?: 'Semua Data');
@@ -280,11 +266,9 @@ class BukuService
         ]);
         $sheet->getRowDimension(4)->setRowHeight(8);
 
-        $headers = $isKegiatanExport
-            ? ['No', 'Judul', 'Pengarang', 'Penerbit', 'ISBN', 'Kategori', 'Tahun', 'Stok']
-            : ($publikOnly
-                ? ['No', 'Judul', 'Pengarang', 'Penerbit', 'ISBN', 'Kategori', 'Tahun', 'Stok', 'Lokasi']
-                : ['No', 'Judul', 'Pengarang', 'Penerbit', 'ISBN', 'Kategori', 'Tahun', 'Stok', 'Lokasi', 'Tampil']);
+        $headers = $publikOnly
+            ? ['No', 'Judul', 'Pengarang', 'Penerbit', 'ISBN', 'Kategori', 'Tahun', 'Stok', 'Lokasi']
+            : ['No', 'Judul', 'Pengarang', 'Penerbit', 'ISBN', 'Kategori', 'Tahun', 'Stok', 'Lokasi', 'Tampil'];
 
         foreach ($headers as $i => $label) {
             $sheet->setCellValue(Coordinate::stringFromColumnIndex($i + 1) . '5', $label);
@@ -298,19 +282,32 @@ class BukuService
         $sheet->getRowDimension(5)->setRowHeight(22);
         $sheet->setAutoFilter("A5:{$lastCol}5");
 
+        // Target paket spesifik (kalau ada) — supaya stok & lokasi per baris akurat
+        $filterPaketId    = null;
+        $filterTanpaPaket = false;
+        if (! empty($filters['paket'])) {
+            if ($filters['paket'] === 'tanpa_paket') {
+                $filterTanpaPaket = true;
+            } else {
+                $filterPaketId = $filters['paket'];
+            }
+        }
+
         $row = 6;
         foreach ($bukus as $i => $buku) {
-            // Fix bug: filter eksemplar sesuai paket_ids kalau ada
-            $stok = $filterPaketIds
-                ? $buku->eksemplars->whereIn('paket_id', $filterPaketIds)->sum('stok')
-                : $buku->eksemplars->sum('stok');
-            
-            $eksemplar = $filterPaketIds
-                ? $buku->eksemplars->whereIn('paket_id', $filterPaketIds)->first()
-                : $buku->eksemplars->first();
+            $relevantEksemplars = $buku->eksemplars;
+            if ($filterPaketId) {
+                $relevantEksemplars = $relevantEksemplars->where('paket_id', $filterPaketId);
+            } elseif ($filterTanpaPaket) {
+                $relevantEksemplars = $relevantEksemplars->whereNull('paket_id');
+            }
+
+            $stok      = $relevantEksemplars->sum('stok');
+            $eksemplar = $relevantEksemplars->first();
 
             $tampil    = $buku->is_visible ? 'Tampil' : 'Tersembunyi';
             $isbnValue = $buku->isbn ? (string) preg_replace('/[^0-9]/', '', $buku->isbn) : '-';
+            $lokasi    = $eksemplar?->paket?->lokasi?->nama_lokasi ?? '-';
 
             $rowData = [
                 $i + 1,
@@ -320,15 +317,11 @@ class BukuService
                 $isbnValue,
                 $buku->kategori     ?? '-',
                 $buku->tahun_terbit ?? '-',
-                $stok,  
+                $stok,
+                $lokasi,
             ];
 
-            if (!$isKegiatanExport) {
-                $lokasi      = $eksemplar?->paket?->lokasi?->nama_lokasi ?? '-';
-                $rowData[]   = $lokasi;
-            }
-
-            if (!$publikOnly && !$isKegiatanExport) {
+            if (! $publikOnly) {
                 $rowData[] = $tampil;
             }
 
@@ -349,14 +342,10 @@ class BukuService
             $row++;
         }
 
-        $colWidths = $isKegiatanExport
-            ? ['A' => 5, 'B' => 36, 'C' => 22, 'D' => 26, 'E' => 16, 'F' => 22, 'G' => 8, 'H' => 10]
-            : ['A' => 5, 'B' => 36, 'C' => 22, 'D' => 26, 'E' => 16, 'F' => 22, 'G' => 8, 'H' => 10, 'I' => 26];
-
-        if (!$publikOnly && !$isKegiatanExport) {
+        $colWidths = ['A' => 5, 'B' => 36, 'C' => 22, 'D' => 26, 'E' => 16, 'F' => 22, 'G' => 8, 'H' => 10, 'I' => 26];
+        if (! $publikOnly) {
             $colWidths['J'] = 14;
         }
-
         foreach ($colWidths as $col => $w) {
             $sheet->getColumnDimension($col)->setWidth($w);
         }
