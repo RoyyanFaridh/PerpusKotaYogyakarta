@@ -10,20 +10,31 @@ class Kegiatan extends Model
     protected $fillable = [
         'nama_kegiatan',
         'deskripsi',
+        'lokasi_id',
         'tanggal_mulai',
         'tanggal_selesai',
         'jam_pelaksanaan',
         'jam_selesai',
+        'lokasi_dipindah',
+        'status_restore',
     ];
 
     protected $casts = [
-        'tanggal_mulai'   => 'datetime',
-        'tanggal_selesai' => 'datetime',
+        'tanggal_mulai'   => 'date',
+        'tanggal_selesai' => 'date',
+        'lokasi_dipindah' => 'boolean',
+        'status_restore'  => 'boolean',
     ];
+
+    public function lokasi()
+    {
+        return $this->belongsTo(Lokasi::class);
+    }
 
     public function pakets()
     {
-        return $this->belongsToMany(Paket::class, 'kegiatan_paket');
+        return $this->belongsToMany(Paket::class, 'kegiatan_paket')
+            ->withPivot('lokasi_asal_id');  // tambah
     }
 
     public function getStatusOtomatisAttribute(): string

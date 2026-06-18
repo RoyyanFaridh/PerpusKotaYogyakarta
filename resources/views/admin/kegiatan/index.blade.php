@@ -81,19 +81,8 @@
 
                             {{-- Lokasi --}}
                             <td class="px-4 py-3.5">
-                                @php
-                                    $lokasis = $kegiatan->pakets
-                                        ->map(fn($p) => $p->lokasi?->nama_lokasi)
-                                        ->filter()
-                                        ->unique()
-                                        ->values();
-                                @endphp
-                                @if ($lokasis->isNotEmpty())
-                                    <div class="flex flex-col gap-0.5">
-                                        @foreach ($lokasis as $lokasi)
-                                            <span class="text-xs text-neutral-600">{{ $lokasi }}</span>
-                                        @endforeach
-                                    </div>
+                                @if ($kegiatan->lokasi)
+                                    <span class="text-xs text-neutral-600">{{ $kegiatan->lokasi->nama_lokasi }}</span>
                                 @else
                                     <span class="text-xs text-neutral-300">—</span>
                                 @endif
@@ -125,12 +114,23 @@
                             {{-- Aksi --}}
                             <td class="px-4 py-3.5">
                                 <div class="flex items-center justify-center gap-1.5">
+
+                                    {{-- Export Buku --}}
+                                    @if ($kegiatan->pakets->isNotEmpty())
+                                        <a href="{{ route('admin.kegiatan.export-buku', $kegiatan) }}"
+                                        class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-success-300 hover:text-success-600 hover:bg-success-50 transition-colors">
+                                            <x-icons.download/>
+                                            <span>Export</span>
+                                        </a>
+                                    @endif
+
                                     <button type="button"
                                             onclick="bukaModalEditKegiatan({{ $kegiatan->id }})"
                                             class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-neutral-500 border border-neutral-200 hover:border-warning-300 hover:text-warning-600 hover:bg-warning-50 transition-colors">
                                         <x-icons.edit/>
                                         <span>Edit</span>
                                     </button>
+
                                     <button type="button"
                                             onclick="bukaModalHapusKegiatan(
                                                 '{{ route('admin.kegiatan.destroy', $kegiatan) }}',
@@ -140,9 +140,9 @@
                                         <x-icons.delete/>
                                         <span>Hapus</span>
                                     </button>
+
                                 </div>
                             </td>
-
                         </tr>
                     @empty
                         <tr>

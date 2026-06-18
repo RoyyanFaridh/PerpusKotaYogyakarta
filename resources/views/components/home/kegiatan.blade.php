@@ -118,8 +118,8 @@
                                     <p class="text-xs mb-1.5 flex items-center gap-1.5
                                         {{ $isPast ? 'text-neutral-300' : 'text-primary-400' }}">
                                         <svg class="w-3 h-3 shrink-0" viewBox="0 0 24 24" fill="none"
-                                             stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                             stroke-linejoin="round" aria-hidden="true">
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" aria-hidden="true">
                                             <circle cx="12" cy="12" r="10"/>
                                             <polyline points="12 6 12 12 16 14"/>
                                         </svg>
@@ -149,25 +149,54 @@
                                     </p>
                                 @endif
 
-                                {{-- Paket / Lokasi --}}
+                                {{-- Lokasi --}}
                                 @if ($item->pakets && $item->pakets->isNotEmpty())
                                     <div class="flex flex-wrap gap-1.5 mt-2.5">
-                                        @foreach ($item->pakets as $paket)
-                                            <span class="inline-flex items-center gap-1 text-[0.62rem] font-medium px-2 py-0.5 rounded-full
-                                                {{ $isPast
-                                                    ? 'bg-neutral-100 text-neutral-400'
-                                                    : 'bg-primary-50 text-primary-500 border border-primary-100' }}">
+                                        @if ($isLive && $item->lokasi)
+                                            {{-- Sedang berlangsung: tampilkan lokasi kegiatan --}}
+                                            <span class="inline-flex items-center gap-1 text-[0.62rem] font-medium px-2 py-0.5 rounded-full bg-primary-50 text-primary-500 border border-primary-100">
                                                 <svg class="w-2.5 h-2.5 shrink-0" viewBox="0 0 24 24" fill="none"
-                                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                     stroke-linejoin="round" aria-hidden="true">
+                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                    stroke-linejoin="round" aria-hidden="true">
                                                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
                                                     <circle cx="12" cy="9" r="2.5"/>
                                                 </svg>
-                                                {{ $paket->lokasi?->nama_lokasi ?? $paket->nama_paket ?? '-' }}
+                                                {{ $item->lokasi->nama_lokasi }}
                                             </span>
-                                        @endforeach
+                                        @elseif (!$isPast)
+                                            {{-- Akan berlangsung: lokasi per paket --}}
+                                            @foreach ($item->pakets as $paket)
+                                                @if ($paket->lokasi)
+                                                    <span class="inline-flex items-center gap-1 text-[0.62rem] font-medium px-2 py-0.5 rounded-full bg-primary-50 text-primary-500 border border-primary-100">
+                                                        <svg class="w-2.5 h-2.5 shrink-0" viewBox="0 0 24 24" fill="none"
+                                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                            stroke-linejoin="round" aria-hidden="true">
+                                                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                                                            <circle cx="12" cy="9" r="2.5"/>
+                                                        </svg>
+                                                        {{ $paket->lokasi->nama_lokasi }}
+                                                    </span>
+                                                @endif
+                                            @endforeach
+                                        @endif
                                     </div>
                                 @endif
+
+                                {{-- Tombol Export — hanya untuk kegiatan aktif/akan datang yang punya paket --}}
+                                @if (!$isPast && $item->pakets->isNotEmpty())
+                                    <a href="{{ route('admin.kegiatan.export-buku', $item) }}"
+                                    class="inline-flex items-center gap-1.5 mt-3 text-[0.68rem] font-medium text-primary-500 hover:text-primary-700 transition-colors">
+                                        <svg class="w-3 h-3 shrink-0" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" aria-hidden="true">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                            <polyline points="7 10 12 15 17 10"/>
+                                            <line x1="12" y1="15" x2="12" y2="3"/>
+                                        </svg>
+                                        Unduh Daftar Buku
+                                    </a>
+                                @endif
+
                             </div>
 
                             {{-- Kolom kanan: badge semua status --}}

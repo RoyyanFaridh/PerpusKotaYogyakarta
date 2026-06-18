@@ -80,6 +80,24 @@
                     </div>
                 </div>
 
+                {{-- Lokasi Kegiatan --}}
+                <div>
+                    <label class="block text-xs font-medium text-neutral-600 mb-1">
+                        Lokasi Kegiatan
+                        <span class="text-[0.65rem] font-normal text-neutral-400 ml-1">opsional</span>
+                    </label>
+                    <select name="lokasi_id" id="tambah_lokasi_id"
+                            class="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition bg-white">
+                        <option value="">— Pilih lokasi —</option>
+                        @foreach (\App\Models\Lokasi::orderBy('nama_lokasi')->get() as $lokasi)
+                            <option value="{{ $lokasi->id }}"
+                                {{ old('lokasi_id') == $lokasi->id ? 'selected' : '' }}>
+                                {{ $lokasi->nama_lokasi }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
                 {{-- Paket --}}
                 <div>
                     <label class="block text-xs font-medium text-neutral-600 mb-1">
@@ -105,7 +123,7 @@
                         @endforeach
                     </div>
                     <p class="text-[0.68rem] text-neutral-400 mt-1">
-                        Pilih paket yang terlibat — lokasi mengikuti paket yang dipilih.
+                        Paket yang dipilih akan dipindahkan sementara ke lokasi kegiatan.
                     </p>
                 </div>
 
