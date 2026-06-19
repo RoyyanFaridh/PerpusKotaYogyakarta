@@ -163,7 +163,6 @@ class PengaturanController extends Controller
             'nama'     => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', 'alpha_dash', 'unique:users,username,' . $user->id],
             'email'    => ['nullable', 'email', 'max:255', 'unique:users,email,' . $user->id],
-            'no_hp'    => ['nullable', 'string', 'max:15'],
             'role'     => ['sometimes', 'in:superadmin,admin'],
             'password' => ['nullable', 'confirmed', Password::min(8)],
         ], [
@@ -186,7 +185,6 @@ class PengaturanController extends Controller
             'nama'     => $validated['nama'],
             'username' => $validated['username'],
             'email'    => $validated['email'] ?? null,
-            'no_hp'    => $validated['no_hp'] ?? null,
             'role'     => $newRole,
         ]);
 
