@@ -88,7 +88,7 @@ class TransaksiController extends Controller
 
     public function index(Request $request)
     {
-        $filters = $request->only(['search', 'tanggal', 'lokasi']);
+        $filters = $request->only(['search', 'tanggal_mulai', 'tanggal_akhir', 'lokasi']);
 
         $transaksi = Transaksi::with([
                 'member',
@@ -101,27 +101,33 @@ class TransaksiController extends Controller
                     $q->whereHas('member', fn($m) =>
                             $m->where('nama', 'ilike', "%{$search}%")
                             ->orWhere('no_telp', 'ilike', "%{$search}%"))
-                      ->orWhereHas('bukuMasuk.buku', fn($b) => $b->where('judul', 'ilike', "%{$search}%"))
-                      ->orWhereHas('bukuKeluar.buku', fn($b) => $b->where('judul', 'ilike', "%{$search}%"));
+                    ->orWhereHas('bukuMasuk.buku', fn($b) => $b->where('judul', 'ilike', "%{$search}%"))
+                    ->orWhereHas('bukuKeluar.buku', fn($b) => $b->where('judul', 'ilike', "%{$search}%"));
                 });
             })
             ->when($filters['lokasi'] ?? null, fn($q, $lokasi) => $q->where('lokasi_snapshot', $lokasi))
-            ->when($filters['tanggal'] ?? null, function ($q, $tanggal) {
-                match ($tanggal) {
-                    'hari_ini'   => $q->whereDate('tanggal_tukar', today()),
-                    'minggu_ini' => $q->whereBetween('tanggal_tukar', [now()->startOfWeek(), now()->endOfWeek()]),
-                    'bulan_ini'  => $q->whereMonth('tanggal_tukar', now()->month)
-                                      ->whereYear('tanggal_tukar', now()->year),
-                    default      => null,
-                };
-            })
+            ->when(
+                ($filters['tanggal_mulai'] ?? null) || ($filters['tanggal_akhir'] ?? null),
+                function ($q) use ($filters) {
+                    if ($filters['tanggal_mulai'] && $filters['tanggal_akhir']) {
+                        $q->whereBetween('tanggal_tukar', [
+                            $filters['tanggal_mulai'] . ' 00:00:00',
+                            $filters['tanggal_akhir'] . ' 23:59:59'
+                        ]);
+                    } elseif ($filters['tanggal_mulai']) {
+                        $q->whereDate('tanggal_tukar', '>=', $filters['tanggal_mulai']);
+                    } elseif ($filters['tanggal_akhir']) {
+                        $q->whereDate('tanggal_tukar', '<=', $filters['tanggal_akhir']);
+                    }
+                }
+            )
             ->latest()
             ->paginate(10)
             ->withQueryString();
 
-        $transaksiHariIni   = Transaksi::whereDate('created_at', today())->count();
-        $transaksiMingguIni = Transaksi::whereBetween('created_at', [now()->startOfWeek(), now()])->count();
-        $transaksiBulanIni  = Transaksi::whereMonth('created_at', now()->month)->count();
+        $transaksiHariIni   = Transaksi::whereDate('tanggal_tukar', today())->count();
+        $transaksiMingguIni = Transaksi::whereBetween('tanggal_tukar', [now()->startOfWeek(), now()])->count();
+        $transaksiBulanIni  = Transaksi::whereMonth('tanggal_tukar', now()->month)->count();
 
         $paketAktif = Paket::aktif()->with('lokasi')->get();
 
@@ -137,16 +143,19 @@ class TransaksiController extends Controller
             ->filter()
             ->values();
 
-        // Untuk step lokasi di wizard — lokasi yang bisa dipilih user ini
-        /** @var \App\Models\User $authUser */
         $authUser = Auth::user();
         $lokasiPilihan = $authUser->isSuperAdmin()
             ? Lokasi::aktif()->orderBy('nama_lokasi')->get()
             : Lokasi::whereIn('id',
                 $authUser->penugasanAktif()->pluck('lokasi_id')
-              )->orderBy('nama_lokasi')->get();
+            )->orderBy('nama_lokasi')->get();
 
         $activeLokasiId = $this->getLokasiId();
+        $oldestTransaksi = (object) [
+            'tanggal_tukar' => \Carbon\Carbon::parse(
+                Transaksi::oldest('tanggal_tukar')->value('tanggal_tukar') ?? now()
+            )->startOfYear()
+        ];
 
         return view('admin.transaksi.index', compact(
             'transaksi',
@@ -158,6 +167,7 @@ class TransaksiController extends Controller
             'lokasiList',
             'lokasiPilihan',
             'activeLokasiId',
+            'oldestTransaksi',
         ));
     }
 

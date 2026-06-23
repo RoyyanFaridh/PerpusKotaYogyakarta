@@ -16,10 +16,31 @@ class MemberController extends Controller
 {
     public function index(Request $request)
     {
-        $members = Member::with('user')
-            ->when($request->search, fn($q, $s) => $q->cari($s))
+        $filters = $request->only(['search', 'tanggal_mulai', 'tanggal_akhir']);
+
+        $members = Member::query()
+            ->when($filters['search'] ?? null, function ($q, $search) {
+                $q->where('nama', 'ilike', "%{$search}%")
+                ->orWhere('no_telp', 'ilike', "%{$search}%");
+            })
+            ->when(
+                ($filters['tanggal_mulai'] ?? null) || ($filters['tanggal_akhir'] ?? null),
+                function ($q) use ($filters) {
+                    if ($filters['tanggal_mulai'] && $filters['tanggal_akhir']) {
+                        $q->whereBetween('created_at', [
+                            $filters['tanggal_mulai'] . ' 00:00:00',
+                            $filters['tanggal_akhir'] . ' 23:59:59',
+                        ]);
+                    } elseif ($filters['tanggal_mulai']) {
+                        $q->whereDate('created_at', '>=', $filters['tanggal_mulai']);
+                    } elseif ($filters['tanggal_akhir']) {
+                        $q->whereDate('created_at', '<=', $filters['tanggal_akhir']);
+                    }
+                }
+            )
             ->latest()
-            ->paginate(15);
+            ->paginate(10)
+            ->withQueryString();
 
         $totalMember = Member::count();
 
