@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Admin – {{ config('app.name', 'SIPETUK') }}</title>
+    <title>Login Admin – {{ config('app.name', 'SIROBY') }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -49,8 +49,8 @@
                     </svg>
                 </div>
                 <div>
-                    <span class="font-extrabold text-xl text-primary-700 tracking-wider leading-none block">SIPETUK</span>
-                    <span class="text-[0.6rem] font-medium tracking-widest text-neutral-400 uppercase block">Sistem Penukaran Buku</span>
+                    <span class="font-extrabold text-xl text-primary-700 tracking-wider leading-none block">SIROBY</span>
+                    <span class="text-[0.6rem] font-medium tracking-widest text-neutral-400 uppercase block">Sistem Rotate Your Book</span>
                 </div>
             </a>
             <a href="{{ url('/') }}"
@@ -81,7 +81,7 @@
 
             <h1 class="anim-2 font-extrabold text-primary-900 text-center mb-2 leading-tight"
                 style="font-size:clamp(1.9rem,5vw,2.8rem);">
-                Masuk ke <span class="text-primary-600">SIPETUK</span>
+                Masuk ke <span class="text-primary-600">SIROBY</span>
             </h1>
 
             <p class="anim-3 text-center text-neutral-400 text-sm mb-8">
@@ -110,7 +110,7 @@
                                 id="login" type="text" name="login"
                                 value="{{ old('login') }}"
                                 required autocomplete="username"
-                                placeholder="admin@sipetuk.id atau username"
+                                placeholder="admin@siroby.id atau username"
                                 class="w-full pl-10 pr-4 py-2.5 rounded-lg border text-sm text-primary-900 placeholder-neutral-300 transition-colors focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-200 {{ $errors->has('login') ? 'border-danger-400 bg-danger-50' : 'border-neutral-200 bg-white' }}"
                             >
                         </div>
@@ -163,7 +163,7 @@
             </div>
 
             <p class="anim-5 text-center text-xs text-neutral-400 mt-6 leading-relaxed">
-                Halaman ini hanya untuk admin SIPETUK.<br>
+                Halaman ini hanya untuk admin SIROBY.<br>
                 Jika Anda bukan admin,
                 <a href="{{ url('/') }}" class="text-primary-600 font-medium no-underline hover:underline">kembali ke beranda</a>.
             </p>
@@ -171,7 +171,7 @@
     </main>
 
     <footer class="relative z-10 text-center px-4 py-5 text-xs text-neutral-400 border-t border-primary-100 bg-white">
-        © {{ date('Y') }} SIPETUK · Perpustakaan Kota Yogyakarta
+        © {{ date('Y') }} SIROBY · Perpustakaan Kota Yogyakarta
     </footer>
 
     <script>
