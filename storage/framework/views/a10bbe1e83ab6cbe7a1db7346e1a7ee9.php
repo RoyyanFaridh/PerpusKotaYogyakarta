@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Admin - @yield('title', 'Perpustakaan')</title>
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <title>Admin - <?php echo $__env->yieldContent('title', 'Perpustakaan'); ?></title>
     <style>
         [x-cloak] { display: none !important; }
         /* PERBAIKAN 5: Hanya sembunyikan sidebar wrapper, bukan seluruh body */
@@ -28,27 +28,27 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/id.js"></script>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
 </head>
 <body class="font-sans bg-neutral-100 flex h-screen overflow-hidden custom-scroll">
 
     <div id="sidebar-wrap">
-        @include('components.admin.sidebar')
+        <?php echo $__env->make('components.admin.sidebar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
     </div>
 
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
         <header class="h-16 bg-white border-b border-neutral-200 flex items-center justify-between px-6 shrink-0 shadow-sm">
-            {{-- PERBAIKAN 6: flex flex-col gap-0.5 untuk jarak konsisten title/subtitle --}}
+            
             <div class="flex flex-col gap-0.5">
-                {{-- PERBAIKAN 2a: text-lg untuk hirarki yang lebih kuat --}}
-                <h1 class="text-neutral-800 font-semibold text-lg leading-tight">@yield('page-title', 'Dashboard')</h1>
-                {{-- PERBAIKAN 2b: text-neutral-500 lebih readable dari 400 --}}
-                <p class="text-neutral-500 text-xs leading-tight">@yield('page-subtitle', 'Selamat datang di panel admin')</p>
+                
+                <h1 class="text-neutral-800 font-semibold text-lg leading-tight"><?php echo $__env->yieldContent('page-title', 'Dashboard'); ?></h1>
+                
+                <p class="text-neutral-500 text-xs leading-tight"><?php echo $__env->yieldContent('page-subtitle', 'Selamat datang di panel admin'); ?></p>
             </div>
             <div class="flex items-center gap-3">
-                {{-- PERBAIKAN 3: tambah aria-label untuk aksesibilitas --}}
-                {{-- PERBAIKAN 1: ganti w-4.5 h-4.5 (tidak valid) ke w-[18px] h-[18px] --}}
+                
+                
                 <button
                     aria-label="Notifikasi"
                     class="relative w-9 h-9 flex items-center justify-center rounded-xl border border-neutral-200 text-neutral-500 hover:text-primary-600 hover:border-primary-300 transition-colors">
@@ -57,20 +57,20 @@
                     </svg>
                 </button>
                 <div class="text-right hidden sm:block">
-                    <p class="text-neutral-700 text-xs font-medium">{{ now()->translatedFormat('l') }}</p>
-                    <p class="text-neutral-400 text-xs">{{ now()->translatedFormat('d F Y') }}</p>
+                    <p class="text-neutral-700 text-xs font-medium"><?php echo e(now()->translatedFormat('l')); ?></p>
+                    <p class="text-neutral-400 text-xs"><?php echo e(now()->translatedFormat('d F Y')); ?></p>
                 </div>
             </div>
         </header>
 
         <main class="flex-1 overflow-y-auto p-6 custom-scroll">
-            @yield('content')
+            <?php echo $__env->yieldContent('content'); ?>
         </main>
 
     </div>
 
-    @if (session('permission_denied'))
-    {{-- PERBAIKAN 4: backdrop click untuk dismiss --}}
+    <?php if(session('permission_denied')): ?>
+    
     <div id="modalDenied"
          onclick="if(event.target === this) closeModalDenied()"
          class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
@@ -84,7 +84,7 @@
                 </div>
                 <div>
                     <p class="text-sm font-semibold text-neutral-800">Akses Ditolak</p>
-                    <p class="text-xs text-neutral-400 mt-1">{{ session('permission_denied') }}</p>
+                    <p class="text-xs text-neutral-400 mt-1"><?php echo e(session('permission_denied')); ?></p>
                 </div>
                 <button onclick="closeModalDenied()"
                         class="px-4 py-2 text-xs font-medium rounded-lg bg-danger-500 text-white hover:bg-danger-600 transition">
@@ -93,9 +93,9 @@
             </div>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 
-    @stack('scripts')
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 
     <script>
         function closeModalDenied() {
@@ -109,4 +109,4 @@
         });
     </script>
 </body>
-</html>
+</html><?php /**PATH D:\Perkuliahan Duniawi\MAGANG GES\PerpusKotaYogyakarta\resources\views/layouts/admin.blade.php ENDPATH**/ ?>

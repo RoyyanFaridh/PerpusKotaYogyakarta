@@ -1,4 +1,4 @@
-@php
+<?php
     $activeMenu = match(true) {
         request()->routeIs('admin.dashboard*')            => 'dashboard',
         request()->routeIs('admin.transaksi*')            => 'transaksi',
@@ -39,13 +39,13 @@
         ],
         ['key' => 'pengaturan',  'label' => 'Pengaturan',        'route' => auth()->user()->isSuperAdmin() ? route('admin.pengaturan.index') : route('admin.pengaturan.profil.page'), 'icon' => 'settings', 'group' => 'akun'],
     ];
-@endphp
+?>
 
 <aside
     x-data="{
         open: localStorage.getItem('sidebarOpen') !== 'false',
-        activeMenu: '{{ $activeMenu }}',
-        statistikExpanded: {{ $activeMenu === 'statistik' ? 'true' : 'false' }},
+        activeMenu: '<?php echo e($activeMenu); ?>',
+        statistikExpanded: <?php echo e($activeMenu === 'statistik' ? 'true' : 'false'); ?>,
         statistikFlyoutOpen: false,
         loaded: false,
         toggle() {
@@ -59,7 +59,7 @@
     style="width: var(--sidebar-w, 16rem)"
     class="relative flex flex-col h-screen bg-primary shrink-0 shadow-lg"
 >
-    {{-- Toggle button --}}
+    
     <button
         @click="toggle()"
         aria-label="Toggle sidebar"
@@ -89,10 +89,29 @@
         </span>
     </button>
 
-    {{-- Logo / Brand --}}
+    
     <div class="flex items-center gap-3 px-4 py-5 border-b border-white/10 overflow-hidden">
         <div class="shrink-0 flex items-center justify-center w-9 h-9 rounded-xl bg-white/15 text-white">
-            <x-icons.book/>
+            <?php if (isset($component)) { $__componentOriginal285eddc9278dae58281aa961bf08a625 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal285eddc9278dae58281aa961bf08a625 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icons.book','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icons.book'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal285eddc9278dae58281aa961bf08a625)): ?>
+<?php $attributes = $__attributesOriginal285eddc9278dae58281aa961bf08a625; ?>
+<?php unset($__attributesOriginal285eddc9278dae58281aa961bf08a625); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal285eddc9278dae58281aa961bf08a625)): ?>
+<?php $component = $__componentOriginal285eddc9278dae58281aa961bf08a625; ?>
+<?php unset($__componentOriginal285eddc9278dae58281aa961bf08a625); ?>
+<?php endif; ?>
         </div>
         <div x-show="open"
              x-transition:enter="transition-opacity duration-200"
@@ -107,57 +126,76 @@
         </div>
     </div>
 
-    {{-- Navigation --}}
+    
     <nav class="flex-1 overflow-y-auto overflow-x-visible py-4 px-2 space-y-0.5">
 
         <div x-show="open" class="px-3 pt-1 pb-2">
             <span class="text-xs font-semibold uppercase tracking-wider text-primary-400">Menu Utama</span>
         </div>
 
-        @foreach($navItems as $item)
+        <?php $__currentLoopData = $navItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 
-            @if($item['key'] === 'member')
+            <?php if($item['key'] === 'member'): ?>
                 <div x-show="open" class="px-3 pt-4 pb-2">
                     <span class="text-xs font-semibold uppercase tracking-wider text-primary-400">Kelola Data</span>
                 </div>
                 <div x-show="!open" class="my-2 mx-3 border-t border-white/10"></div>
-            @endif
+            <?php endif; ?>
 
-            @if($item['key'] === 'pengaturan')
+            <?php if($item['key'] === 'pengaturan'): ?>
                 <div x-show="open" class="px-3 pt-4 pb-2">
                     <span class="text-xs font-semibold uppercase tracking-wider text-primary-400">Akun</span>
                 </div>
                 <div x-show="!open" class="my-2 mx-3 border-t border-white/10"></div>
-            @endif
+            <?php endif; ?>
 
-            @if(isset($item['children']))
-                {{-- ==================== ITEM DENGAN SUBMENU (STATISTIK) ==================== --}}
+            <?php if(isset($item['children'])): ?>
+                
                 <div class="relative group/nav">
 
-                    {{-- Header parent: klik untuk expand/collapse (saat open) atau toggle flyout (saat collapsed) --}}
+                    
                     <button
                         type="button"
                         @click="open ? (statistikExpanded = !statistikExpanded) : (statistikFlyoutOpen = !statistikFlyoutOpen)"
                         @click.outside="statistikFlyoutOpen = false"
                         :class="[
-                            activeMenu === '{{ $item['key'] }}' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
+                            activeMenu === '<?php echo e($item['key']); ?>' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
                             open ? 'px-3 gap-3' : 'px-0 gap-0 justify-center'
                         ]"
                         class="flex items-center rounded-xl py-2.5 transition-colors duration-150 relative w-full"
                     >
-                        <span x-show="activeMenu === '{{ $item['key'] }}'"
+                        <span x-show="activeMenu === '<?php echo e($item['key']); ?>'"
                               class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-white shrink-0"></span>
 
                         <span class="shrink-0 flex items-center justify-center w-5 h-5">
-                            <x-dynamic-component :component="'icons.' . $item['icon']" class="w-5 h-5"/>
+                            <?php if (isset($component)) { $__componentOriginal511d4862ff04963c3c16115c05a86a9d = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal511d4862ff04963c3c16115c05a86a9d = $attributes; } ?>
+<?php $component = Illuminate\View\DynamicComponent::resolve(['component' => 'icons.' . $item['icon']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('dynamic-component'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\DynamicComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['class' => 'w-5 h-5']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal511d4862ff04963c3c16115c05a86a9d)): ?>
+<?php $attributes = $__attributesOriginal511d4862ff04963c3c16115c05a86a9d; ?>
+<?php unset($__attributesOriginal511d4862ff04963c3c16115c05a86a9d); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal511d4862ff04963c3c16115c05a86a9d)): ?>
+<?php $component = $__componentOriginal511d4862ff04963c3c16115c05a86a9d; ?>
+<?php unset($__componentOriginal511d4862ff04963c3c16115c05a86a9d); ?>
+<?php endif; ?>
                         </span>
 
                         <span x-show="open" class="text-sm font-medium whitespace-nowrap flex-1 text-left"
                               x-transition:enter="transition-opacity duration-150"
                               x-transition:enter-start="opacity-0"
-                              x-transition:enter-end="opacity-100">{{ $item['label'] }}</span>
+                              x-transition:enter-end="opacity-100"><?php echo e($item['label']); ?></span>
 
-                        {{-- Chevron, hanya saat sidebar open --}}
+                        
                         <svg x-show="open" :class="statistikExpanded ? 'rotate-180' : ''"
                              class="w-3.5 h-3.5 shrink-0 transition-transform duration-200"
                              xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -166,7 +204,7 @@
                         </svg>
                     </button>
 
-                    {{-- Submenu list, tampil inline saat sidebar TERBUKA --}}
+                    
                     <div x-show="open && statistikExpanded"
                          x-transition:enter="transition-all duration-200 ease-out"
                          x-transition:enter-start="opacity-0 -translate-y-1"
@@ -175,19 +213,20 @@
                          x-transition:leave-start="opacity-100 translate-y-0"
                          x-transition:leave-end="opacity-0 -translate-y-1"
                          class="mt-0.5 ml-4 pl-4 border-l border-white/10 space-y-0.5">
-                        @foreach($item['children'] as $child)
-                            <a href="{{ $child['route'] }}"
-                               @class([
+                        <?php $__currentLoopData = $item['children']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $child): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <a href="<?php echo e($child['route']); ?>"
+                               class="<?php echo \Illuminate\Support\Arr::toCssClasses([
                                    'flex items-center rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors duration-150',
                                    'bg-white/15 text-white' => $activeStatistikChild === $child['key'],
                                    'text-primary-300 hover:bg-white/10 hover:text-white' => $activeStatistikChild !== $child['key'],
-                               ])>
-                                {{ $child['label'] }}
+                               ]); ?>">
+                                <?php echo e($child['label']); ?>
+
                             </a>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
 
-                    {{-- Flyout berisi sublist, tampil saat sidebar COLLAPSED --}}
+                    
                     <div x-show="!open && statistikFlyoutOpen"
                          x-transition:enter="transition ease-out duration-150"
                          x-transition:enter-start="opacity-0 -translate-x-2"
@@ -198,41 +237,62 @@
                          class="absolute left-[calc(100%+0.75rem)] top-0 z-50 w-52
                                 bg-primary-600 rounded-lg shadow-lg overflow-hidden">
                         <div class="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-primary-300 border-b border-white/10">
-                            {{ $item['label'] }}
+                            <?php echo e($item['label']); ?>
+
                         </div>
-                        @foreach($item['children'] as $child)
-                            <a href="{{ $child['route'] }}"
-                               @class([
+                        <?php $__currentLoopData = $item['children']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $child): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <a href="<?php echo e($child['route']); ?>"
+                               class="<?php echo \Illuminate\Support\Arr::toCssClasses([
                                    'block px-3 py-2.5 text-xs font-medium hover:bg-white/10 hover:text-white transition-colors whitespace-nowrap',
                                    'bg-white/10 text-white' => $activeStatistikChild === $child['key'],
                                    'text-primary-200' => $activeStatistikChild !== $child['key'],
-                               ])>
-                                {{ $child['label'] }}
+                               ]); ?>">
+                                <?php echo e($child['label']); ?>
+
                             </a>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                 </div>
-            @else
-                {{-- ==================== ITEM BIASA (TANPA SUBMENU) ==================== --}}
+            <?php else: ?>
+                
                 <div class="relative group/nav">
-                    <a href="{{ $item['route'] }}"
+                    <a href="<?php echo e($item['route']); ?>"
                         :class="[
-                            activeMenu === '{{ $item['key'] }}' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
+                            activeMenu === '<?php echo e($item['key']); ?>' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
                             open ? 'px-3 gap-3' : 'px-0 gap-0 justify-center'
                         ]"
                         class="flex items-center rounded-xl py-2.5 transition-colors duration-150 relative w-full"
                     >
-                        <span x-show="activeMenu === '{{ $item['key'] }}'"
+                        <span x-show="activeMenu === '<?php echo e($item['key']); ?>'"
                               class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-white shrink-0"></span>
 
                         <span class="shrink-0 flex items-center justify-center w-5 h-5">
-                            <x-dynamic-component :component="'icons.' . $item['icon']" class="w-5 h-5"/>
+                            <?php if (isset($component)) { $__componentOriginal511d4862ff04963c3c16115c05a86a9d = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal511d4862ff04963c3c16115c05a86a9d = $attributes; } ?>
+<?php $component = Illuminate\View\DynamicComponent::resolve(['component' => 'icons.' . $item['icon']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('dynamic-component'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\DynamicComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['class' => 'w-5 h-5']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal511d4862ff04963c3c16115c05a86a9d)): ?>
+<?php $attributes = $__attributesOriginal511d4862ff04963c3c16115c05a86a9d; ?>
+<?php unset($__attributesOriginal511d4862ff04963c3c16115c05a86a9d); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal511d4862ff04963c3c16115c05a86a9d)): ?>
+<?php $component = $__componentOriginal511d4862ff04963c3c16115c05a86a9d; ?>
+<?php unset($__componentOriginal511d4862ff04963c3c16115c05a86a9d); ?>
+<?php endif; ?>
                         </span>
 
                         <span x-show="open" class="text-sm font-medium whitespace-nowrap"
                               x-transition:enter="transition-opacity duration-150"
                               x-transition:enter-start="opacity-0"
-                              x-transition:enter-end="opacity-100">{{ $item['label'] }}</span>
+                              x-transition:enter-end="opacity-100"><?php echo e($item['label']); ?></span>
                     </a>
 
                     <div x-show="!open"
@@ -241,30 +301,32 @@
                                 flex items-center gap-1">
                         <div class="w-0 h-0 border-y-4 border-y-transparent border-r-4 border-r-primary-600"></div>
                         <div class="bg-primary-600 text-white text-xs font-medium px-2.5 py-1.5 rounded-md shadow-lg whitespace-nowrap">
-                            {{ $item['label'] }}
+                            <?php echo e($item['label']); ?>
+
                         </div>
                     </div>
                 </div>
-            @endif
-        @endforeach
+            <?php endif; ?>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
     </nav>
 
-    {{-- User profile & logout --}}
+    
     <div class="border-t border-white/10 p-3">
 
-        {{-- Expanded state --}}
+        
         <div x-show="open"
              x-transition:enter="transition-opacity duration-150"
              x-transition:enter-start="opacity-0"
              x-transition:enter-end="opacity-100"
              class="flex items-center gap-3 rounded-xl px-2 py-2">
             <div class="shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-white/20 text-white text-sm font-bold uppercase select-none">
-                {{ substr(auth()->user()->name ?? 'A', 0, 1) }}
+                <?php echo e(substr(auth()->user()->name ?? 'A', 0, 1)); ?>
+
             </div>
             <div class="flex-1 min-w-0">
-                <p class="text-white text-xs font-semibold truncate">{{ auth()->user()->name ?? 'Admin' }}</p>
-                <p class="text-primary-300 text-xs truncate">{{ auth()->user()->email ?? '' }}</p>
+                <p class="text-white text-xs font-semibold truncate"><?php echo e(auth()->user()->name ?? 'Admin'); ?></p>
+                <p class="text-primary-300 text-xs truncate"><?php echo e(auth()->user()->email ?? ''); ?></p>
             </div>
             <button type="button"
                     @click="$dispatch('logout-confirm')"
@@ -278,7 +340,7 @@
             </button>
         </div>
 
-        {{-- Collapsed state --}}
+        
         <div x-show="!open"
              x-data="{ dropdownOpen: false }"
              class="relative flex justify-center">
@@ -287,7 +349,8 @@
                     @click.outside="dropdownOpen = false"
                     aria-label="Menu akun"
                     class="flex items-center justify-center w-8 h-8 rounded-full bg-white/20 text-white text-sm font-bold uppercase hover:bg-white/30 transition-colors select-none">
-                {{ substr(auth()->user()->name ?? 'A', 0, 1) }}
+                <?php echo e(substr(auth()->user()->name ?? 'A', 0, 1)); ?>
+
             </button>
 
             <div x-show="dropdownOpen"
@@ -300,8 +363,8 @@
                  class="absolute bottom-0 left-full ml-2 w-48 bg-white rounded-lg shadow-lg border border-neutral-200 overflow-hidden z-50">
 
                 <div class="px-3 py-2.5 border-b border-neutral-100">
-                    <p class="text-xs font-semibold text-neutral-800 truncate">{{ auth()->user()->name ?? 'Admin' }}</p>
-                    <p class="text-xs text-neutral-500 truncate">{{ auth()->user()->email ?? '' }}</p>
+                    <p class="text-xs font-semibold text-neutral-800 truncate"><?php echo e(auth()->user()->name ?? 'Admin'); ?></p>
+                    <p class="text-xs text-neutral-500 truncate"><?php echo e(auth()->user()->email ?? ''); ?></p>
                 </div>
 
                 <button type="button"
@@ -321,8 +384,8 @@
 
 </aside>
 
-{{-- Logout Confirmation Modal --}}
-{{-- Taruh di layout utama, di luar <aside>, sebelum </body> --}}
+
+
 <div x-data="{ showLogout: false }"
      @logout-confirm.window="showLogout = true"
      x-cloak>
@@ -336,11 +399,11 @@
          x-transition:leave-end="opacity-0"
          class="fixed inset-0 z-999 flex items-center justify-center p-4">
 
-        {{-- Backdrop --}}
+        
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"
              @click="showLogout = false"></div>
 
-        {{-- Panel --}}
+        
         <div x-show="showLogout"
              x-transition:enter="transition ease-out duration-200"
              x-transition:enter-start="opacity-0 scale-95"
@@ -369,8 +432,8 @@
                         class="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-neutral-600 border border-neutral-200 hover:bg-neutral-50 transition-colors">
                     Batal
                 </button>
-                <form method="POST" action="{{ route('auth.logout') }}" class="flex-1">
-                    @csrf
+                <form method="POST" action="<?php echo e(route('auth.logout')); ?>" class="flex-1">
+                    <?php echo csrf_field(); ?>
                     <button type="submit"
                             class="w-full px-4 py-2 rounded-lg text-xs font-semibold text-white bg-danger-600 hover:bg-danger-700 transition-colors">
                         Ya, Keluar
@@ -379,4 +442,4 @@
             </div>
         </div>
     </div>
-</div>
+</div><?php /**PATH D:\Perkuliahan Duniawi\MAGANG GES\PerpusKotaYogyakarta\resources\views/components/admin/sidebar.blade.php ENDPATH**/ ?>

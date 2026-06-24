@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PengaturanController;
 use App\Http\Controllers\Admin\KegiatanController;
+use App\Http\Controllers\Admin\StatistikController;
 use App\Http\Controllers\Admin\PaketController;
 use App\Http\Controllers\Api\BukuApiController;
 
@@ -36,6 +37,13 @@ Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('auth
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'active'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/statistik/transaksi', [StatistikController::class, 'transaksi'])->name('statistik.transaksi');
+    Route::get('/statistik/buku', [StatistikController::class, 'buku'])->name('statistik.buku');
+    Route::get('/statistik/member', [StatistikController::class, 'member'])->name('statistik.member');
+    Route::get('/statistik/transaksi/export', [StatistikController::class, 'exportTransaksi'])->name('statistik.transaksi.export');
+    Route::get('/statistik/buku/export', [StatistikController::class, 'exportBuku'])->name('statistik.buku.export');
+    Route::get('/statistik/member/export', [StatistikController::class, 'exportMember'])->name('statistik.member.export');
 
     // Member
     Route::get('/member',             [MemberController::class, 'index'])->name('member.index');
