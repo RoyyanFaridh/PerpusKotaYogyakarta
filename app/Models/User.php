@@ -18,7 +18,6 @@ class User extends Authenticatable implements Auditable
         'nama',
         'username',
         'email',
-        'no_hp',
         'password',
         'role',
         'is_active',
