@@ -6,7 +6,16 @@
         request()->routeIs('admin.buku*', 'admin.paket*') => 'buku',
         request()->routeIs('admin.lokasi*')               => 'lokasi',
         request()->routeIs('admin.kegiatan*')             => 'kegiatan',
+        request()->routeIs('admin.statistik*')            => 'statistik',
         request()->routeIs('admin.pengaturan*')           => 'pengaturan',
+        default                                           => '',
+    };
+
+    // Submenu aktif khusus untuk item statistik (dipakai agar anak yg aktif ikut ter-highlight)
+    $activeStatistikChild = match(true) {
+        request()->routeIs('admin.statistik.transaksi*') => 'statistik-transaksi',
+        request()->routeIs('admin.statistik.buku*')      => 'statistik-buku',
+        request()->routeIs('admin.statistik.member*')    => 'statistik-member',
         default                                           => '',
     };
 
@@ -17,6 +26,17 @@
         ['key' => 'buku',        'label' => 'Buku',              'route' => route('admin.buku.index'),          'icon' => 'book-open',  'group' => 'data'],
         ['key' => 'lokasi',      'label' => 'Lokasi',            'route' => route('admin.lokasi.index'),        'icon' => 'location',   'group' => 'data'],
         ['key' => 'kegiatan',    'label' => 'Rencana Kegiatan',  'route' => route('admin.kegiatan.index'),      'icon' => 'calendar',   'group' => 'data'],
+        [
+            'key'      => 'statistik',
+            'label'    => 'Statistik',
+            'icon'     => 'chart-line',
+            'group'    => 'data',
+            'children' => [
+                ['key' => 'statistik-transaksi', 'label' => 'Statistik Transaksi', 'route' => route('admin.statistik.transaksi')],
+                ['key' => 'statistik-buku',      'label' => 'Statistik Buku',      'route' => route('admin.statistik.buku')],
+                ['key' => 'statistik-member',    'label' => 'Statistik Member',    'route' => route('admin.statistik.member')],
+            ],
+        ],
         ['key' => 'pengaturan',  'label' => 'Pengaturan',        'route' => auth()->user()->isSuperAdmin() ? route('admin.pengaturan.index') : route('admin.pengaturan.profil.page'), 'icon' => 'settings', 'group' => 'akun'],
     ];
 @endphp
@@ -25,6 +45,8 @@
     x-data="{
         open: localStorage.getItem('sidebarOpen') !== 'false',
         activeMenu: '{{ $activeMenu }}',
+        statistikExpanded: {{ $activeMenu === 'statistik' ? 'true' : 'false' }},
+        statistikFlyoutOpen: false,
         loaded: false,
         toggle() {
             this.open = !this.open;
@@ -108,37 +130,122 @@
                 <div x-show="!open" class="my-2 mx-3 border-t border-white/10"></div>
             @endif
 
-            <div class="relative group/nav">
-                <a href="{{ $item['route'] }}"
-                    :class="[
-                        activeMenu === '{{ $item['key'] }}' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
-                        open ? 'px-3 gap-3' : 'px-0 gap-0 justify-center'
-                    ]"
-                    class="flex items-center rounded-xl py-2.5 transition-colors duration-150 relative w-full"
-                >
-                    <span x-show="activeMenu === '{{ $item['key'] }}'"
-                          class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-white shrink-0"></span>
+            @if(isset($item['children']))
+                {{-- ==================== ITEM DENGAN SUBMENU (STATISTIK) ==================== --}}
+                <div class="relative group/nav">
 
-                    <span class="shrink-0 flex items-center justify-center w-5 h-5">
-                        <x-dynamic-component :component="'icons.' . $item['icon']" class="w-5 h-5"/>
-                    </span>
+                    {{-- Header parent: klik untuk expand/collapse (saat open) atau toggle flyout (saat collapsed) --}}
+                    <button
+                        type="button"
+                        @click="open ? (statistikExpanded = !statistikExpanded) : (statistikFlyoutOpen = !statistikFlyoutOpen)"
+                        @click.outside="statistikFlyoutOpen = false"
+                        :class="[
+                            activeMenu === '{{ $item['key'] }}' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
+                            open ? 'px-3 gap-3' : 'px-0 gap-0 justify-center'
+                        ]"
+                        class="flex items-center rounded-xl py-2.5 transition-colors duration-150 relative w-full"
+                    >
+                        <span x-show="activeMenu === '{{ $item['key'] }}'"
+                              class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-white shrink-0"></span>
 
-                    <span x-show="open" class="text-sm font-medium whitespace-nowrap"
-                          x-transition:enter="transition-opacity duration-150"
-                          x-transition:enter-start="opacity-0"
-                          x-transition:enter-end="opacity-100">{{ $item['label'] }}</span>
-                </a>
+                        <span class="shrink-0 flex items-center justify-center w-5 h-5">
+                            <x-dynamic-component :component="'icons.' . $item['icon']" class="w-5 h-5"/>
+                        </span>
 
-                <div x-show="!open"
-                     class="pointer-events-none absolute left-[calc(100%+0.75rem)] top-1/2 -translate-y-1/2 z-50
-                            opacity-0 group-hover/nav:opacity-100 transition-opacity duration-150
-                            flex items-center gap-1">
-                    <div class="w-0 h-0 border-y-4 border-y-transparent border-r-4 border-r-primary-600"></div>
-                    <div class="bg-primary-600 text-white text-xs font-medium px-2.5 py-1.5 rounded-md shadow-lg whitespace-nowrap">
-                        {{ $item['label'] }}
+                        <span x-show="open" class="text-sm font-medium whitespace-nowrap flex-1 text-left"
+                              x-transition:enter="transition-opacity duration-150"
+                              x-transition:enter-start="opacity-0"
+                              x-transition:enter-end="opacity-100">{{ $item['label'] }}</span>
+
+                        {{-- Chevron, hanya saat sidebar open --}}
+                        <svg x-show="open" :class="statistikExpanded ? 'rotate-180' : ''"
+                             class="w-3.5 h-3.5 shrink-0 transition-transform duration-200"
+                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M6 9l6 6 6-6"/>
+                        </svg>
+                    </button>
+
+                    {{-- Submenu list, tampil inline saat sidebar TERBUKA --}}
+                    <div x-show="open && statistikExpanded"
+                         x-transition:enter="transition-all duration-200 ease-out"
+                         x-transition:enter-start="opacity-0 -translate-y-1"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition-all duration-150 ease-in"
+                         x-transition:leave-start="opacity-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 -translate-y-1"
+                         class="mt-0.5 ml-4 pl-4 border-l border-white/10 space-y-0.5">
+                        @foreach($item['children'] as $child)
+                            <a href="{{ $child['route'] }}"
+                               @class([
+                                   'flex items-center rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors duration-150',
+                                   'bg-white/15 text-white' => $activeStatistikChild === $child['key'],
+                                   'text-primary-300 hover:bg-white/10 hover:text-white' => $activeStatistikChild !== $child['key'],
+                               ])>
+                                {{ $child['label'] }}
+                            </a>
+                        @endforeach
+                    </div>
+
+                    {{-- Flyout berisi sublist, tampil saat sidebar COLLAPSED --}}
+                    <div x-show="!open && statistikFlyoutOpen"
+                         x-transition:enter="transition ease-out duration-150"
+                         x-transition:enter-start="opacity-0 -translate-x-2"
+                         x-transition:enter-end="opacity-100 translate-x-0"
+                         x-transition:leave="transition ease-in duration-100"
+                         x-transition:leave-start="opacity-100 translate-x-0"
+                         x-transition:leave-end="opacity-0 -translate-x-2"
+                         class="absolute left-[calc(100%+0.75rem)] top-0 z-50 w-52
+                                bg-primary-600 rounded-lg shadow-lg overflow-hidden">
+                        <div class="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-primary-300 border-b border-white/10">
+                            {{ $item['label'] }}
+                        </div>
+                        @foreach($item['children'] as $child)
+                            <a href="{{ $child['route'] }}"
+                               @class([
+                                   'block px-3 py-2.5 text-xs font-medium hover:bg-white/10 hover:text-white transition-colors whitespace-nowrap',
+                                   'bg-white/10 text-white' => $activeStatistikChild === $child['key'],
+                                   'text-primary-200' => $activeStatistikChild !== $child['key'],
+                               ])>
+                                {{ $child['label'] }}
+                            </a>
+                        @endforeach
                     </div>
                 </div>
-            </div>
+            @else
+                {{-- ==================== ITEM BIASA (TANPA SUBMENU) ==================== --}}
+                <div class="relative group/nav">
+                    <a href="{{ $item['route'] }}"
+                        :class="[
+                            activeMenu === '{{ $item['key'] }}' ? 'bg-white/15 text-white' : 'text-primary-300 hover:bg-white/10 hover:text-white',
+                            open ? 'px-3 gap-3' : 'px-0 gap-0 justify-center'
+                        ]"
+                        class="flex items-center rounded-xl py-2.5 transition-colors duration-150 relative w-full"
+                    >
+                        <span x-show="activeMenu === '{{ $item['key'] }}'"
+                              class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-white shrink-0"></span>
+
+                        <span class="shrink-0 flex items-center justify-center w-5 h-5">
+                            <x-dynamic-component :component="'icons.' . $item['icon']" class="w-5 h-5"/>
+                        </span>
+
+                        <span x-show="open" class="text-sm font-medium whitespace-nowrap"
+                              x-transition:enter="transition-opacity duration-150"
+                              x-transition:enter-start="opacity-0"
+                              x-transition:enter-end="opacity-100">{{ $item['label'] }}</span>
+                    </a>
+
+                    <div x-show="!open"
+                         class="pointer-events-none absolute left-[calc(100%+0.75rem)] top-1/2 -translate-y-1/2 z-50
+                                opacity-0 group-hover/nav:opacity-100 transition-opacity duration-150
+                                flex items-center gap-1">
+                        <div class="w-0 h-0 border-y-4 border-y-transparent border-r-4 border-r-primary-600"></div>
+                        <div class="bg-primary-600 text-white text-xs font-medium px-2.5 py-1.5 rounded-md shadow-lg whitespace-nowrap">
+                            {{ $item['label'] }}
+                        </div>
+                    </div>
+                </div>
+            @endif
         @endforeach
 
     </nav>

@@ -6,8 +6,8 @@
                     class="w-8 h-8 sm:w-10 sm:h-10 object-contain">
 
             <div>
-                <span class="font-extrabold text-lg sm:text-xl text-primary-700 tracking-wider leading-none block">SIPETUK</span>
-                <span class="text-[0.6rem] font-medium tracking-widest text-neutral-400 uppercase block mt-0.5">Sistem Penukaran Buku  Kota </span>
+                <span class="font-extrabold text-lg sm:text-xl text-primary-700 tracking-wider leading-none block">SIROBY</span>
+                <span class="text-[0.6rem] font-medium tracking-widest text-neutral-400 uppercase block mt-0.5">Sistem Rotate Your Book</span>
             </div>
         </a>
 

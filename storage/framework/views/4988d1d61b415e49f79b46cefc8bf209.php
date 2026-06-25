@@ -1,0 +1,380 @@
+<?php $__env->startSection('title', 'Semua Buku'); ?>
+<?php $__env->startSection('page-title', 'Semua Buku'); ?>
+<?php $__env->startSection('page-subtitle', 'Koleksi buku perpustakaan kota'); ?>
+
+<?php $__env->startSection('content'); ?>
+<div class="flex flex-col gap-5">
+
+    
+    <div class="relative overflow-hidden rounded-xl bg-white border border-neutral-200">
+        <div class="absolute top-0 left-0 right-0 h-0.5 bg-primary-400"></div>
+
+        <div class="flex items-center justify-between gap-4 px-5 pt-5 pb-4 border-b border-neutral-100">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-primary-50 text-primary-700 flex items-center justify-center shrink-0">
+                    <?php if (isset($component)) { $__componentOriginal285eddc9278dae58281aa961bf08a625 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal285eddc9278dae58281aa961bf08a625 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icons.book','data' => ['class' => 'w-5 h-5']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icons.book'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['class' => 'w-5 h-5']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal285eddc9278dae58281aa961bf08a625)): ?>
+<?php $attributes = $__attributesOriginal285eddc9278dae58281aa961bf08a625; ?>
+<?php unset($__attributesOriginal285eddc9278dae58281aa961bf08a625); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal285eddc9278dae58281aa961bf08a625)): ?>
+<?php $component = $__componentOriginal285eddc9278dae58281aa961bf08a625; ?>
+<?php unset($__componentOriginal285eddc9278dae58281aa961bf08a625); ?>
+<?php endif; ?>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-neutral-800 leading-tight">Semua Buku</p>
+                    <p class="text-xs text-neutral-400 leading-tight"><?php echo e($stats['total_judul']); ?> judul terdaftar</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0">
+                
+                <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                    <button
+                        @click="open = !open"
+                        title="Export"
+                        class="flex items-center gap-1.5 px-2.5 py-2 sm:px-3.5 rounded-lg text-xs font-medium text-neutral-600 border border-neutral-200 hover:bg-neutral-50 transition-colors"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        <span class="hidden sm:inline">Export</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="hidden sm:block w-3 h-3 transition-transform duration-150" :class="{ 'rotate-180': open }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </button>
+
+                    <div
+                        x-show="open"
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="opacity-0 scale-95"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-95"
+                        class="absolute right-0 mt-1.5 w-48 rounded-lg border border-neutral-200 bg-white shadow-lg shadow-neutral-200/60 z-10"
+                        style="display: none;"
+                    >
+                        <div class="py-1">
+                            <a href="<?php echo e(route('admin.buku.export')); ?>"
+                               class="flex items-center gap-2.5 px-3.5 py-2 text-xs text-neutral-700 hover:bg-neutral-50 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-neutral-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+                                </svg>
+                                Export Internal
+                            </a>
+                            <a href="<?php echo e(route('admin.buku.export')); ?>?publik=1"
+                               class="flex items-center gap-2.5 px-3.5 py-2 text-xs text-neutral-700 hover:bg-neutral-50 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-neutral-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                                </svg>
+                                Export Katalog Publik
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <button type="button"
+                        onclick="bukaModalBuku()"
+                        title="Tambah Buku"
+                        class="flex items-center gap-1.5 px-2.5 py-2 sm:px-3.5 rounded-lg text-xs font-semibold text-white bg-primary-600 hover:bg-primary-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    <span class="hidden sm:inline">Tambah Buku</span>
+                </button>
+
+                
+                <a href="<?php echo e(route('admin.paket.index')); ?>"
+                   title="Kelola Paket"
+                   class="flex items-center gap-1.5 px-2.5 py-2 sm:px-3.5 rounded-lg text-xs font-semibold text-neutral-600 border border-neutral-200 hover:bg-neutral-50 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                        <line x1="12" y1="22.08" x2="12" y2="12"/>
+                    </svg>
+                    <span class="hidden sm:inline">Kelola Paket</span>
+                </a>
+            </div>
+        </div>
+
+        
+        <?php
+            $statItems = [
+                ['label' => 'Total Judul',   'value' => $stats['total_judul'],   'color' => 'text-neutral-800'],
+                ['label' => 'Total Stok',    'value' => $stats['total_stok'],    'color' => 'text-primary-700'],
+                ['label' => 'Dalam Paket',   'value' => $stats['dalam_paket'],   'color' => 'text-warning-700'],
+                ['label' => 'Stok Tersedia', 'value' => $stats['stok_tersedia'], 'color' => 'text-success-700'],
+            ];
+        ?>
+        <div class="grid grid-cols-2 sm:grid-cols-4 border-b border-neutral-100">
+            <?php $__currentLoopData = $statItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $stat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <div class="px-5 py-3.5 flex flex-col gap-0.5
+                    <?php echo e($index > 0 ? 'border-l border-neutral-100' : ''); ?>
+
+                    <?php echo e($index === 2 ? 'border-t border-neutral-100 sm:border-t-0' : ''); ?>">
+                    <span class="text-xs text-neutral-400 font-medium"><?php echo e($stat['label']); ?></span>
+                    <span class="text-2xl font-semibold tabular-nums <?php echo e($stat['color']); ?>"><?php echo e($stat['value']); ?></span>
+                </div>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </div>
+
+        
+        <div class="flex flex-wrap items-center gap-3 px-5 py-3.5">
+            <div class="relative flex-1 min-w-48">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none"
+                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <label for="filterSearch" class="sr-only">Cari buku</label>
+                <input id="filterSearch" type="text"
+                       placeholder="Cari judul, pengarang, ISBN..."
+                       class="w-full pl-9 pr-4 py-2 text-sm text-neutral-700 bg-neutral-50 border border-neutral-200 rounded-lg placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition"/>
+            </div>
+            <label for="filterKategori" class="sr-only">Filter kategori</label>
+            <select id="filterKategori"
+                    class="px-3 py-2 text-sm text-neutral-600 bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition shrink-0">
+                <option value="">Semua Kategori</option>
+                <?php $__currentLoopData = [
+                    'Umum/Komputer','Filsafat & Psikologi','Agama','Ilmu Sosial','Bahasa',
+                    'Sains & Matematika','Teknologi','Seni & Rekreasi','Literatur & Sastra','Geografi & Sejarah'
+                ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $kat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($kat); ?>"><?php echo e($kat); ?></option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </select>
+        </div>
+    </div>
+
+    <?php if(session('success')): ?>
+        <div class="flex items-center gap-2.5 px-5 py-3 bg-success-50 border border-success-100 rounded-xl text-success-700 text-sm font-medium">
+            <?php echo e(session('success')); ?>
+
+        </div>
+    <?php endif; ?>
+
+    
+    <div id="paketContainer" class="flex flex-col gap-4">
+        <?php $__empty_1 = true; $__currentLoopData = $pakets; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $paket): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+            <?php if (isset($component)) { $__componentOriginal80b2ae37f4d1774b2154c3b5c26b138d = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal80b2ae37f4d1774b2154c3b5c26b138d = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.admin.buku.paket-group','data' => ['paket' => $paket]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('admin.buku.paket-group'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['paket' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($paket)]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal80b2ae37f4d1774b2154c3b5c26b138d)): ?>
+<?php $attributes = $__attributesOriginal80b2ae37f4d1774b2154c3b5c26b138d; ?>
+<?php unset($__attributesOriginal80b2ae37f4d1774b2154c3b5c26b138d); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal80b2ae37f4d1774b2154c3b5c26b138d)): ?>
+<?php $component = $__componentOriginal80b2ae37f4d1774b2154c3b5c26b138d; ?>
+<?php unset($__componentOriginal80b2ae37f4d1774b2154c3b5c26b138d); ?>
+<?php endif; ?>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+            <div class="rounded-xl border border-neutral-200 bg-white p-12 flex flex-col items-center gap-2">
+                <div class="w-10 h-10 rounded-xl bg-neutral-100 flex items-center justify-center">
+                    <?php if (isset($component)) { $__componentOriginal285eddc9278dae58281aa961bf08a625 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal285eddc9278dae58281aa961bf08a625 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icons.book','data' => ['class' => 'w-5 h-5 text-neutral-400']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icons.book'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['class' => 'w-5 h-5 text-neutral-400']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal285eddc9278dae58281aa961bf08a625)): ?>
+<?php $attributes = $__attributesOriginal285eddc9278dae58281aa961bf08a625; ?>
+<?php unset($__attributesOriginal285eddc9278dae58281aa961bf08a625); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal285eddc9278dae58281aa961bf08a625)): ?>
+<?php $component = $__componentOriginal285eddc9278dae58281aa961bf08a625; ?>
+<?php unset($__componentOriginal285eddc9278dae58281aa961bf08a625); ?>
+<?php endif; ?>
+                </div>
+                <p class="text-sm font-medium text-neutral-500">Belum ada paket</p>
+                <p class="text-xs text-neutral-400">Buat paket terlebih dahulu sebelum menambah buku</p>
+            </div>
+        <?php endif; ?>
+
+        
+        <?php if($tanpaPaket->isNotEmpty()): ?>
+            <div class="rounded-xl border border-neutral-200 bg-white overflow-hidden"
+                 x-data="{ open: true }">
+                <button type="button"
+                        @click="open = !open"
+                        class="w-full flex items-center justify-between px-5 py-3.5 bg-neutral-50 hover:bg-neutral-100 transition-colors border-b border-neutral-200">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-neutral-100 text-neutral-400 flex items-center justify-center shrink-0">
+                            <?php if (isset($component)) { $__componentOriginal285eddc9278dae58281aa961bf08a625 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal285eddc9278dae58281aa961bf08a625 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.icons.book','data' => ['class' => 'w-4 h-4']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('icons.book'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['class' => 'w-4 h-4']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal285eddc9278dae58281aa961bf08a625)): ?>
+<?php $attributes = $__attributesOriginal285eddc9278dae58281aa961bf08a625; ?>
+<?php unset($__attributesOriginal285eddc9278dae58281aa961bf08a625); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal285eddc9278dae58281aa961bf08a625)): ?>
+<?php $component = $__componentOriginal285eddc9278dae58281aa961bf08a625; ?>
+<?php unset($__componentOriginal285eddc9278dae58281aa961bf08a625); ?>
+<?php endif; ?>
+                        </div>
+                        <div class="text-left">
+                            <p class="text-sm font-semibold text-neutral-800 leading-tight">Tanpa Paket</p>
+                            <p class="text-xs text-neutral-400 mt-0.5"><?php echo e($tanpaPaket->count()); ?> eksemplar</p>
+                        </div>
+                    </div>
+                    <svg class="w-4 h-4 text-neutral-400 transition-transform"
+                         :class="open ? 'rotate-180' : ''"
+                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </button>
+                <div x-show="open" x-collapse>
+                    <div class="overflow-x-auto">
+                        <table class="w-full min-w-150 text-sm">
+                            <thead>
+                                <tr class="border-b border-neutral-100 bg-neutral-50/50">
+                                    <th class="text-left text-xs font-medium text-neutral-500 px-5 py-2.5">Judul</th>
+                                    <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">ISBN</th>
+                                    <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">Kategori</th>
+                                    <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">Stok</th>
+                                    <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">Tampil</th>
+                                    <th class="text-center text-xs font-medium text-neutral-500 px-4 py-2.5">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-neutral-50">
+                                <?php $__currentLoopData = $tanpaPaket; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $eksemplar): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <?php if (isset($component)) { $__componentOriginal9d0b8040ecf323afcc034ce550fc9aba = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal9d0b8040ecf323afcc034ce550fc9aba = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.admin.buku.eksemplar-row','data' => ['eksemplar' => $eksemplar]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('admin.buku.eksemplar-row'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['eksemplar' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($eksemplar)]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal9d0b8040ecf323afcc034ce550fc9aba)): ?>
+<?php $attributes = $__attributesOriginal9d0b8040ecf323afcc034ce550fc9aba; ?>
+<?php unset($__attributesOriginal9d0b8040ecf323afcc034ce550fc9aba); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal9d0b8040ecf323afcc034ce550fc9aba)): ?>
+<?php $component = $__componentOriginal9d0b8040ecf323afcc034ce550fc9aba; ?>
+<?php unset($__componentOriginal9d0b8040ecf323afcc034ce550fc9aba); ?>
+<?php endif; ?>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+
+</div>
+
+<?php echo $__env->make('admin.buku.create', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+<?php echo $__env->make('admin.buku.edit', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+<?php echo $__env->make('admin.buku.destroy', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+<?php echo $__env->make('admin.buku.relokasi', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+<?php echo $__env->make('admin.paket.create', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+
+<?php $__env->startPush('scripts'); ?>
+<script>
+(function () {
+    const searchInput = document.getElementById('filterSearch');
+    const kategoriSel = document.getElementById('filterKategori');
+    const exportBase  = '<?php echo e(route('admin.buku.export')); ?>';
+
+    function filterRows() {
+        const q   = searchInput?.value.toLowerCase().trim() ?? '';
+        const kat = kategoriSel?.value.toLowerCase() ?? '';
+
+        document.querySelectorAll('#paketContainer tbody tr').forEach(row => {
+            const text    = row.textContent.toLowerCase();
+            const katCell = row.querySelector('td:nth-child(3)')?.textContent.toLowerCase() ?? '';
+            const matchQ  = !q   || text.includes(q);
+            const matchK  = !kat || katCell.includes(kat);
+            row.style.display = matchQ && matchK ? '' : 'none';
+        });
+    }
+
+    let debounce;
+    searchInput?.addEventListener('input', () => {
+        clearTimeout(debounce);
+        debounce = setTimeout(filterRows, 250);
+    });
+    kategoriSel?.addEventListener('change', filterRows);
+})();
+
+function toggleVisibilityBuku(id, currentlyVisible, btn) {
+    btn.disabled = true;
+    btn.classList.add('opacity-50', 'cursor-wait');
+
+    fetch(`/admin/buku/${id}/toggle-visibility`, {
+        method: 'PATCH',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+        },
+    })
+    .then(r => r.json())
+    .then(data => {
+        const nowVisible = data.is_visible;
+        btn.textContent = nowVisible ? 'Tampil' : 'Tersembunyi';
+        btn.title       = nowVisible ? 'Klik untuk sembunyikan' : 'Klik untuk tampilkan';
+        btn.onclick     = () => toggleVisibilityBuku(id, nowVisible, btn);
+        btn.classList.remove(
+            'bg-success-50', 'text-success-700', 'hover:bg-success-100',
+            'bg-neutral-100', 'text-neutral-500', 'hover:bg-neutral-200'
+        );
+        btn.classList.add(
+            ...(nowVisible
+                ? ['bg-success-50', 'text-success-700', 'hover:bg-success-100']
+                : ['bg-neutral-100', 'text-neutral-500', 'hover:bg-neutral-200'])
+        );
+    })
+    .catch(() => alert('Gagal mengubah visibilitas.'))
+    .finally(() => {
+        btn.disabled = false;
+        btn.classList.remove('opacity-50', 'cursor-wait');
+    });
+}
+</script>
+<?php $__env->stopPush(); ?>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\rotateyourbook\resources\views/admin/buku/index.blade.php ENDPATH**/ ?>
